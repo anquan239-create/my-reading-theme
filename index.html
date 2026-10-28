@@ -71,7 +71,10 @@ canvas:active { cursor: grabbing; }
   width: calc(100% - 24px); max-width: 736px; align-items: center; gap: 10px;
   background: #fff; border: 1px solid var(--accent); border-radius: 8px; padding: 8px 10px;
   box-shadow: 0 6px 18px rgba(0,0,0,.22);
+  touch-action: none; cursor: grab;
 }
+#pickBar.dragging { cursor: grabbing; box-shadow: 0 12px 30px rgba(0,0,0,.32); opacity: .96; }
+#pickBar.dragging * { pointer-events: none; }
 body.picking #pickBar { display: flex; }
 #pickSw { width: 30px; height: 30px; border-radius: 4px; border: 1px solid #bbb; background: #ccc; flex: none; }
 #pickBar .pt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -154,71 +157,24 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
 .pre i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.1); }
 .pre:hover { background: #f5f7fa; }
 .pre.on { border-color: var(--accent); background: #eaf3ff; box-shadow: 0 0 0 2px rgba(0,122,255,.22); font-weight: 600; }
-
-/* ===== 预设模板面板：分类分块 ===== */
 #presets { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-
-.pgroup {
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  background: #fbfbfb;
-  padding: 10px 12px 12px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.03);
-}
-
-.pgroup-title {
-  display: flex; align-items: center; gap: 8px;
-  margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #555;
-}
-.pgroup-title::before {
-  content: ''; width: 3px; height: 12px; border-radius: 2px;
-  background: var(--accent); flex: none;
-}
+.pgroup { border: 1px solid #dcdcdc; border-radius: 8px; background: #fbfbfb; padding: 10px 12px 12px; box-shadow: 0 1px 1px rgba(0,0,0,.03); }
+.pgroup-title { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #555; }
+.pgroup-title::before { content: ''; width: 3px; height: 12px; border-radius: 2px; background: var(--accent); flex: none; }
 .pg-line { flex: 1; height: 1px; background: #e4e4e4; }
 .pg-count { flex: none; font-size: 10px; font-weight: 500; color: #aaa; }
-
-.pgroup-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
-  gap: 6px;
-}
-
-/* ===== 顶部提示条 ===== */
+.pgroup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; }
 .tip {
-  flex: none;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 5px 16px;
-  background: #efefef;
-  border-bottom: 1px solid #d8d8d8;
-  color: #777;
-  font-size: 11px;
-  letter-spacing: 0.2px;
-  text-align: center;
-  user-select: none;
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 5px 16px;
+  background: #efefef; border-bottom: 1px solid #d8d8d8; color: #777; font-size: 11px; letter-spacing: 0.2px; text-align: center; user-select: none;
 }
-.tip svg {
-  width: 12px; height: 12px; flex: none;
-  fill: none; stroke: currentColor; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round;
-  opacity: .7;
-}
-
+.tip svg { width: 12px; height: 12px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .7; }
 input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: #dcdcdc; border-radius: 2px; outline: none; border: 1px solid #b3b3b3; }
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
-  background: linear-gradient(to bottom, #fff, #e0e0e0); border: 1px solid #999;
-  box-shadow: 0 1px 2px rgba(0,0,0,.2); cursor: pointer;
-}
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(to bottom, #fff, #e0e0e0); border: 1px solid #999; box-shadow: 0 1px 2px rgba(0,0,0,.2); cursor: pointer; }
 input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 .hint { color: var(--text-muted); font-size: 11px; margin: 4px 0 0; text-align: left; }
-#toast {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-  background: rgba(50,50,50,.9); color: #fff; padding: 8px 16px; border-radius: 6px;
-  z-index: 60; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2);
-  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-}
+#toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: rgba(50,50,50,.9); color: #fff; padding: 8px 16px; border-radius: 6px; z-index: 60; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 #toast:empty { display: none; }
-
 .color-cell .color-hex { width:100%; min-width:0; height:30px; border:1px solid #b3b3b3; border-radius:4px; padding:4px 7px; background:#fff; color:#333; font:12px ui-monospace, SFMono-Regular, Consolas, monospace; text-transform:uppercase; }
 .color-cell .color-hex:focus { outline:2px solid rgba(0,122,255,.22); border-color:#007aff; }
 #savePanel { display:none; position:fixed; z-index:9999; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); padding:12px; background:#fff; color:#222; border:1px solid #c8c8c8; border-radius:10px; box-shadow:0 5px 24px rgba(0,0,0,.2); gap:10px; align-items:center; }
@@ -226,17 +182,16 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 #savePanel .save-copy { flex:1; min-width:0; font-size:12px; line-height:1.5; }
 #savePanel a { display:inline-flex; align-items:center; justify-content:center; flex:none; min-height:36px; padding:0 14px; border-radius:6px; background:#222; color:#fff; text-decoration:none; font-size:13px; }
 #savePanel button { min-height:32px; padding:0 8px; }
-
+.ct-item { display: flex; gap: 6px; align-items: center; }
+.ct-item input[type="text"] { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid #b3b3b3; border-radius: 4px; font-size: 13px; }
+.ct-item input[type="color"] { width: 30px; height: 30px; padding: 0; border: 1px solid #b3b3b3; border-radius: 4px; cursor: pointer; }
+.ct-item button { padding: 0 10px; min-height: 30px; color: #d32f2f; background: #fff; border: 1px solid #ccc; border-radius: 4px; }
+.ct-item button:hover { background: #fff0f0; border-color: #d32f2f; }
 @media (max-width: 560px) {
   .tabs button svg { display: none; }
   .tabs button { font-size: 11px; padding: 0 2px; }
   .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
-
-/* PATCH: pickBar drag */
-#pickBar { touch-action: none; cursor: grab; }
-#pickBar.dragging { cursor: grabbing; box-shadow: 0 12px 30px rgba(0,0,0,.32); opacity: .96; }
-#pickBar.dragging * { pointer-events: none; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -252,7 +207,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 
   <div class="tip">
     <svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-    <span>单指长按标题或截图可拖动位置；取色器提示条也可长按拖动</span>
+    <span>单指长按文字或截图可拖动位置；取色器提示条也可长按拖动</span>
   </div>
 
   <main class="stage">
@@ -330,7 +285,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
     <div class="panel" id="p7">
       <div class="r" style="align-items:flex-start;margin-bottom:14px">
         <span style="padding-top:2px">模板库</span>
-        <p class="hint" style="margin:0;flex:1">点击任意模板，一键套用配色、背景样式、边框与标题样式。每个分类独立成块，方便快速定位风格。</p>
+        <p class="hint" style="margin:0;flex:1">点击任意模板，一键套用配色、背景样式、边框与标题样式。</p>
       </div>
       <div id="presets"></div>
     </div>
@@ -497,6 +452,13 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
       <div class="r"><span>主标题</span><input class="line" style="margin:0" id="title" value="主题名称" maxlength="40" placeholder="主题名称"></div>
       <div class="r"><span>副标题</span><input class="line" style="margin:0" id="author" value="作者名称" maxlength="30" placeholder="作者名称"></div>
       <div class="r" style="align-items:flex-start; margin-top:12px;">
+        <span style="padding-top:6px">附加文字</span>
+        <div style="flex:1;">
+          <div id="customTextList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
+          <button id="addTextBtn" style="width:100%">+ 添加文字</button>
+        </div>
+      </div>
+      <div class="r" style="align-items:flex-start; margin-top:12px;">
         <span style="padding-top:6px">标题样式</span>
         <div class="chips" data-k="titleStyle">
           <button data-v="text">极简纯文本</button>
@@ -575,8 +537,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 <script>
 'use strict';
 
-if (typeof CanvasRenderingContext2D !== 'undefined' &&
-    !CanvasRenderingContext2D.prototype.roundRect) {
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (w < 0) { x += w; w = -w; }
     if (h < 0) { y += h; h = -h; }
@@ -636,13 +597,18 @@ const SUPPORTS_CANVAS_FILTER = (function () {
 const $ = id => document.getElementById(id);
 const SANS = '"Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
 
-const state = { images: [], bgImage: null, font: null, face: null, busy: false };
+const state = { images: [], bgImage: null, font: null, face: null, busy: false, customTexts: [] };
 const opt = {
   layout: 'flat', frame: 'fold', collageBase: 'magMast', tapeStyle: 'none',
   ratio: 'auto', res: '2400', titleStyle: 'issue'
 };
 
-const offsets = { title: { x: 0, y: 0 }, cards: [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}] };
+const offsets = { 
+  title: { x: 0, y: 0 }, 
+  author: { x: 0, y: 0 },
+  cards: [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}],
+  customTexts: {}
+};
 let bgOffset = { x: 0, y: 0 };
 let dragging = null;
 
@@ -750,9 +716,6 @@ const PRESETS = [
   { name:'深海潮汐', grp:'夜景', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], bg:'deepSea',    frame:'fold', tape:'none' },
   { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' }
 ]
-
-
-
 
 function clearPresetHighlight() {
   document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
@@ -1867,7 +1830,6 @@ function premiumBackground(c, w, h, cb, o) {
   }
 }
 
-
 function creditLine(c, w, h, cb, o) {
   const { tcol } = o;
   const T = (str, x, y, op) => bgText(c, str, x, y, op);
@@ -1889,8 +1851,6 @@ function creditLine(c, w, h, cb, o) {
 
   switch (cb) {
     case 'paperMast':
-      T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.paper, sp: 1, align: 'left', col: tcol(1) });
-      break;
     case 'paperBox': case 'paperPost': case 'paperLedger': case 'paperCorner':
       T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.paper, sp: 1, align: 'left', col: tcol(1) });
       break;
@@ -1915,22 +1875,20 @@ function creditLine(c, w, h, cb, o) {
     case 'magSpread':
       T('Created by Q.', w / 4, h - 32, { size: 14, weight: 600, italic: true, family: F.play, sp: 1, col: tcol(D) });
       break;
-
     case 'appLight':
       T('Creator / Q.', w / 2, h - 24, { size: 12, weight: 600, family: F.app, sp: 0.5, col: tcol(0.85) });
       break;
     case 'webLight':
       T('Home  /  Creator  /  Q.', 112, 30, { size: 12, weight: 600, align: 'left', family: F.sans, col: tcol(0.85) });
       break;
-    case 'rulerWin': {
+    case 'rulerWin':
       c.fillStyle = '#007aff'; c.beginPath(); c.arc(36, h - 17, 4, 0, Math.PI * 2); c.fill();
       T('Creator / Q.   ·   RGB/8   ·   92%', 48, h - 17, { size: 12, weight: 700, family: F.mono, align: 'left', col: tcol(0.85) });
       break;
-    }
     case 'sideWin':
       T('Creator / Q.', 50, h - 14, { size: 10, weight: 700, family: F.round, col: tcol(0.85) });
       break;
-    case 'twinCoil': {
+    case 'twinCoil':
       const x = w - 40, y = h - 40;
       const tw = T('created by Q. ♡', x, y, { size: 22, weight: 700, family: F.hand, align: 'right', sp: 1, col: tcol(0.88) });
       c.save(); c.strokeStyle = tcol(0.7); c.lineWidth = 1.8; c.lineCap = 'round';
@@ -1938,39 +1896,32 @@ function creditLine(c, w, h, cb, o) {
       for (let k = 0; k <= 8; k++) c.lineTo(x - tw + (tw / 8) * k, y + 17 + (k % 2 ? -2.5 : 2.5));
       c.stroke(); c.restore();
       break;
-    }
-
     case 'poster':
       T('CREATED BY Q.', w - 50, h - 48, { size: 19, family: F.poster, sp: 4, align: 'right', col: tcol(0.85) });
       break;
-    case 'parchment': {
+    case 'parchment':
       const pc = tcol(0.88);
-      const tw = T('Penned by Q.', w / 2, h - 34, { size: 16, italic: true, family: F.fell, sp: 3, col: pc });
-      bgDiamond(c, w / 2 - tw / 2 - 16, h - 34, 3, pc); bgDiamond(c, w / 2 + tw / 2 + 16, h - 34, 3, pc);
+      const tw2 = T('Penned by Q.', w / 2, h - 34, { size: 16, italic: true, family: F.fell, sp: 3, col: pc });
+      bgDiamond(c, w / 2 - tw2 / 2 - 16, h - 34, 3, pc); bgDiamond(c, w / 2 + tw2 / 2 + 16, h - 34, 3, pc);
       break;
-    }
-
     case 'cloudDots':
       T('made with ♡ by Q.', w / 2, h - 12, { size: 17, weight: 700, family: F.hand, sp: 1, col: tcol(0.88) });
       break;
     case 'gingham':
       T('sewn by Q. ♡', w / 2, h - 12, { size: 17, weight: 700, family: F.hand, sp: 1, col: tcol(0.88) });
       break;
-
     case 'suspenseFog':
       T('CREATOR // Q.', w / 2, h - 32, { size: 12, weight: 700, family: F.mono, sp: 3, col: 'rgba(255, 90, 90, 1)' });
       break;
-    case 'crimeDna': {
-      const tw = T('CREATOR: Q.', 40, h - 34, { size: 14, weight: 900, family: F.sans, sp: 2, align: 'left', col: '#f3c614' });
-      c.fillStyle = '#f3c614'; c.fillRect(40, h - 22, tw, 2.5);
+    case 'crimeDna':
+      const tw3 = T('CREATOR: Q.', 40, h - 34, { size: 14, weight: 900, family: F.sans, sp: 2, align: 'left', col: '#f3c614' });
+      c.fillStyle = '#f3c614'; c.fillRect(40, h - 22, tw3, 2.5);
       break;
-    }
-    case 'classifiedDossier': {
-      const tw = T('CREATED BY: Q.', 50, h - 45, { size: 14, family: F.mono, sp: 2, align: 'left', col: tcol(0.92) });
-      c.fillStyle = tcol(0.6); c.fillRect(50, h - 35, tw, 1.5);
+    case 'classifiedDossier':
+      const tw4 = T('CREATED BY: Q.', 50, h - 45, { size: 14, family: F.mono, sp: 2, align: 'left', col: tcol(0.92) });
+      c.fillStyle = tcol(0.6); c.fillRect(50, h - 35, tw4, 1.5);
       break;
-    }
-    case 'detectiveBoard': {
+    case 'detectiveBoard':
       c.save(); c.translate(120, h - 36); c.rotate(-0.04);
       c.shadowColor = 'rgba(0,0,0,0.4)'; c.shadowBlur = 6; c.shadowOffsetY = 3;
       c.fillStyle = '#efe5cd'; c.fillRect(-14, -17, 190, 34);
@@ -1979,15 +1930,12 @@ function creditLine(c, w, h, cb, o) {
       T('Creator / Q.', 85, 2, { size: 22, weight: 700, family: F.hand, col: 'rgba(30,22,16,1)' });
       c.restore();
       break;
-    }
-    case 'glitchArchive': {
+    case 'glitchArchive':
       const gs = { size: 13, weight: 700, family: F.mono, sp: 2, align: 'left' };
       T('CREATOR // Q.', 35 + 1.4, h - 35 + 0.6, { ...gs, col: 'rgba(255,45,111,0.95)' });
       T('CREATOR // Q.', 35 - 1.4, h - 35 - 0.6, { ...gs, col: 'rgba(0,229,255,0.95)' });
       T('CREATOR // Q.', 35, h - 35, { ...gs, col: 'rgba(240,248,255,1)' });
       break;
-    }
-
     case 'songPorcelain':
       T('Created by Q.', w - 100, h - 52, { size: 14, weight: 600, family: F.song, sp: 3, align: 'right', col: tcol(0.88) });
       break;
@@ -2000,30 +1948,26 @@ function creditLine(c, w, h, cb, o) {
     case 'songTea':
       T('Created by Q.', w / 2, h - 40, { size: 15, weight: 600, family: F.song, sp: 4, col: tcol(0.88) });
       break;
-    case 'crackedGlaze': {
-      const x = w - 60, y = h - 44;
-      const tw = T('Created by Q.', x, y, { size: 15, weight: 600, family: F.song, sp: 3, align: 'right', col: tcol(0.9) });
-      c.fillStyle = tcol(0.7); c.fillRect(x - tw - 44, y, 30, 1.5);
+    case 'crackedGlaze':
+      const x5 = w - 60, y5 = h - 44;
+      const tw5 = T('Created by Q.', x5, y5, { size: 15, weight: 600, family: F.song, sp: 3, align: 'right', col: tcol(0.9) });
+      c.fillStyle = tcol(0.7); c.fillRect(x5 - tw5 - 44, y5, 30, 1.5);
       break;
-    }
-    case 'inkMountain': {
-      const x = w - 60, y = h - 36;
-      const tw = T('Created by Q.', x, y, { size: 15, weight: 600, family: F.song, sp: 3, align: 'right', col: tcol(0.92) });
-      c.fillStyle = 'rgba(200,66,58,1)'; c.beginPath(); c.roundRect(x - tw - 22, y - 6, 12, 12, 2); c.fill();
+    case 'inkMountain':
+      const x6 = w - 60, y6 = h - 36;
+      const tw6 = T('Created by Q.', x6, y6, { size: 15, weight: 600, family: F.song, sp: 3, align: 'right', col: tcol(0.92) });
+      c.fillStyle = 'rgba(200,66,58,1)'; c.beginPath(); c.roundRect(x6 - tw6 - 22, y6 - 6, 12, 12, 2); c.fill();
       break;
-    }
-    case 'bambooMoon': {
-      const y = h - 36;
-      const tw = T('Created by Q.', w / 2, y, { size: 15, weight: 600, family: F.song, sp: 4, col: tcol(0.9) });
-      c.fillStyle = tcol(0.6); c.fillRect(w / 2 - tw / 2 - 40, y, 26, 1.5); c.fillRect(w / 2 + tw / 2 + 14, y, 26, 1.5);
+    case 'bambooMoon':
+      const y7 = h - 36;
+      const tw7 = T('Created by Q.', w / 2, y7, { size: 15, weight: 600, family: F.song, sp: 4, col: tcol(0.9) });
+      c.fillStyle = tcol(0.6); c.fillRect(w / 2 - tw7 / 2 - 40, y7, 26, 1.5); c.fillRect(w / 2 + tw7 / 2 + 14, y7, 26, 1.5);
       break;
-    }
     case 'scroll':
       T('Created by Q.', w / 2, h - 52, { size: 14, weight: 600, family: F.song, sp: 4, col: tcol(0.92) });
       break;
   }
 }
-
 
 function paperBackground(c, w, h, cb, o) {
   const { baseCol, isDark, transparent, R, tcol } = o;
@@ -3002,21 +2946,36 @@ function renderText(c, w, h, g) {
 
   const availableTopSpace = h - (titleBlockH + g.fh + g.stag);
   const baseTitleY = Math.max(80, availableTopSpace * 0.32);
-  const titleActualY = baseTitleY + offsets.title.y;
-  const titleActualX = offsets.title.x + g.paddingLeft;
-
+  
   const rawTitle = $('title').value.trim() || '主题名称';
   const rawAuthor = $('author').value.trim() || '作者名称';
   const fontFam = state.font || SANS;
 
+  const titleActualY = baseTitleY + offsets.title.y;
+  const titleActualX = offsets.title.x + g.paddingLeft;
   const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, titleFontSize, fontFam, chipCol, textCol, R, titleActualX, opt.titleStyle, spacing);
 
-  let aInfo = { totalW: 0, height: 0 };
+  let aInfo = { totalW: 0, height: 0, actualY: 0, actualX: 0 };
   if (rawAuthor) {
-    aInfo = drawCollageTextGroup(c, rawAuthor.toUpperCase(), titleActualY + tInfo.height + 14, authorFontSize, fontFam, chipCol, textCol, R, titleActualX, opt.titleStyle, spacing);
+    const defaultAuthorY = baseTitleY + (42 * layoutScale * 1.35) + 10;
+    aInfo.actualY = defaultAuthorY + offsets.author.y;
+    aInfo.actualX = offsets.author.x + g.paddingLeft;
+    const info = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, authorFontSize, fontFam, chipCol, textCol, R, aInfo.actualX, opt.titleStyle, spacing);
+    aInfo.totalW = info.totalW;
+    aInfo.height = info.height;
   }
 
-  return { tInfo, aInfo, titleActualX, titleActualY, titleBlockH };
+  let ctInfos = [];
+  const baseCustomY = baseTitleY + (42 * layoutScale * 1.35) + (20 * layoutScale * 1.35) + 30;
+  state.customTexts.forEach((ct, idx) => {
+    const off = offsets.customTexts[ct.id] || { x: 0, y: 0 };
+    const ctY = baseCustomY + (idx * 40) + off.y;
+    const ctX = off.x + g.paddingLeft;
+    const info = drawCollageTextGroup(c, ct.text, ctY, authorFontSize, fontFam, chipCol, ct.color || textCol, R, ctX, opt.titleStyle, spacing);
+    ctInfos.push({ id: ct.id, info, actualX: ctX, actualY: ctY });
+  });
+
+  return { tInfo, aInfo, ctInfos, titleActualX, titleActualY, titleBlockH };
 }
 
 function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg, chipText, R, xOffset, style, spacing) {
@@ -3245,15 +3204,6 @@ function draw(cv, W, isExport) {
   }
 
   hitBoxes = [];
-  const maxTextW = Math.max(tData.tInfo.totalW, tData.aInfo.totalW);
-  hitBoxes.push({
-    type: 'title',
-    x: (g.w - maxTextW) / 2 + tData.titleActualX - 20,
-    y: tData.titleActualY - 10,
-    w: maxTextW + 40,
-    h: tData.titleBlockH + 20
-  });
-
   const fw = g.sw + 2 * g.sidePad;
   const cardsStartY = Math.max(80, (g.h - (tData.titleBlockH + g.fh + g.stag)) * 0.32) + tData.titleBlockH + 24;
   const slots = slotPositions(g, g.w, cardsStartY);
@@ -3264,6 +3214,32 @@ function draw(cv, W, isExport) {
     const py = slots[i].py + cardOff.y;
     hitBoxes.push({ type: 'card', index: i, x: px, y: py, w: fw, h: g.fh });
   }
+
+  const tX = (g.w - tData.tInfo.totalW) / 2 + tData.titleActualX;
+  hitBoxes.push({
+    type: 'title',
+    x: tX - 20, y: tData.titleActualY - 10,
+    w: tData.tInfo.totalW + 40, h: tData.tInfo.height + 20
+  });
+
+  if (tData.aInfo.totalW > 0) {
+    const aX = (g.w - tData.aInfo.totalW) / 2 + tData.aInfo.actualX;
+    hitBoxes.push({
+      type: 'author',
+      x: aX - 20, y: tData.aInfo.actualY - 10,
+      w: tData.aInfo.totalW + 40, h: tData.aInfo.height + 20
+    });
+  }
+
+  tData.ctInfos.forEach(ct => {
+    const cX = (g.w - ct.info.totalW) / 2 + ct.actualX;
+    hitBoxes.push({
+      type: 'customText',
+      id: ct.id,
+      x: cX - 20, y: ct.actualY - 10,
+      w: ct.info.totalW + 40, h: ct.info.height + 20
+    });
+  });
 
   return cv;
 }
@@ -3463,11 +3439,18 @@ function findDragTarget(pt) {
   for (let i = hitBoxes.length - 1; i >= 0; i--) {
     const box = hitBoxes[i];
     if (pt.x >= box.x && pt.x <= box.x + box.w && pt.y >= box.y && pt.y <= box.y + box.h) {
+      let origX = 0, origY = 0;
+      if (box.type === 'title') { origX = offsets.title.x; origY = offsets.title.y; }
+      else if (box.type === 'author') { origX = offsets.author.x; origY = offsets.author.y; }
+      else if (box.type === 'customText') { 
+        const off = offsets.customTexts[box.id] || { x: 0, y: 0 };
+        origX = off.x; origY = off.y; 
+      }
+      else if (box.type === 'card') { origX = offsets.cards[box.index].x; origY = offsets.cards[box.index].y; }
+      
       return {
-        type: box.type, index: box.index,
-        startX: pt.x, startY: pt.y,
-        origX: box.type === 'title' ? offsets.title.x : offsets.cards[box.index].x,
-        origY: box.type === 'title' ? offsets.title.y : offsets.cards[box.index].y
+        type: box.type, index: box.index, id: box.id,
+        startX: pt.x, startY: pt.y, origX, origY
       };
     }
   }
@@ -3529,6 +3512,15 @@ function handleMove(e) {
     offsets.title.x = dragging.origX + dx;
     offsets.title.y = dragging.origY + dy;
     schedule(false, false, true);
+  } else if (dragging.type === 'author') {
+    offsets.author.x = dragging.origX + dx;
+    offsets.author.y = dragging.origY + dy;
+    schedule(false, false, true);
+  } else if (dragging.type === 'customText') {
+    if (!offsets.customTexts[dragging.id]) offsets.customTexts[dragging.id] = { x: 0, y: 0 };
+    offsets.customTexts[dragging.id].x = dragging.origX + dx;
+    offsets.customTexts[dragging.id].y = dragging.origY + dy;
+    schedule(false, false, true);
   } else if (dragging.type === 'card') {
     offsets.cards[dragging.index].x = dragging.origX + dx;
     offsets.cards[dragging.index].y = dragging.origY + dy;
@@ -3556,6 +3548,8 @@ window.addEventListener('touchcancel', () => { pickTouch = null; dragging = null
 
 $('resetPos').onclick = () => {
   offsets.title = { x: 0, y: 0 };
+  offsets.author = { x: 0, y: 0 };
+  state.customTexts.forEach(ct => { offsets.customTexts[ct.id] = { x: 0, y: 0 }; });
   offsets.cards = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
   bgOffset = { x: 0, y: 0 };
   $('bgScale').value = 100;
@@ -3631,7 +3625,7 @@ document.querySelectorAll('.tabs button').forEach(b => {
   };
 });
 
-['title', 'author'].forEach(id => $(id).addEventListener('input', () => schedule(false, opt.layout === 'accordion', true)));
+['title', 'author'].forEach(id => $(id).addEventListener('input', () => schedule(false, false, true)));
 ['scale', 'olGap', 'olW', 'olR'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
 ['bgOpacity', 'bgBlur', 'bgScale'].forEach(id => $(id).addEventListener('input', () => schedule(true, false, false)));
 ['textSize', 'textSpacing'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
@@ -3738,7 +3732,6 @@ Object.entries(opt).forEach(([k, v]) => setOpt(k, v));
 document.body.style.background = $('cBase').value;
 render();
 
-/* PATCH: pickBar drag */
 function initPickBarDrag() {
   const bar = document.getElementById('pickBar');
   if (!bar || bar.dataset.dragReady) return;
@@ -3800,6 +3793,59 @@ function initPickBarDrag() {
 }
 initPickBarDrag();
 
+function renderCustomTextUI() {
+  const list = document.getElementById('customTextList');
+  if (!list) return;
+  list.innerHTML = '';
+  state.customTexts.forEach(ct => {
+    const div = document.createElement('div');
+    div.className = 'ct-item';
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = ct.text;
+    input.placeholder = '输入文字';
+    input.addEventListener('input', (e) => {
+      ct.text = e.target.value;
+      schedule(false, false, true);
+    });
+
+    const color = document.createElement('input');
+    color.type = 'color';
+    color.value = ct.color || document.getElementById('cText').value;
+    color.addEventListener('input', (e) => {
+      ct.color = e.target.value;
+      schedule(false, false, true);
+    });
+
+    const del = document.createElement('button');
+    del.textContent = '×';
+    del.title = '删除此条文字';
+    del.onclick = () => {
+      state.customTexts = state.customTexts.filter(x => x.id !== ct.id);
+      delete offsets.customTexts[ct.id];
+      renderCustomTextUI();
+      schedule(false, false, true);
+    };
+
+    div.append(input, color, del);
+    list.appendChild(div);
+  });
+}
+
+const addBtn = document.getElementById('addTextBtn');
+if (addBtn && !addBtn.dataset.bound) {
+  addBtn.dataset.bound = '1';
+  addBtn.onclick = () => {
+    const newId = 'txt_' + Date.now();
+    state.customTexts.push({ id: newId, text: '新文字', color: document.getElementById('cText').value });
+    offsets.customTexts[newId] = { x: 0, y: state.customTexts.length * 40 };
+    renderCustomTextUI();
+    schedule(false, false, true);
+  };
+}
+
+setTimeout(renderCustomTextUI, 100);
 </script>
 </body>
-  </html>
+        </html>
