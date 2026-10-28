@@ -215,7 +215,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         <button id="clear">清空</button>
       </div>
       <div class="th" id="thumbs"></div>
-      <p class="hint">请选择 1–4 张相同尺寸手机截图。</p>
+      <p class="hint">请选择 1–6 张相同尺寸手机截图。</p>
     </div>
 
     <div class="panel" id="p4">
@@ -254,6 +254,12 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
           <button data-v="stack">倾斜错落</button>
           <button data-v="scatter">自由散落</button>
           <button data-v="flat" aria-pressed="true">卡片并列</button>
+          <button data-v="rows2">上下两排</button>
+          <button data-v="rows2brick">上下交错</button>
+          <button data-v="rows2tilt">上下错落</button>
+          <button data-v="stairs">阶梯</button>
+          <button data-v="wave">波浪</button>
+          <button data-v="fan">扇形</button>
           <button data-v="accordion">折页</button>
         </div>
       </div>
@@ -286,12 +292,16 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
           <button data-v="auto">自适应</button>
           <button data-v="1">1:1</button>
           <button data-v="0.75">3:4</button>
+          <button data-v="0.666667">2:3</button>
+          <button data-v="0.5625">9:16</button>
           <button data-v="1.333333">4:3</button>
+          <button data-v="1.5">3:2</button>
+          <button data-v="1.777778">16:9</button>
         </div>
       </div>
       <div class="r">
         <span>缩放</span>
-        <input id="scale" type="range" min="80" max="105" value="80">
+        <input id="scale" type="range" min="80" max="250" value="80">
         <output id="scaleV" style="width:36px;text-align:right;font-size:11px">80%</output>
       </div>
       <div class="r" style="margin-top:8px">
@@ -542,7 +552,7 @@ const opt = {
   ratio: 'auto', res: '2400', titleStyle: 'issue'
 };
 
-const offsets = { title: { x: 0, y: 0 }, cards: [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}] };
+const offsets = { title: { x: 0, y: 0 }, cards: [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}] };
 let bgOffset = { x: 0, y: 0 };
 let dragging = null;
 
@@ -714,7 +724,7 @@ function initColors() {
 
 async function importImages(files) {
   if (!files.length) return;
-  if (state.images.length + files.length > 4) { toast('最多支持 4 张截图'); $('images').value = ''; return; }
+  if (state.images.length + files.length > 6) { toast('最多支持 6 张截图'); $('images').value = ''; return; }
   state.busy = true;
   const added = [];
   try {
@@ -793,6 +803,52 @@ const rng = s => () => {
   return ((t ^ t >>> 14) >>> 0) / 4294967296;
 };
 
+const LAYOUT_NEW = {
+  rows2: { rows: 2 }, rows2brick: { rows: 2, brick: true }, rows2tilt: { rows: 2 },
+  stairs: { rows: 1 }, wave: { rows: 1 }, fan: { rows: 1 }
+};
+
+function slotPositions(g, w, cardsStartY) {
+  const fw = g.sw + 2 * g.sidePad, fh = g.fh, n = g.n, lay = g.lay;
+  const out = [];
+  if (!LAYOUT_NEW[lay]) {
+    let rotations = { flat: [0, 0, 0], scatter: [-0.09, 0.07, -0.05], stack: [-0.07, 0.03, 0.08] }[lay] || [0, 0, 0];
+    if (n === 1) rotations = [0];
+    const offsetsY = { flat: [0, 0, 0], scatter: [0, 1.2, 0.4], stack: [0, 1, 0], accordion: [0, 0, 0] }[lay] || [0, 0, 0];
+    const x0 = (w - (n * fw + (n - 1) * g.gap)) / 2 + g.paddingLeft;
+    for (let i = 0; i < n; i++) out.push({ px: x0 + i * (fw + g.gap), py: cardsStartY + offsetsY[i % 3] * g.stag, angle: rotations[i % 3] || 0 });
+    return out;
+  }
+  if (g.rows === 2) {
+    const t = Math.ceil(n / 2), counts = [t, n - t];
+    const brick = !!LAYOUT_NEW[lay].brick, shift = brick ? (fw + g.gap) / 2 : 0;
+    let idx = 0;
+    for (let r = 0; r < 2; r++) {
+      const kk = counts[r];
+      const x0 = (w - (kk * fw + (kk - 1) * g.gap)) / 2 + g.paddingLeft + (brick ? (r ? shift / 2 : -shift / 2) : 0);
+      for (let j = 0; j < kk; j++, idx++) {
+        const tilt = lay === 'rows2tilt';
+        out.push({
+          px: x0 + j * (fw + g.gap),
+          py: cardsStartY + r * (fh + g.rowGap) + (tilt ? (idx % 2) * 26 : 0),
+          angle: tilt ? (idx % 2 ? 0.035 : -0.035) : 0
+        });
+      }
+    }
+    return out;
+  }
+  const c0 = (n - 1) / 2;
+  const x0 = (w - (n * fw + (n - 1) * g.gap)) / 2 + g.paddingLeft;
+  for (let i = 0; i < n; i++) {
+    let py = 0, angle = 0;
+    if (lay === 'wave') py = (i % 2) * 60;
+    else if (lay === 'stairs') py = i * 44;
+    else if (lay === 'fan') { py = 20 * (i - c0) * (i - c0); angle = (i - c0) * 0.07; }
+    out.push({ px: x0 + i * (fw + g.gap), py: cardsStartY + py, angle });
+  }
+  return out;
+}
+
 function geometry() {
   const n = state.images.length || 3;
   const im = state.images[0];
@@ -815,11 +871,24 @@ function geometry() {
     case 'stamp':    sidePad = 20; topPad = 20; botPad = 20; break;
   }
 
-  const fw0 = lay === 'accordion'
-    ? 1040 / n
-    : (lay === 'stack' ? 1040 / (n - (n - 1) * 0.14) : (1040 - (lay === 'flat' ? 24 : 12) * (n - 1)) / n);
-  const gap = lay === 'accordion' ? 0 : (lay === 'stack' ? -0.14 * fw0 : (lay === 'flat' ? 24 : 12));
-  const stag = lay === 'accordion' ? 36 : (lay === 'flat' ? 0 : (lay === 'scatter' ? 56 : 32));
+  const NEWLAY = LAYOUT_NEW[lay];
+  const rows = (NEWLAY && NEWLAY.rows === 2 && n > 1) ? 2 : 1;
+  const cols = rows === 2 ? Math.ceil(n / 2) : n;
+  const brickX = (NEWLAY && NEWLAY.brick && rows === 2) ? 0.5 : 0;
+  const rowGap = 28;
+  const c0 = (n - 1) / 2;
+  let stagFixed = 0;
+  if (NEWLAY) stagFixed = lay === 'wave' ? 60 : lay === 'stairs' ? (n - 1) * 44 : lay === 'fan' ? 20 * c0 * c0 + 24 : lay === 'rows2tilt' ? 26 : 0;
+
+  const fw0 = NEWLAY
+    ? (lay === 'fan' ? 1040 / (n - (n - 1) * 0.14) : (1040 - 24 * (cols - 1)) / (cols + brickX))
+    : (lay === 'accordion'
+      ? 1040 / n
+      : (lay === 'stack' ? 1040 / (n - (n - 1) * 0.14) : (1040 - (lay === 'flat' ? 24 : 12) * (n - 1)) / n));
+  const gap = NEWLAY
+    ? (lay === 'fan' ? -0.14 * fw0 : 24)
+    : (lay === 'accordion' ? 0 : (lay === 'stack' ? -0.14 * fw0 : (lay === 'flat' ? 24 : 12)));
+  const stag = NEWLAY ? stagFixed : (lay === 'accordion' ? 36 : (lay === 'flat' ? 0 : (lay === 'scatter' ? 56 : 32)));
   const swW = fw0 - 2 * sidePad;
   let h, sw;
 
@@ -830,16 +899,19 @@ function geometry() {
 
   if (opt.ratio === 'auto') {
     sw = swW * k;
-    const extraBot = opt.frame === 'polaroid' ? sw * 0.25 : 0;
-    h = Math.ceil(180 + sw * r + topPad + botPad + extraBot + stag + titleBlockH + candyExtra);
+    const eb = opt.frame === 'polaroid' ? sw * 0.25 : 0;
+    const fhU = sw * r + topPad + botPad + eb;
+    h = Math.ceil(180 + fhU + stag + (rows - 1) * (fhU + rowGap) + titleBlockH + candyExtra);
   } else {
     h = Math.round(1200 / +opt.ratio);
-    sw = Math.min(swW, (h - 220 - candyExtra - stag - topPad - botPad) / r) * k;
+    sw = Math.min(swW, ((h - 220 - candyExtra - stag - (rows - 1) * rowGap) / rows - topPad - botPad) / r) * k;
   }
   const extraBot = opt.frame === 'polaroid' ? sw * 0.25 : 0;
+  const fhFinal = sw * r + topPad + botPad + extraBot;
+  const stagTotal = stag + (rows - 1) * (fhFinal + rowGap);
   const paddingLeft = (opt.collageBase === 'twinCoil' || opt.collageBase === 'sideWin') ? 40 : (opt.collageBase === 'rulerWin' ? 14 : 0);
 
-  return { w: 1200, h, n, r, sidePad, topPad, botPad: botPad + extraBot, gap, sw, fh: sw * r + topPad + botPad + extraBot, lay, stag, paddingLeft, olGap, olW, olR };
+  return { w: 1200, h, n, r, sidePad, topPad, botPad: botPad + extraBot, gap, sw, fh: fhFinal, lay, stag: stagTotal, rows, cols, rowGap, paddingLeft, olGap, olW, olR };
 }
 
 function drawTornEdge(c, x, y, ww, hh, j = 2.5, st = 12, R) {
@@ -2727,21 +2799,16 @@ function renderCards(c, w, h, g, useCache = false) {
   const cardsStartY = baseTitleY + titleBlockH + 24;
 
   const fw = g.sw + 2 * g.sidePad;
-  const totalCardsW = g.n * fw + (g.n - 1) * g.gap;
-  const startCardX = (w - totalCardsW) / 2 + g.paddingLeft;
-
-  let rotations = { flat: [0, 0, 0], scatter: [-0.09, 0.07, -0.05], stack: [-0.07, 0.03, 0.08] }[g.lay];
-  if (g.n === 1) rotations = [0];
-  const offsetsY = { flat: [0, 0, 0], scatter: [0, 1.2, 0.4], stack: [0, 1, 0] }[g.lay];
+  const slots = slotPositions(g, w, cardsStartY);
 
   const key = useCache ? cardCacheKey(g) : '';
   const pad = 60;
 
   for (let i = 0; i < g.n; i++) {
     const cardOff = offsets.cards[i] || { x: 0, y: 0 };
-    const px = startCardX + i * (fw + g.gap) + cardOff.x;
-    const py = cardsStartY + offsetsY[i % 3] * g.stag + cardOff.y;
-    const angle = rotations[i % 3] || 0;
+    const px = slots[i].px + cardOff.x;
+    const py = slots[i].py + cardOff.y;
+    const angle = slots[i].angle;
 
     c.save();
     c.translate(px + fw / 2, py + g.fh / 2);
@@ -2802,7 +2869,7 @@ function renderText(c, w, h, g) {
 function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg, chipText, R, xOffset, style, spacing) {
   const chars = Array.from(style === 'kicker' ? textStr.toUpperCase() : textStr);
   if (!chars.length) return { totalW: 0, height: 0 };
-  const isFlat = opt.layout === 'flat' || opt.layout === 'accordion';
+  const isFlat = opt.layout === 'flat' || opt.layout === 'accordion' || !!LAYOUT_NEW[opt.layout];
   const fontSize = baseFontSize;
   const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed'];
   const isNew = ALIGNED.includes(style);
@@ -3035,16 +3102,13 @@ function draw(cv, W, isExport) {
   });
 
   const fw = g.sw + 2 * g.sidePad;
-  const totalCardsW = g.n * fw + (g.n - 1) * g.gap;
-  const startCardX = (g.w - totalCardsW) / 2 + g.paddingLeft;
   const cardsStartY = Math.max(80, (g.h - (tData.titleBlockH + g.fh + g.stag)) * 0.32) + tData.titleBlockH + 24;
-
-  const offsetsY = { flat: [0, 0, 0], scatter: [0, 1.2, 0.4], stack: [0, 1, 0], accordion: [0, 0, 0] }[g.lay];
+  const slots = slotPositions(g, g.w, cardsStartY);
 
   for (let i = 0; i < g.n; i++) {
     const cardOff = offsets.cards[i] || { x: 0, y: 0 };
-    const px = startCardX + i * (fw + g.gap) + cardOff.x;
-    const py = cardsStartY + offsetsY[i % 3] * g.stag + cardOff.y;
+    const px = slots[i].px + cardOff.x;
+    const py = slots[i].py + cardOff.y;
     hitBoxes.push({ type: 'card', index: i, x: px, y: py, w: fw, h: g.fh });
   }
 
@@ -3068,7 +3132,7 @@ function render() {
   const ok = !state.busy && state.images.length >= 1;
   $('export').disabled = $('exportTop').disabled = !ok;
   const n = state.images.length;
-  $('status').textContent = n ? `已选 ${n} 张` : '选1~4张截图';
+  $('status').textContent = n ? `已选 ${n} 张` : '选1~6张截图';
 }
 
 const previewCanvas = $('preview');
@@ -3276,7 +3340,7 @@ window.addEventListener('touchend', handleEnd);
 
 $('resetPos').onclick = () => {
   offsets.title = { x: 0, y: 0 };
-  offsets.cards = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
+  offsets.cards = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
   bgOffset = { x: 0, y: 0 };
   $('bgScale').value = 100;
   schedule(true, true, true);
