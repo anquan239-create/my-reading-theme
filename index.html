@@ -53,15 +53,30 @@ button:disabled { opacity: .5; cursor: default; box-shadow: none; }
 .go:active { background: #0066d6; box-shadow: inset 0 1px 2px rgba(0,0,0,.3); }
 .stage {
   flex: none; display: grid; place-items: center; padding: 16px;
-  background: #ececec; border-bottom: 1px solid #d0d0d0; touch-action: none;
+  background: #ececec; border-bottom: 1px solid #d0d0d0; touch-action: auto;
 }
 canvas {
   width: 100%; height: auto; max-width: 500px; border-radius: 4px; border: 1px solid #ccc;
   box-shadow: 0 10px 30px rgba(0,0,0,.15);
   background-image: linear-gradient(45deg,#e0e0e0 25%,transparent 25%),linear-gradient(-45deg,#e0e0e0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e0e0e0 75%),linear-gradient(-45deg,transparent 75%,#e0e0e0 75%);
   background-size: 16px 16px; background-position: 0 0,0 8px,8px -8px,-8px 0; cursor: grab;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
 canvas:active { cursor: grabbing; }
+#preview { scroll-margin-top: 56px; }
+#pickBar {
+  display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 30;
+  width: calc(100% - 24px); max-width: 736px; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid var(--accent); border-radius: 8px; padding: 8px 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.22);
+}
+body.picking #pickBar { display: flex; }
+#pickSw { width: 30px; height: 30px; border-radius: 4px; border: 1px solid #bbb; background: #ccc; flex: none; }
+#pickBar .pt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#pickBar .pt b { font-size: 13px; color: #222; }
+#pickBar .pt small { font-size: 11px; color: #666; line-height: 1.35; }
+#pickHex { font: 12px ui-monospace, Menlo, Consolas, monospace; color: #333; flex: none; min-width: 56px; text-align: right; }
+#pickBar button { min-height: 28px; flex: none; }
 body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(--accent), 0 10px 30px rgba(0,0,0,.15) !important; }
 .dock {
   width: calc(100% - 24px); margin: 16px auto 24px; background: #f6f6f6; border-radius: 8px;
@@ -471,6 +486,12 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
   </section>
 </div>
 
+<div id="pickBar" role="status" aria-live="polite">
+  <i id="pickSw"></i>
+  <div class="pt"><b id="pickTitle">取色中</b><small id="pickHint"></small></div>
+  <code id="pickHex">—</code>
+  <button id="pickCancel" type="button">取消</button>
+</div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="savePanel" role="status" aria-live="polite">
   <div class="save-copy"><strong>图片已生成</strong><br>如果没有自动下载，请点击右侧按钮保存 PNG。</div>
@@ -3137,7 +3158,7 @@ function render() {
 
 const previewCanvas = $('preview');
 
-let pickingTarget = null;
+let pickingTarget = null, pickTouch = null;
 
 function applyPick(targetId, hexColor) {
   const input = $(targetId);
@@ -3154,21 +3175,29 @@ function startCanvasPick(targetId) {
   document.querySelectorAll('.picker').forEach(b => {
     b.classList.toggle('active', b.dataset.target === targetId);
   });
-  toast('点击画布任意位置取色（Esc 取消）');
+  const cell = $(targetId) && $(targetId).closest('.color-cell');
+  const label = cell && cell.querySelector('span') ? cell.querySelector('span').childNodes[0].textContent.trim() : '颜色';
+  $('pickTitle').textContent = '取色中 · ' + label;
+  $('pickHint').textContent = (window.matchMedia && matchMedia('(pointer: coarse)').matches)
+    ? '在预览图上按住并拖动，松开手指取色'
+    : '点击预览图上任意位置取色（Esc 取消）';
+  $('pickHex').textContent = '—';
+  $('pickSw').style.background = '#ccc';
+  previewCanvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function stopCanvasPick() {
-  pickingTarget = null;
+  pickingTarget = null; pickTouch = null;
   document.body.classList.remove('picking');
   document.querySelectorAll('.picker').forEach(b => b.classList.remove('active'));
 }
 
-function canvasPickAt(clientX, clientY) {
+function sampleCanvasAt(clientX, clientY) {
   const rect = previewCanvas.getBoundingClientRect();
-  if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return false;
+  if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return null;
   const px = Math.floor((clientX - rect.left) * previewCanvas.width / rect.width);
   const py = Math.floor((clientY - rect.top) * previewCanvas.height / rect.height);
-  if (px < 0 || py < 0 || px >= previewCanvas.width || py >= previewCanvas.height) return false;
+  if (px < 0 || py < 0 || px >= previewCanvas.width || py >= previewCanvas.height) return null;
   const ctx = previewCanvas.getContext('2d');
   let [r, g, b, a] = ctx.getImageData(px, py, 1, 1).data;
   if (a < 255) {
@@ -3177,13 +3206,28 @@ function canvasPickAt(clientX, clientY) {
     g = Math.round(g * k + 255 * (1 - k));
     b = Math.round(b * k + 255 * (1 - k));
   }
-  const hexColor = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+function updatePickPreview(clientX, clientY) {
+  const hex = pickingTarget ? sampleCanvasAt(clientX, clientY) : null;
+  $('pickHex').textContent = hex ? hex.toUpperCase() : '—';
+  $('pickSw').style.background = hex || '#ccc';
+}
+
+function canvasPickAt(clientX, clientY) {
+  const hexColor = sampleCanvasAt(clientX, clientY);
+  if (!hexColor) return false;
   const target = pickingTarget;
   stopCanvasPick();
   applyPick(target, hexColor);
   toast('已取色 ' + hexColor.toUpperCase());
   return true;
 }
+
+$('pickCancel').addEventListener('click', () => { stopCanvasPick(); toast('已取消取色'); });
+previewCanvas.addEventListener('mousemove', e => { if (pickingTarget) updatePickPreview(e.clientX, e.clientY); });
+previewCanvas.addEventListener('mouseleave', () => { if (pickingTarget) updatePickPreview(-1, -1); });
 
 function bindColorPickers() {
   document.querySelectorAll('.color-cell').forEach(cell => {
@@ -3281,35 +3325,72 @@ function getCanvasPoint(e) {
   };
 }
 
-function handleStart(e) {
-  if (pickingTarget) {
-    if (e.cancelable) e.preventDefault();
-    const touch = e.touches ? e.touches[0] : e;
-    canvasPickAt(touch.clientX, touch.clientY);
-    return;
-  }
-  const pt = getCanvasPoint(e);
+let pendingDrag = null, pressTimer = null, touchStartXY = null;
+
+function findDragTarget(pt) {
   for (let i = hitBoxes.length - 1; i >= 0; i--) {
     const box = hitBoxes[i];
     if (pt.x >= box.x && pt.x <= box.x + box.w && pt.y >= box.y && pt.y <= box.y + box.h) {
-      dragging = {
+      return {
         type: box.type, index: box.index,
         startX: pt.x, startY: pt.y,
         origX: box.type === 'title' ? offsets.title.x : offsets.cards[box.index].x,
         origY: box.type === 'title' ? offsets.title.y : offsets.cards[box.index].y
       };
-      if (e.cancelable) e.preventDefault();
-      break;
     }
   }
-  if (!dragging && state.bgImage && opt.collageBase === 'custom') {
-    dragging = { type: 'bg', startX: pt.x, startY: pt.y, origX: bgOffset.x, origY: bgOffset.y };
+  if (state.bgImage && opt.collageBase === 'custom') {
+    return { type: 'bg', startX: pt.x, startY: pt.y, origX: bgOffset.x, origY: bgOffset.y };
+  }
+  return null;
+}
+
+function handleStart(e) {
+  if (pickingTarget) {
+    if (e.cancelable) e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    if (e.touches) {
+      pickTouch = { x: touch.clientX, y: touch.clientY };
+      updatePickPreview(touch.clientX, touch.clientY);
+    } else {
+      canvasPickAt(touch.clientX, touch.clientY);
+    }
+    return;
+  }
+  const target = findDragTarget(getCanvasPoint(e));
+  if (!target) return;
+  if (e.touches) {
+    // 触屏：短按滑动 = 滚动页面；长按约 0.25 秒后才进入拖拽
+    pendingDrag = target;
+    touchStartXY = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => {
+      if (pendingDrag) {
+        dragging = pendingDrag; pendingDrag = null;
+        if (navigator.vibrate) navigator.vibrate(15);
+      }
+    }, 250);
+  } else {
+    dragging = target;
     if (e.cancelable) e.preventDefault();
   }
 }
 
 function handleMove(e) {
-  if (!dragging) return;
+  if (pickingTarget && e.touches && pickTouch) {
+    const t = e.touches[0];
+    pickTouch = { x: t.clientX, y: t.clientY };
+    updatePickPreview(t.clientX, t.clientY);
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+  if (!dragging) {
+    if (pendingDrag && e.touches && touchStartXY) {
+      const t = e.touches[0];
+      if (Math.hypot(t.clientX - touchStartXY.x, t.clientY - touchStartXY.y) > 8) { pendingDrag = null; clearTimeout(pressTimer); }
+    }
+    return;
+  }
   const pt = getCanvasPoint(e);
   const dx = pt.x - dragging.startX;
   const dy = pt.y - dragging.startY;
@@ -3329,7 +3410,10 @@ function handleMove(e) {
   if (e.cancelable) e.preventDefault();
 }
 
-function handleEnd() { dragging = null; }
+function handleEnd() {
+  dragging = null; pendingDrag = null; clearTimeout(pressTimer);
+  if (pickingTarget && pickTouch) { const t = pickTouch; pickTouch = null; if (!canvasPickAt(t.x, t.y)) updatePickPreview(-1, -1); }
+}
 
 previewCanvas.addEventListener('mousedown', handleStart);
 window.addEventListener('mousemove', handleMove);
@@ -3337,6 +3421,7 @@ window.addEventListener('mouseup', handleEnd);
 previewCanvas.addEventListener('touchstart', handleStart, { passive: false });
 window.addEventListener('touchmove', handleMove, { passive: false });
 window.addEventListener('touchend', handleEnd);
+window.addEventListener('touchcancel', () => { pickTouch = null; dragging = null; pendingDrag = null; clearTimeout(pressTimer); });
 
 $('resetPos').onclick = () => {
   offsets.title = { x: 0, y: 0 };
@@ -3523,4 +3608,4 @@ document.body.style.background = $('cBase').value;
 render();
 </script>
 </body>
-</html>
+  </html>
