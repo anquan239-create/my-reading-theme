@@ -63,6 +63,8 @@ canvas {
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
 canvas:active { cursor: grabbing; }
+.pgrp { flex: 0 0 100%; font-size: 11px; color: #888; margin: 8px 0 -2px; font-weight: 500; }
+.pgrp:first-child { margin-top: 0; }
 #preview { scroll-margin-top: 56px; }
 #pickBar {
   display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 30;
@@ -152,7 +154,35 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
 .pre i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.1); }
 .pre:hover { background: #f5f7fa; }
 .pre.on { border-color: var(--accent); background: #eaf3ff; box-shadow: 0 0 0 2px rgba(0,122,255,.22); font-weight: 600; }
-#presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; width: 100%; }
+
+/* ===== 预设模板面板：分类分块 ===== */
+#presets { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+.pgroup {
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #fbfbfb;
+  padding: 10px 12px 12px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.03);
+}
+
+.pgroup-title {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #555;
+}
+.pgroup-title::before {
+  content: ''; width: 3px; height: 12px; border-radius: 2px;
+  background: var(--accent); flex: none;
+}
+.pg-line { flex: 1; height: 1px; background: #e4e4e4; }
+.pg-count { flex: none; font-size: 10px; font-weight: 500; color: #aaa; }
+
+.pgroup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 6px;
+}
+
 input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: #dcdcdc; border-radius: 2px; outline: none; border: 1px solid #b3b3b3; }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
@@ -176,6 +206,12 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 #savePanel .save-copy { flex:1; min-width:0; font-size:12px; line-height:1.5; }
 #savePanel a { display:inline-flex; align-items:center; justify-content:center; flex:none; min-height:36px; padding:0 14px; border-radius:6px; background:#222; color:#fff; text-decoration:none; font-size:13px; }
 #savePanel button { min-height:32px; padding:0 8px; }
+
+@media (max-width: 560px) {
+  .tabs button svg { display: none; }
+  .tabs button { font-size: 11px; padding: 0 2px; }
+  .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -202,6 +238,10 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
       <button role="tab" data-t="p4" aria-selected="false">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z"/></svg>
         色彩
+      </button>
+      <button role="tab" data-t="p7" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M12 3.5l2.4 6.1 6.1 2.4-6.1 2.4L12 20.5l-2.4-6.1L3.5 12l6.1-2.4z"/></svg>
+        预设
       </button>
       <button role="tab" data-t="p3" aria-selected="false">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="12" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
@@ -234,16 +274,11 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
     </div>
 
     <div class="panel" id="p4">
-      <div class="r" style="align-items:flex-start">
-        <span style="padding-top:6px">预设模板</span>
-        <div class="chips" id="presets"></div>
-      </div>
-      <p class="hint" style="margin:-4px 0 12px 84px">每个模板包含配色、标题样式、背景样式、边框与装饰，点击即整套套用。</p>
       <div class="r">
         <span>智能取色</span>
         <button id="autoColorBtn" style="flex:1;font-weight:500">一键提取截图主色调</button>
       </div>
-      <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #dcdcdc;">
+      <div style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #dcdcdc;">
         <span style="font-size:12px;color:#888;display:block;margin-bottom:8px;">自定义颜色</span>
         <div class="color-grid">
           <div class="color-cell">
@@ -260,6 +295,14 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         </div>
         <p class="hint" style="margin-top:8px">点击颜色标签旁的吸管按钮，可从屏幕或预览画布取色。</p>
       </div>
+    </div>
+
+    <div class="panel" id="p7">
+      <div class="r" style="align-items:flex-start;margin-bottom:14px">
+        <span style="padding-top:2px">模板库</span>
+        <p class="hint" style="margin:0;flex:1">点击任意模板，一键套用配色、背景样式、边框与标题样式。每个分类独立成块，方便快速定位风格。</p>
+      </div>
+      <div id="presets"></div>
     </div>
 
     <div class="panel" id="p3">
@@ -623,55 +666,55 @@ function setOpt(k, v) {
 }
 
 const PRESETS = [
-  { name:'大刊头',   colors:['#f9f8f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'issue',     bg:'magMast',       frame:'fold', tape:'none'  },
-  { name:'杂志封面', colors:['#f4f6fa','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'issue',     bg:'magCover',      frame:'fold', tape:'none'  },
-  { name:'编辑排版', colors:['#ffffff','#ffffff','#00aeef','#ffffff','#1d1d1f'], title:'kicker',    bg:'magGrid',       frame:'fold', tape:'none'  },
-  { name:'色块海报', colors:['#f2f3f6','#ffffff','#ec008c','#ffffff','#1d1d1f'], title:'ribbon',    bg:'magColor',      frame:'fold', tape:'none'  },
-  { name:'报纸版面', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], title:'masthead',  bg:'magNews',       frame:'fold', tape:'none'  },
-  { name:'展签留白', colors:['#ffffff','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'italicMag', bg:'magLabel',      frame:'fold', tape:'none'  },
-  { name:'对开内页', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'text',      bg:'magSpread',     frame:'fold', tape:'none'  },
-  { name:'纸·大刊头', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperMast',   frame:'fold', tape:'none' },
-  { name:'纸·信息框', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperBox',    frame:'outline', tape:'none' },
-  { name:'纸·邮戳',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperPost',   frame:'polaroid', tape:'none' },
-  { name:'纸·信息栏', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperLedger', frame:'fold', tape:'none' },
-  { name:'纸·角标',   colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperCorner', frame:'outline', tape:'none' },
-  { name:'可爱·蓝条纹', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], title:'text', bg:'candyBlueStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·蓝星星', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], title:'text', bg:'candyBlueStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉条纹', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], title:'text', bg:'candyPinkStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉星星', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], title:'text', bg:'candyPinkStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·蝴蝶结', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], title:'text', bg:'candyBowTape', frame:'polaroid', tape:'none' },
-  { name:'海报·瑞士网格', colors:['#f1eee6','#ffffff','#e2231a','#ffffff','#111111'], title:'text', bg:'pstSwiss', frame:'polaroid', tape:'none' },
-  { name:'海报·构成主义', colors:['#eee4cd','#ffffff','#d62f26','#ffffff','#151515'], title:'text', bg:'pstConstruct', frame:'polaroid', tape:'none' },
-  { name:'海报·波普网点', colors:['#ffd23f','#ffffff','#e8362c','#ffffff','#111111'], title:'text', bg:'pstPop', frame:'polaroid', tape:'none' },
-  { name:'海报·电影', colors:['#0d0d10','#ffffff','#e9561f','#ffffff','#f4efe6'], title:'text', bg:'pstCinema', frame:'polaroid', tape:'none' },
-  { name:'撕页·杂志剪报', colors:['#cdbfa8','#ffffff','#c9573a','#ffffff','#2b2b2b'], title:'text', bg:'tornClip', frame:'polaroid', tape:'none' },
-  { name:'撕页·撕纸拼贴', colors:['#fbf7ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], title:'text', bg:'tornCollage', frame:'polaroid', tape:'none' },
-  { name:'撕页·翻角连页', colors:['#e6dece','#ffffff','#d33a2f','#ffffff','#2b2b2b'], title:'text', bg:'tornRip', frame:'polaroid', tape:'none' },
-  { name:'撕纸·条纹拼贴', colors:['#fcf8ef','#ffffff','#cfe4f5','#ffffff','#3a2e30'], title:'text', bg:'tornStripe', frame:'polaroid', tape:'none' },
-  { name:'撕纸·侧边拼贴', colors:['#fdf9f0','#ffffff','#d4ebdd','#ffffff','#3a2e30'], title:'text', bg:'tornSide', frame:'polaroid', tape:'none' },
-  { name:'撕纸·牛皮纸框', colors:['#d7b98e','#ffffff','#f6c9d4','#ffffff','#3a2e30'], title:'text', bg:'tornFrame', frame:'polaroid', tape:'none' },
-  { name:'撕纸·对角拼贴', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], title:'text', bg:'tornCorner', frame:'polaroid', tape:'none' },
-  { name:'撕纸·补丁拼贴', colors:['#faf4e6','#ffffff','#fbe7a6','#ffffff','#3a2e30'], title:'text', bg:'tornPatch', frame:'polaroid', tape:'none' },
-  { name:'折页', colors:['#f5f3ee','#ffffff','#d8d5ce','#ffffff','#333333'], title:'text', bg:'appLight', frame:'outline', tape:'none', layout:'accordion' },
-  { name:'浅色系统', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], title:'text',      bg:'appLight',      frame:'fold',    tape:'none'  },
-  { name:'网页展示', colors:['#ffffff','#f6f6f6','#4a9eff','#ffffff','#1d1d1f'], title:'kicker',    bg:'webLight',      frame:'window',  tape:'none'  },
-  { name:'标尺窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], title:'text',      bg:'rulerWin',      frame:'outline', tape:'none'  },
-  { name:'侧栏窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], title:'text',      bg:'sideWin',       frame:'outline', tape:'none'  },
-  { name:'双线圈本', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], title:'text',      bg:'twinCoil',      frame:'polaroid',tape:'none'  },
-  { name:'撕边海报', colors:['#f2ede4','#ffffff','#ff5f56','#fff8ee','#1a1a1a'], title:'sticker',   bg:'poster',        frame:'torn',    tape:'washi' },
-  { name:'经典羊皮', colors:['#e8d9c2','#f3ebd9','#c49a6c','#f5eee1','#3b2d1f'], title:'italicMag', bg:'parchment',     frame:'torn',    tape:'washi' },
-  { name:'云朵波点', colors:['#eaf3fb','#ffffff','#a9d8ff','#ffffff','#3b4a5a'], title:'sparkle',   bg:'cloudDots',     frame:'polaroid',tape:'washi' },
-  { name:'格纹野餐', colors:['#fdf0f2','#ffffff','#8fd3a4','#ffffff','#3a2d2f'], title:'wave',      bg:'gingham',       frame:'polaroid',tape:'washi' },
-  { name:'暗夜迷雾', colors:['#0f141c','#1b2230','#8b0000','#18202e','#e2e8f0'], title:'glitch',    bg:'suspenseFog',   frame:'window',  tape:'none'  },
-  { name:'犯罪现场', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], title:'tape',      bg:'crimeDna',      frame:'outline', tape:'none'  },
-  { name:'绝密档案', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], title:'stamp',     bg:'classifiedDossier', frame:'index', tape:'none' },
-  { name:'侦探线索', colors:['#2b231d','#3a2f26','#dc2626','#352b22','#f3eee3'], title:'ransom',    bg:'detectiveBoard',frame:'polaroid',tape:'none'  },
-  { name:'故障档案', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], title:'glitch',    bg:'glitchArchive', frame:'window',  tape:'none'  },
-  { name:'夜航星图', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], title:'text', bg:'starChart', frame:'fold', tape:'none' },
-  { name:'余烬黄昏', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], title:'text', bg:'emberDusk',  frame:'fold', tape:'none' },
-  { name:'深海潮汐', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], title:'text', bg:'deepSea',    frame:'fold', tape:'none' },
-  { name:'霓虹雨夜', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], title:'text', bg:'neonRain',   frame:'fold', tape:'none' }
-];
+  { name:'大刊头', grp:'杂志版式', title:'masthead',   colors:['#f9f8f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magMast',       frame:'fold', tape:'none'  },
+  { name:'杂志封面', grp:'杂志版式', title:'magazine', colors:['#f4f6fa','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magCover',      frame:'fold', tape:'none'  },
+  { name:'编辑排版', grp:'杂志版式', title:'kicker', colors:['#ffffff','#ffffff','#00aeef','#ffffff','#1d1d1f'], bg:'magGrid',       frame:'fold', tape:'none'  },
+  { name:'色块海报', grp:'杂志版式', title:'label', colors:['#f2f3f6','#ffffff','#ec008c','#ffffff','#1d1d1f'], bg:'magColor',      frame:'fold', tape:'none'  },
+  { name:'报纸版面', grp:'杂志版式', title:'masthead', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], bg:'magNews',       frame:'fold', tape:'none'  },
+  { name:'展签留白', grp:'杂志版式', title:'italicMag', colors:['#ffffff','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magLabel',      frame:'fold', tape:'none'  },
+  { name:'对开内页', grp:'杂志版式', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magSpread',     frame:'fold', tape:'none'  },
+  { name:'纸·大刊头', grp:'纸张', title:'masthead', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperMast',   frame:'fold', tape:'none' },
+  { name:'纸·信息框', grp:'纸张', title:'boxed', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperBox',    frame:'outline', tape:'none' },
+  { name:'纸·邮戳', grp:'纸张', title:'stamp',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperPost',   frame:'polaroid', tape:'none' },
+  { name:'纸·信息栏', grp:'纸张', title:'kicker', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperLedger', frame:'fold', tape:'none' },
+  { name:'纸·角标', grp:'纸张', title:'issue',   colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperCorner', frame:'outline', tape:'none' },
+  { name:'经典羊皮', grp:'纸张', title:'italicMag', colors:['#e8d9c2','#f3ebd9','#c49a6c','#f5eee1','#3b2d1f'], bg:'parchment',     frame:'torn',    tape:'washi' },
+  { name:'可爱·蓝条纹', grp:'可爱', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], bg:'candyBlueStripe', frame:'polaroid', tape:'none' },
+  { name:'可爱·蓝星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], bg:'candyBlueStar', frame:'polaroid', tape:'none' },
+  { name:'可爱·粉条纹', grp:'可爱', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyPinkStripe', frame:'polaroid', tape:'none' },
+  { name:'可爱·粉星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyPinkStar', frame:'polaroid', tape:'none' },
+  { name:'可爱·蝴蝶结', grp:'可爱', title:'ribbon', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyBowTape', frame:'polaroid', tape:'none' },
+  { name:'云朵波点', grp:'可爱', title:'sparkle', colors:['#eaf3fb','#ffffff','#a9d8ff','#ffffff','#3b4a5a'], bg:'cloudDots',     frame:'polaroid',tape:'washi' },
+  { name:'格纹野餐', grp:'可爱', title:'wave', colors:['#fdf0f2','#ffffff','#8fd3a4','#ffffff','#3a2d2f'], bg:'gingham',       frame:'polaroid',tape:'washi' },
+  { name:'海报·瑞士网格', grp:'海报', title:'kicker', colors:['#f1eee6','#ffffff','#e2231a','#ffffff','#111111'], bg:'pstSwiss', frame:'polaroid', tape:'none' },
+  { name:'海报·构成主义', grp:'海报', title:'banner', colors:['#eee4cd','#ffffff','#d62f26','#ffffff','#151515'], bg:'pstConstruct', frame:'polaroid', tape:'none' },
+  { name:'海报·波普网点', grp:'海报', title:'cutout', colors:['#ffd23f','#ffffff','#e8362c','#ffffff','#111111'], bg:'pstPop', frame:'polaroid', tape:'none' },
+  { name:'海报·电影', grp:'海报', colors:['#0d0d10','#ffffff','#e9561f','#ffffff','#f4efe6'], bg:'pstCinema', frame:'polaroid', tape:'none' },
+  { name:'撕边海报', grp:'撕纸拼贴', title:'sticker', colors:['#f2ede4','#ffffff','#ff5f56','#fff8ee','#1a1a1a'], bg:'poster',        frame:'torn',    tape:'washi' },
+  { name:'撕页·杂志剪报', grp:'撕纸拼贴', title:'ransom', colors:['#cdbfa8','#ffffff','#c9573a','#ffffff','#2b2b2b'], bg:'tornClip', frame:'polaroid', tape:'none' },
+  { name:'撕页·撕纸拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fbf7ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCollage', frame:'polaroid', tape:'none' },
+  { name:'撕页·翻角连页', grp:'撕纸拼贴', colors:['#e6dece','#ffffff','#d33a2f','#ffffff','#2b2b2b'], bg:'tornRip', frame:'polaroid', tape:'none' },
+  { name:'撕纸·条纹拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#cfe4f5','#ffffff','#3a2e30'], bg:'tornStripe', frame:'polaroid', tape:'none' },
+  { name:'撕纸·侧边拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fdf9f0','#ffffff','#d4ebdd','#ffffff','#3a2e30'], bg:'tornSide', frame:'polaroid', tape:'none' },
+  { name:'撕纸·牛皮纸框', grp:'撕纸拼贴', title:'sticker', colors:['#d7b98e','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornFrame', frame:'polaroid', tape:'none' },
+  { name:'撕纸·对角拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCorner', frame:'polaroid', tape:'none' },
+  { name:'撕纸·补丁拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#faf4e6','#ffffff','#fbe7a6','#ffffff','#3a2e30'], bg:'tornPatch', frame:'polaroid', tape:'none' },
+  { name:'折页', grp:'界面窗口', colors:['#f5f3ee','#ffffff','#d8d5ce','#ffffff','#333333'], bg:'appLight', frame:'outline', tape:'none', layout:'accordion' },
+  { name:'浅色系统', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], bg:'appLight',      frame:'fold',    tape:'none'  },
+  { name:'网页展示', grp:'界面窗口', title:'kicker', colors:['#ffffff','#f6f6f6','#4a9eff','#ffffff','#1d1d1f'], bg:'webLight',      frame:'window',  tape:'none'  },
+  { name:'标尺窗口', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], bg:'rulerWin',      frame:'outline', tape:'none'  },
+  { name:'侧栏窗口', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], bg:'sideWin',       frame:'outline', tape:'none'  },
+  { name:'双线圈本', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], bg:'twinCoil',      frame:'polaroid',tape:'none'  },
+  { name:'暗夜迷雾', grp:'悬疑档案', title:'drip', colors:['#0f141c','#1b2230','#8b0000','#18202e','#e2e8f0'], bg:'suspenseFog',   frame:'window',  tape:'none'  },
+  { name:'犯罪现场', grp:'悬疑档案', title:'tape', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], bg:'crimeDna',      frame:'outline', tape:'none'  },
+  { name:'绝密档案', grp:'悬疑档案', title:'stamp', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], bg:'classifiedDossier', frame:'index', tape:'none' },
+  { name:'侦探线索', grp:'悬疑档案', title:'ransom', colors:['#2b231d','#3a2f26','#dc2626','#352b22','#f3eee3'], bg:'detectiveBoard',frame:'polaroid',tape:'none'  },
+  { name:'故障档案', grp:'悬疑档案', title:'glitch', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], bg:'glitchArchive', frame:'window',  tape:'none'  },
+  { name:'夜航星图', grp:'夜景', title:'sparkle', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], bg:'starChart', frame:'fold', tape:'none' },
+  { name:'余烬黄昏', grp:'夜景', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], bg:'emberDusk',  frame:'fold', tape:'none' },
+  { name:'深海潮汐', grp:'夜景', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], bg:'deepSea',    frame:'fold', tape:'none' },
+  { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' }
+]
 
 function clearPresetHighlight() {
   document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
@@ -698,20 +741,56 @@ function applyPreset(p) {
   });
   schedule(true, true, true);
   applyingPreset = false;
+  toast('已套用 · ' + p.name);
 }
 
 function initColors() {
+  let lastGrp = null, grid = null, countEl = null, count = 0;
+  const flushCount = () => { if (countEl) countEl.textContent = count + ' 款'; };
+
   PRESETS.forEach(p => {
+    if (p.grp !== lastGrp) {
+      flushCount();
+
+      const sec = document.createElement('section');
+      sec.className = 'pgroup';
+
+      const title = document.createElement('h4');
+      title.className = 'pgroup-title';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'pg-name';
+      nameEl.textContent = p.grp;
+      const lineEl = document.createElement('span');
+      lineEl.className = 'pg-line';
+      countEl = document.createElement('span');
+      countEl.className = 'pg-count';
+
+      title.append(nameEl, lineEl, countEl);
+
+      grid = document.createElement('div');
+      grid.className = 'pgroup-grid';
+
+      sec.append(title, grid);
+      $('presets').append(sec);
+
+      lastGrp = p.grp;
+      count = 0;
+    }
+
+    count++;
+
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'pre';
     b.dataset.preset = p.name;
     const [base, frame, tape] = p.colors;
     b.innerHTML = `<span class="dots"><i style="background:${base}"></i><i style="background:${frame}"></i><i style="background:${tape}"></i></span>${p.name}`;
-    b.title = `配色 · ${p.title} · ${p.bg}`;
+    b.title = `配色${p.title ? ' · 标题：' + p.title : ''} · ${p.bg}`;
     b.onclick = () => applyPreset(p);
-    $('presets').append(b);
+    grid.append(b);
   });
+
+  flushCount();
 
   $('autoColorBtn').onclick = () => {
     if (!state.images.length) { toast('请先在"截图"面板添加至少 1 张截图'); return; }
@@ -721,9 +800,9 @@ function initColors() {
     const ctx = cv.getContext('2d');
     ctx.drawImage(img, 0, 0, 40, 40);
     const data = ctx.getImageData(0, 0, 40, 40).data;
-    let r = 0, g = 0, b = 0, count = 0;
-    for (let i = 0; i < data.length; i += 16) { r += data[i]; g += data[i+1]; b += data[i+2]; count++; }
-    r = Math.round(r / count); g = Math.round(g / count); b = Math.round(b / count);
+    let r = 0, g = 0, b = 0, count2 = 0;
+    for (let i = 0; i < data.length; i += 16) { r += data[i]; g += data[i+1]; b += data[i+2]; count2++; }
+    r = Math.round(r / count2); g = Math.round(g / count2); b = Math.round(b / count2);
     const lum = 0.299 * r + 0.587 * g + 0.114 * b;
     let bgR, bgG, bgB;
     if (lum > 128) {
