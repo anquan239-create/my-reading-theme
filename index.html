@@ -306,6 +306,46 @@ body.dark-mode #savePanel a { background: var(--accent); }
 .theme-toggle-btn { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 8px !important; font-size: 16px !important; cursor: pointer; transition: transform 0.2s; }
 .theme-toggle-btn:hover { transform: scale(1.15); }
 
+/* ===== 文字独立设置卡片 ===== */
+#textCards { display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
+.tcard { border:1px solid #d0d0d0; border-radius:8px; background:#fbfbfb; overflow:hidden; box-shadow:0 1px 1px rgba(0,0,0,.03); }
+.tc-head { display:flex; align-items:center; gap:8px; padding:8px 10px 0; }
+.tc-head b { font-size:12px; color:#555; flex:1; display:flex; align-items:center; gap:6px; }
+.tc-head b::before { content:''; width:3px; height:12px; border-radius:2px; background:var(--accent); flex:none; }
+.tc-head .tc-btn { min-height:24px; padding:0 8px; font-size:11px; border-radius:4px; }
+.tc-head .tc-del { color:#d32f2f; }
+.tc-text { padding:6px 10px 8px; }
+.tc-text .line { margin:0; }
+.tc-body { display:none; padding:2px 10px 10px; border-top:1px dashed #e0e0e0; margin-top:2px; padding-top:10px; }
+.tcard.open .tc-body { display:block; }
+.tc-fold svg { width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
+.tcard.open .tc-fold svg { transform:rotate(180deg); }
+.tc-row { display:flex; align-items:center; gap:8px; margin-bottom:9px; min-height:28px; }
+.tc-row:last-child { margin-bottom:0; }
+.tc-row > label { width:34px; flex:none; font-size:12px; font-weight:500; color:var(--text-muted); text-align:right; }
+.tc-row select { flex:1; min-width:0; min-height:28px; border:1px solid #b3b3b3; border-radius:4px; background:#fff; padding:0 6px; font-size:12px; font-family:inherit; color:inherit; }
+.tc-row input[type=color] { width:44px; height:28px; padding:2px; border:1px solid #b3b3b3; border-radius:4px; background:#fff; cursor:pointer; flex:none; }
+.tc-row .tc-hexv { flex:1; font:12px ui-monospace,Menlo,Consolas,monospace; color:#666; text-transform:uppercase; }
+.tc-row output { width:42px; flex:none; text-align:right; font-size:11px; color:#555; }
+.tc-row .tc-undo { width:24px; min-height:24px; padding:0; flex:none; border-radius:4px; font-size:13px; line-height:1; visibility:hidden; }
+.tc-row .tc-undo.on { visibility:visible; }
+.tc-tag { font-size:10px; font-weight:400; color:#999; }
+.tglobal { border:1px solid #dcdcdc; border-radius:8px; background:#f7f7f7; padding:0 12px; margin-bottom:12px; }
+.tglobal > summary { cursor:pointer; padding:10px 0; font-size:12px; font-weight:600; color:#666; list-style:none; display:flex; align-items:center; gap:6px; }
+.tglobal > summary::-webkit-details-marker { display:none; }
+.tglobal > summary::before { content:'▸'; font-size:10px; transition:transform .15s; }
+.tglobal[open] > summary::before { transform:rotate(90deg); }
+.tglobal[open] { padding-bottom:6px; }
+body.dark-mode .tcard { background:#1e1e1e; border-color:#333; }
+body.dark-mode .tc-head b { color:#ccc; }
+body.dark-mode .tc-body { border-top-color:#333; }
+body.dark-mode .tc-row select { background:#111; border-color:#444; color:#eee; }
+body.dark-mode .tc-row input[type=color] { background:#111; border-color:#444; }
+body.dark-mode .tc-row .tc-hexv, body.dark-mode .tc-row output { color:#aaa; }
+body.dark-mode .tglobal { background:#1a1a1a; border-color:#333; }
+body.dark-mode .tglobal > summary { color:#aaa; }
+body.dark-mode .tc-head .tc-del { color:#ff5f56; }
+
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,15 +603,10 @@ body.dark-mode #savePanel a { background: var(--accent); }
     </div>
 
     <div class="panel" id="p2">
-      <div class="r"><span>主标题</span><input class="line" style="margin:0" id="title" value="主题名称" maxlength="40" placeholder="主题名称"></div>
-      <div class="r"><span>副标题</span><input class="line" style="margin:0" id="author" value="作者名称" maxlength="30" placeholder="作者名称"></div>
-      <div class="r" style="align-items:flex-start; margin-top:12px;">
-        <span style="padding-top:6px">附加文字</span>
-        <div style="flex:1;">
-          <div id="customTextList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
-          <button id="addTextBtn" style="width:100%">+ 添加文字</button>
-        </div>
-      </div>
+      <div id="textCards"></div>
+      <button id="addTextBtn" style="width:100%;margin:2px 0 12px">+ 添加文字</button>
+      <details class="tglobal">
+        <summary>全局默认样式（没有单独设置的文字会跟随这里）</summary>
       <div class="r" style="align-items:flex-start; margin-top:12px;">
         <span style="padding-top:6px">标题样式</span>
         <div class="chips" data-k="titleStyle">
@@ -609,6 +644,7 @@ body.dark-mode #savePanel a { background: var(--accent); }
         <input id="textSpacing" type="range" min="-20" max="50" value="0">
         <output id="textSpacingV" style="width:36px;text-align:right;font-size:11px">0px</output>
       </div>
+      </details>
       <div class="r" style="margin-top:12px">
         <span>字体</span>
         <label class="add">
@@ -712,6 +748,29 @@ const $ = id => document.getElementById(id);
 const SANS = '"Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
 
 const state = { images: [], bgImage: null, font: null, face: null, busy: false, customTexts: [] };
+
+/* ===== 文字独立设置：每段文字都有自己的 文本 / 样式 / 颜色 / 大小 / 间距 ===== */
+/* style/color/size/sp 为 null 时表示“跟随全局默认” */
+const tcfg = {
+  title:  { text: '主题名称', style: null, color: null, size: null, sp: null, open: true },
+  author: { text: '作者名称', style: null, color: null, size: null, sp: null, open: false }
+};
+const textCardRefs = [];   // 文字卡片引用 { cfg, kind, el, sync() }
+const T_BASE = { title: 42, author: 20, custom: 20 };
+function effText(cfg, kind) {
+  const gScale = (+$('textSize').value || 100) / 100;
+  return {
+    style: cfg.style || opt.titleStyle,
+    color: cfg.color || $('cText').value,
+    size:  cfg.size != null ? cfg.size : T_BASE[kind] * gScale,
+    sp:    cfg.sp   != null ? cfg.sp   : (+$('textSpacing').value || 0)
+  };
+}
+function textLayout() {
+  const t = effText(tcfg.title, 'title'), a = effText(tcfg.author, 'author');
+  const lt = Math.max(T_BASE.title, t.size), la = Math.max(T_BASE.author, a.size);
+  return { t, a, lt, la, titleBlockH: lt * 1.35 + la * 1.35 + 32 };
+}
 const opt = {
   layout: 'flat', frame: 'fold', collageBase: 'magMast', tapeStyle: 'none',
   ratio: 'auto', res: '2400', titleStyle: 'issue'
@@ -861,6 +920,8 @@ function applyPreset(p) {
   document.body.style.background = base;
 
   if (p.title) setOpt('titleStyle', p.title);
+  [tcfg.title, tcfg.author, ...state.customTexts].forEach(t => { t.style = null; t.color = null; });
+  if (typeof refreshTextCards === 'function') refreshTextCards();
   if (p.bg) setOpt('collageBase', p.bg);
   if (p.frame) setOpt('frame', p.frame);
   if (p.tape) setOpt('tapeStyle', p.tape);
@@ -1130,8 +1191,7 @@ function geometry() {
 
   const candyExtra0 = opt.layout === 'accordion' ? 40 : 0;
   const candyExtra = candyExtra0 + /^candy/.test(opt.collageBase) ? 90 : (/^paper/.test(opt.collageBase) ? 110 : (/^pst/.test(opt.collageBase) ? 100 : (/^(torn|doo)/.test(opt.collageBase) ? 110 : (opt.collageBase === 'accordionBg' ? 100 : 0))));
-  const sizeScale = Math.max(1, +$('textSize').value / 100);
-  const titleBlockH = (42 * sizeScale * 1.35 + 20 * sizeScale * 1.35 + 32);
+  const titleBlockH = textLayout().titleBlockH;
 
   // 拍立得留白基于图片高度的 15%
   const polaroidExtraRatio = 0.15;
@@ -2251,12 +2311,12 @@ function candyBackground(c, w, h, cb, o) {
     txt('a little wish you carry there.', 960, 308, 27, { align: 'left', weight: 400 });
     txt('Warm as a blanket, sweet and bright,', 132, H - 262, 27, { align: 'left', weight: 400 });
     txt('a tiny star to hold at night.', 132, H - 230, 27, { align: 'left', weight: 400 });
-    txt('Creator / Q.', W / 2, H - 34, 32, { sp: 3 });
+    txt('Creator / Q.', W / 2, H - 34, 18, { sp: 3, weight: 400, col: 'rgba(107, 76, 69, 0.4)' });
   } else if (cb === 'candyBlueStar' || cb === 'candyPinkStar') {
     c.fillStyle = isBlue ? '#e3f6fa' : '#fbf0f5';
     for (let y = 210; y < H - 140; y += 93) for (let x = 18; x < W + 40; x += 86) star(x, y, 18);
     c.fillStyle = main; c.fillRect(0, H - 140, W, 140);
-    txt('Creator / Q.', 62, H - 70, 40, { align: 'left', weight: 400, sp: 2 });
+    txt('Creator / Q.', 62, H - 70, 20, { align: 'left', weight: 400, sp: 2, col: 'rgba(107, 76, 69, 0.4)' });
     heart(1383, H - 68, 22, brown);
     c.fillStyle = main; c.fillRect(0, 0, W, 120);
     for (let x = 28; x < W + 70; x += 145) { c.beginPath(); c.arc(x + 45, 118, 72, 0, Math.PI); c.fill(); }
@@ -2278,7 +2338,7 @@ function candyBackground(c, w, h, cb, o) {
     c.fillStyle = '#f8e1ec'; c.fillRect(0, H - 140, W, 140);
     txt('Pink is a whisper, soft and low, the blush upon a sunrise glow.', W / 2, H - 108, 27, { weight: 400 });
     txt('Cotton candy, sweet and light, a baby\u2019s blanket, warm and tight.', W / 2, H - 76, 27, { weight: 400 });
-    txt('Creator / Q.', W / 2, H - 36, 30, { sp: 3 });
+    txt('Creator / Q.', W / 2, H - 36, 18, { sp: 3, weight: 400, col: 'rgba(107, 76, 69, 0.4)' });
   }
   c.restore();
 }
@@ -2931,8 +2991,7 @@ let accordionCompCache = [];
 let accordionCompKey = '';
 
 function renderAccordion(c, w, h, g, useCache) {
-  const sizeScale = Math.max(1, +$('textSize').value / 100);
-  const titleBlockH = 42 * sizeScale * 1.35 + 20 * sizeScale * 1.35 + 32;
+  const titleBlockH = textLayout().titleBlockH;
   const availableTopSpace = h - (titleBlockH + g.fh + g.stag);
   const cardsStartY = Math.max(80, availableTopSpace * 0.32) + titleBlockH + 24;
   const fw = g.sw + 2 * g.sidePad, m = g.n;
@@ -3026,10 +3085,7 @@ function renderAccordion(c, w, h, g, useCache) {
 
 function renderCards(c, w, h, g, useCache = false) {
   if (g.lay === 'accordion') { renderAccordion(c, w, h, g, useCache); return; }
-  const sizeScale = Math.max(1, +$('textSize').value / 100);
-  const titleFontSize = 42 * sizeScale;
-  const authorFontSize = 20 * sizeScale;
-  const titleBlockH = titleFontSize * 1.35 + authorFontSize * 1.35 + 32;
+  const titleBlockH = textLayout().titleBlockH;
   const availableTopSpace = h - (titleBlockH + g.fh + g.stag);
   const baseTitleY = Math.max(80, availableTopSpace * 0.32);
   const cardsStartY = baseTitleY + titleBlockH + 24;
@@ -3089,43 +3145,41 @@ function renderCards(c, w, h, g, useCache = false) {
 function renderText(c, w, h, g) {
   const R = rng(42);
   const chipCol = $('cChip').value;
-  const textCol = $('cText').value;
-  const rawSizeScale = +$('textSize').value / 100;
-  const layoutScale = Math.max(1, rawSizeScale);
-  const spacing = +$('textSpacing').value;
-  const titleFontSize = 42 * rawSizeScale;
-  const authorFontSize = 20 * rawSizeScale;
-  const titleBlockH = (42 * layoutScale * 1.35 + 20 * layoutScale * 1.35 + 32);
+  const L = textLayout();
+  const titleBlockH = L.titleBlockH;
 
   const availableTopSpace = h - (titleBlockH + g.fh + g.stag);
   const baseTitleY = Math.max(80, availableTopSpace * 0.32);
-  
-  const rawTitle = $('title').value.trim() || '主题名称';
-  const rawAuthor = $('author').value.trim() || '作者名称';
+
+  const rawTitle = (tcfg.title.text || '').trim() || '主题名称';
+  const rawAuthor = (tcfg.author.text || '').trim() || '作者名称';
   const fontFam = state.font || SANS;
 
+  // 主标题
   const titleActualY = baseTitleY + offsets.title.y;
   const titleActualX = offsets.title.x + g.paddingLeft;
-  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, titleFontSize, fontFam, chipCol, textCol, R, titleActualX, opt.titleStyle, spacing);
+  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, L.t.size, fontFam, chipCol, L.t.color, R, titleActualX, L.t.style, L.t.sp);
 
-  let aInfo = { totalW: 0, height: 0, actualY: 0, actualX: 0 };
-  if (rawAuthor) {
-    const defaultAuthorY = baseTitleY + (42 * layoutScale * 1.35) + 10;
-    aInfo.actualY = defaultAuthorY + offsets.author.y;
-    aInfo.actualX = offsets.author.x + g.paddingLeft;
-    const info = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, authorFontSize, fontFam, chipCol, textCol, R, aInfo.actualX, opt.titleStyle, spacing);
-    aInfo.totalW = info.totalW;
-    aInfo.height = info.height;
-  }
+  // 副标题
+  const aInfo = { totalW: 0, height: 0, actualY: 0, actualX: 0 };
+  const defaultAuthorY = baseTitleY + L.lt * 1.35 + 10;
+  aInfo.actualY = defaultAuthorY + offsets.author.y;
+  aInfo.actualX = offsets.author.x + g.paddingLeft;
+  const aDraw = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, L.a.size, fontFam, chipCol, L.a.color, R, aInfo.actualX, L.a.style, L.a.sp);
+  aInfo.totalW = aDraw.totalW;
+  aInfo.height = aDraw.height;
 
-  let ctInfos = [];
-  const baseCustomY = baseTitleY + (42 * layoutScale * 1.35) + (20 * layoutScale * 1.35) + 30;
-  state.customTexts.forEach((ct, idx) => {
+  // 附加文字：按各自字号依次向下排布，互不重叠
+  const ctInfos = [];
+  let flowY = defaultAuthorY + L.la * 1.35 + 20;
+  state.customTexts.forEach(ct => {
+    const E = effText(ct, 'custom');
     const off = offsets.customTexts[ct.id] || { x: 0, y: 0 };
-    const ctY = baseCustomY + (idx * 40) + off.y;
+    const ctY = flowY + off.y;
     const ctX = off.x + g.paddingLeft;
-    const info = drawCollageTextGroup(c, ct.text, ctY, authorFontSize, fontFam, chipCol, ct.color || textCol, R, ctX, opt.titleStyle, spacing);
+    const info = drawCollageTextGroup(c, ct.text || '', ctY, E.size, fontFam, chipCol, E.color, R, ctX, E.style, E.sp);
     ctInfos.push({ id: ct.id, info, actualX: ctX, actualY: ctY });
+    flowY += E.size * 1.35 + 14;
   });
 
   return { tInfo, aInfo, ctInfos, titleActualX, titleActualY, titleBlockH };
@@ -3422,6 +3476,7 @@ function render() {
   $('olGapV').textContent = $('olGap').value + 'px';
   $('olWV').textContent = $('olW').value + 'px';
   $('olRV').textContent = $('olR').value + 'px';
+  if (typeof refreshTextCards === 'function') refreshTextCards();
 
   const ok = !state.busy && state.images.length >= 1;
   $('export').disabled = $('exportTop').disabled = !ok;
@@ -3727,7 +3782,7 @@ function downloadBlob(blob) {
   const pad = n => String(n).padStart(2, '0');
   const d = new Date();
   const stamp = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
-  const name = ($('title').value.trim() || '主题预览').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40);
+  const name = ((tcfg.title.text || '').trim() || '主题预览').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40);
   const filename = `${name}-${opt.res}px-${stamp}.png`;
   if (lastExportUrl) URL.revokeObjectURL(lastExportUrl);
   lastExportUrl = URL.createObjectURL(blob);
@@ -3790,7 +3845,6 @@ document.querySelectorAll('.tabs button').forEach(b => {
   };
 });
 
-['title', 'author'].forEach(id => $(id).addEventListener('input', () => schedule(false, false, true)));
 ['scale', 'olGap', 'olW', 'olR'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
 ['bgOpacity', 'bgBlur', 'bgScale'].forEach(id => $(id).addEventListener('input', () => schedule(true, false, false)));
 ['textSize', 'textSpacing'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
@@ -3958,59 +4012,144 @@ function initPickBarDrag() {
 }
 initPickBarDrag();
 
-function renderCustomTextUI() {
-  const list = document.getElementById('customTextList');
-  if (!list) return;
-  list.innerHTML = '';
-  state.customTexts.forEach(ct => {
-    const div = document.createElement('div');
-    div.className = 'ct-item';
-    
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = ct.text;
-    input.placeholder = '输入文字';
-    input.addEventListener('input', (e) => {
-      ct.text = e.target.value;
-      schedule(false, false, true);
-    });
+/* ===== 文字卡片 UI ===== */
 
-    const color = document.createElement('input');
-    color.type = 'color';
-    color.value = ct.color || document.getElementById('cText').value;
-    color.addEventListener('input', (e) => {
-      ct.color = e.target.value;
-      schedule(false, false, true);
-    });
+function styleOptions() {
+  return Array.from(document.querySelectorAll('.chips[data-k="titleStyle"] button'))
+    .map(b => ({ v: b.dataset.v, t: b.textContent.trim() }));
+}
 
-    const del = document.createElement('button');
-    del.textContent = '×';
-    del.title = '删除此条文字';
-    del.onclick = () => {
+function makeTextCard(cfg, kind, label, onDelete) {
+  const el = document.createElement('div');
+  el.className = 'tcard' + (cfg.open ? ' open' : '');
+
+  // 头部
+  const head = document.createElement('div'); head.className = 'tc-head';
+  const lb = document.createElement('b'); lb.textContent = label;
+  const resetAll = document.createElement('button'); resetAll.className = 'tc-btn'; resetAll.textContent = '恢复全局'; resetAll.title = '样式、颜色、大小、间距全部恢复为全局默认';
+  const fold = document.createElement('button'); fold.className = 'tc-btn tc-fold'; fold.title = '展开/收起样式设置';
+  fold.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+  head.append(lb, resetAll);
+  if (onDelete) { const del = document.createElement('button'); del.className = 'tc-btn tc-del'; del.textContent = '删除'; del.onclick = onDelete; head.append(del); }
+  head.append(fold);
+  fold.onclick = () => { cfg.open = !cfg.open; el.classList.toggle('open', cfg.open); };
+
+  // 文字输入
+  const tw = document.createElement('div'); tw.className = 'tc-text';
+  const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'line';
+  inp.value = cfg.text || ''; inp.placeholder = kind === 'title' ? '主题名称' : (kind === 'author' ? '作者名称' : '输入文字');
+  inp.maxLength = kind === 'title' ? 40 : (kind === 'author' ? 30 : 60);
+  inp.addEventListener('input', () => { cfg.text = inp.value; schedule(false, false, true); });
+  tw.append(inp);
+
+  // 样式设置
+  const body = document.createElement('div'); body.className = 'tc-body';
+  const mkRow = (name) => {
+    const row = document.createElement('div'); row.className = 'tc-row';
+    const l = document.createElement('label'); l.textContent = name;
+    const undo = document.createElement('button'); undo.className = 'tc-undo'; undo.textContent = '↺'; undo.title = '恢复为全局默认';
+    row.append(l); return { row, undo };
+  };
+
+  // 标题样式
+  const rs = mkRow('样式');
+  const sel = document.createElement('select');
+  const o0 = document.createElement('option'); o0.value = ''; sel.append(o0);
+  styleOptions().forEach(o => { const op = document.createElement('option'); op.value = o.v; op.textContent = o.t; sel.append(op); });
+  sel.addEventListener('change', () => { cfg.style = sel.value || null; schedule(false, false, true); sync(); });
+  rs.undo.onclick = () => { cfg.style = null; schedule(false, false, true); sync(); };
+  rs.row.append(sel, rs.undo);
+
+  // 颜色
+  const rc = mkRow('颜色');
+  const col = document.createElement('input'); col.type = 'color';
+  const hexv = document.createElement('span'); hexv.className = 'tc-hexv';
+  col.addEventListener('input', () => { cfg.color = col.value; hexv.textContent = col.value; schedule(false, false, true); rc.undo.classList.add('on'); });
+  rc.undo.onclick = () => { cfg.color = null; schedule(false, false, true); sync(); };
+  rc.row.append(col, hexv, rc.undo);
+
+  // 大小
+  const rz = mkRow('大小');
+  const sz = document.createElement('input'); sz.type = 'range'; sz.min = 12; sz.max = 160; sz.step = 1;
+  const szV = document.createElement('output');
+  sz.addEventListener('input', () => { cfg.size = +sz.value; szV.textContent = sz.value + 'px'; rz.undo.classList.add('on'); if (kind !== 'custom') schedule(true, true, true); else schedule(false, false, true); });
+  rz.undo.onclick = () => { cfg.size = null; if (kind !== 'custom') schedule(true, true, true); else schedule(false, false, true); sync(); };
+  rz.row.append(sz, szV, rz.undo);
+
+  // 间距
+  const rp = mkRow('间距');
+  const sp = document.createElement('input'); sp.type = 'range'; sp.min = -20; sp.max = 50; sp.step = 1;
+  const spV = document.createElement('output');
+  sp.addEventListener('input', () => { cfg.sp = +sp.value; spV.textContent = sp.value + 'px'; rp.undo.classList.add('on'); schedule(false, false, true); });
+  rp.undo.onclick = () => { cfg.sp = null; schedule(false, false, true); sync(); };
+  rp.row.append(sp, spV, rp.undo);
+
+  body.append(rs.row, rc.row, rz.row, rp.row);
+
+  resetAll.onclick = () => {
+    cfg.style = null; cfg.color = null; cfg.size = null; cfg.sp = null;
+    schedule(true, true, true); sync();
+  };
+
+  // 把 UI 同步到“生效值”（跟随全局的项随全局变化）
+  function sync() {
+    const E = effText(cfg, kind);
+    const gStyleName = (styleOptions().find(o => o.v === opt.titleStyle) || {}).t || '';
+    if (o0.textContent !== '跟随全局（' + gStyleName + '）') o0.textContent = '跟随全局（' + gStyleName + '）';
+    const sv = cfg.style || '';
+    if (sel.value !== sv) sel.value = sv;
+    rs.undo.classList.toggle('on', !!cfg.style);
+    if (col.value.toLowerCase() !== String(E.color).toLowerCase()) col.value = E.color;
+    hexv.textContent = String(E.color).toUpperCase() + (cfg.color ? '' : '  · 跟随全局');
+    rc.undo.classList.toggle('on', !!cfg.color);
+    const szVal = String(Math.round(E.size));
+    if (document.activeElement !== sz && sz.value !== szVal) sz.value = szVal;
+    szV.textContent = szVal + 'px';
+    rz.undo.classList.toggle('on', cfg.size != null);
+    const spVal = String(Math.round(E.sp));
+    if (document.activeElement !== sp && sp.value !== spVal) sp.value = spVal;
+    spV.textContent = spVal + 'px';
+    rp.undo.classList.toggle('on', cfg.sp != null);
+  }
+
+  el.append(head, tw, body);
+  textCardRefs.push({ cfg, kind, el, sync, input: inp });
+  sync();
+  return el;
+}
+
+function buildTextCards() {
+  const host = document.getElementById('textCards');
+  if (!host) return;
+  host.innerHTML = '';
+  textCardRefs.length = 0;
+  host.append(makeTextCard(tcfg.title, 'title', '主标题'));
+  host.append(makeTextCard(tcfg.author, 'author', '副标题'));
+  state.customTexts.forEach((ct, i) => {
+    host.append(makeTextCard(ct, 'custom', '附加文字 ' + (i + 1), () => {
       state.customTexts = state.customTexts.filter(x => x.id !== ct.id);
       delete offsets.customTexts[ct.id];
-      renderCustomTextUI();
+      buildTextCards();
       schedule(false, false, true);
-    };
-
-    div.append(input, color, del);
-    list.appendChild(div);
+    }));
   });
 }
+
+function refreshTextCards() { textCardRefs.forEach(r => r.sync()); }
 
 const addBtn = document.getElementById('addTextBtn');
 if (addBtn && !addBtn.dataset.bound) {
   addBtn.dataset.bound = '1';
   addBtn.onclick = () => {
     const newId = 'txt_' + Date.now();
-    state.customTexts.push({ id: newId, text: '新文字', color: document.getElementById('cText').value });
-    offsets.customTexts[newId] = { x: 0, y: state.customTexts.length * 40 };
-    renderCustomTextUI();
+    state.customTexts.push({ id: newId, text: '新文字', style: null, color: null, size: null, sp: null, open: true });
+    offsets.customTexts[newId] = { x: 0, y: 0 };
+    buildTextCards();
     schedule(false, false, true);
   };
 }
 
-setTimeout(renderCustomTextUI, 100);
+buildTextCards();
 
 
 
@@ -4153,4 +4292,4 @@ setTimeout(initThemeToggle, 100);
 
 </script>
 </body>
-</html>
+  </html>
