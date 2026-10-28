@@ -816,10 +816,6 @@ function schedule(dirtyBg = true, dirtyCards = true, dirtyText = true) {
 
 function setOpt(k, v) {
   opt[k] = v;
-  if (k === 'layout' && v === 'accordion') {
-    opt.collageBase = 'appLight';
-    document.querySelectorAll('.chips[data-k="collageBase"] button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === 'appLight'));
-  }
   document.querySelectorAll(`.chips[data-k="${k}"] button`).forEach(b => {
     b.setAttribute('aria-pressed', b.dataset.v === v);
   });
@@ -922,10 +918,14 @@ function applyPreset(p) {
   if (p.title) setOpt('titleStyle', p.title);
   [tcfg.title, tcfg.author, ...state.customTexts].forEach(t => { t.style = null; t.color = null; });
   if (typeof refreshTextCards === 'function') refreshTextCards();
+  if (p.layout) {
+    setOpt('layout', p.layout);
+  } else {
+    setOpt('layout', 'flat');
+  }
   if (p.bg) setOpt('collageBase', p.bg);
   if (p.frame) setOpt('frame', p.frame);
   if (p.tape) setOpt('tapeStyle', p.tape);
-  if (p.layout) setOpt('layout', p.layout);
 
   document.querySelectorAll('#presets .pre').forEach(b => {
     b.classList.toggle('on', b.dataset.preset === p.name);
