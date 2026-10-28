@@ -225,6 +225,87 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
       vertical-align: middle;
     }
     
+
+/* PATCH: Dark Mode */
+body.dark-mode {
+  --bg-body: #121212;
+  --border-color: #444444;
+  --text-main: #e0e0e0;
+  --text-muted: #999999;
+  --accent: #0a84ff;
+}
+
+/* 全局平滑过渡 */
+body, .app, .top, .stage, .dock, button, input, .panel, .tabs, .pgroup, .pre, .chips button, .color-cell, .color-hex, .add span, .line, .tip {
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+body.dark-mode .app { background: var(--bg-body); border-color: #333; box-shadow: none; }
+body.dark-mode .top { background: linear-gradient(to bottom, #2a2a2a, #1f1f1f); border-bottom-color: #333; }
+body.dark-mode .top b { color: #e0e0e0; }
+body.dark-mode .top span { background: #333; color: #aaa; border-color: #444; box-shadow: none; }
+body.dark-mode .tip { background: #222; border-bottom-color: #333; color: #888; }
+body.dark-mode .stage { background: #181818; border-bottom-color: #333; }
+body.dark-mode .dock { background: #222; border-color: #333; box-shadow: none; }
+
+body.dark-mode .tabs { background: #1a1a1a; border-bottom-color: #333; }
+body.dark-mode .tabs button { color: #888; }
+body.dark-mode .tabs button:hover { background: rgba(255,255,255,0.05); }
+body.dark-mode .tabs button[aria-selected="true"] { background: #222; border-color: #333; color: #fff; box-shadow: none; }
+body.dark-mode .tabs button[aria-selected="true"]::after { background: #222; }
+
+body.dark-mode .panel { background: #222; }
+body.dark-mode .r > span { color: #888; }
+
+body.dark-mode button { background: linear-gradient(to bottom, #333, #2a2a2a); color: #ccc; border-color: #444; box-shadow: none; }
+body.dark-mode button:hover { background: #3a3a3a; }
+body.dark-mode button:active, body.dark-mode button[aria-pressed="true"] { background: #111; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); color: #fff; border-color: #555; }
+
+body.dark-mode .line, body.dark-mode input[type=color], body.dark-mode .color-hex, body.dark-mode .ct-item input[type=text] {
+  background: #111; border-color: #444; color: #eee; box-shadow: none;
+}
+body.dark-mode .line:focus, body.dark-mode .color-hex:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(10,132,255,.2); }
+
+body.dark-mode .chips button { background: #2a2a2a; color: #aaa; border-color: #444; }
+body.dark-mode .chips button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+body.dark-mode .chips button[data-v="custom"] { background: #2a2a2a; }
+
+body.dark-mode .pre { background: #2a2a2a; border-color: #444; color: #aaa; }
+body.dark-mode .pre.on { background: #1a3a5a; border-color: var(--accent); color: #fff; }
+body.dark-mode .pgroup { background: #1e1e1e; border-color: #333; }
+body.dark-mode .pgroup-title { color: #ccc; }
+body.dark-mode .pg-line { background: #333; }
+
+body.dark-mode .color-cell > span { color: #aaa; }
+body.dark-mode .color-cell .picker { background: #333; border-color: #555; color: #ccc; }
+body.dark-mode .color-cell .picker.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+body.dark-mode .add span { background: #333; color: #ccc; border-color: #444; }
+body.dark-mode .add span:hover { background: #444; }
+
+body.dark-mode .t img { border-color: #444; background: #111; }
+body.dark-mode .t button { background: #333; border-color: #444; color: #ccc; }
+body.dark-mode .t button:hover { background: #444; }
+
+body.dark-mode #olCtl, body.dark-mode #bgImgControls { background: #1a1a1a; border-color: #333; }
+body.dark-mode input[type=range] { background: #444; border-color: #555; }
+body.dark-mode input[type=range]::-webkit-slider-thumb { background: #888; border-color: #666; }
+
+body.dark-mode .hint { color: #777; }
+body.dark-mode .ct-item button { background: #2a2a2a; border-color: #444; color: #ff5f56; }
+body.dark-mode .ct-item button:hover { background: #3a2222; border-color: #ff5f56; }
+
+body.dark-mode #pickBar { background: #2a2a2a; border-color: var(--accent); box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+body.dark-mode #pickBar .pt b { color: #eee; }
+body.dark-mode #pickBar .pt small { color: #aaa; }
+body.dark-mode #pickHex { color: #aaa; }
+body.dark-mode #toast { background: rgba(255,255,255,.9); color: #222; font-weight: 500; }
+body.dark-mode #savePanel { background: #2a2a2a; border-color: #444; color: #eee; box-shadow: 0 5px 24px rgba(0,0,0,.5); }
+body.dark-mode #savePanel a { background: var(--accent); }
+
+/* 顶部切换按钮 */
+.theme-toggle-btn { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 8px !important; font-size: 16px !important; cursor: pointer; transition: transform 0.2s; }
+.theme-toggle-btn:hover { transform: scale(1.15); }
+
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,13 +342,13 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
         文字
       </button>
-      <button role="tab" data-t="p4" aria-selected="false">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z"/></svg>
-        色彩
-      </button>
       <button role="tab" data-t="p7" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M12 3.5l2.4 6.1 6.1 2.4-6.1 2.4L12 20.5l-2.4-6.1L3.5 12l6.1-2.4z"/></svg>
         预设
+      </button>
+      <button role="tab" data-t="p4" aria-selected="false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z"/></svg>
+        色彩
       </button>
       <button role="tab" data-t="p6" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -3982,6 +4063,43 @@ function initTabsDrag() {
 
 setTimeout(initTabsDrag, 100);
 
+
+/* PATCH: Theme Toggle Logic */
+function initThemeToggle() {
+  const header = document.querySelector('.top');
+  if (!header || document.getElementById('themeToggle')) return;
+  
+  const btn = document.createElement('button');
+  btn.id = 'themeToggle';
+  btn.className = 'theme-toggle-btn';
+  btn.title = '切换日间/夜间模式';
+  btn.setAttribute('aria-label', '切换模式');
+  
+  // 插入到“导出”按钮之前
+  const exportTop = document.getElementById('exportTop');
+  if (exportTop) {
+    header.insertBefore(btn, exportTop);
+  } else {
+    header.appendChild(btn);
+  }
+
+  const isDark = localStorage.getItem('q_dark_mode') === '1';
+  if (isDark) {
+    document.body.classList.add('dark-mode');
+    btn.textContent = '☀️';
+  } else {
+    btn.textContent = '🌙';
+  }
+
+  btn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const nowDark = document.body.classList.contains('dark-mode');
+    btn.textContent = nowDark ? '☀️' : '🌙';
+    try { localStorage.setItem('q_dark_mode', nowDark ? '1' : '0'); } catch(e){}
+  });
+}
+setTimeout(initThemeToggle, 100);
+
 </script>
 </body>
-</html>
+  </html>
