@@ -1087,20 +1087,7 @@ function geometry() {
   const k = +$('scale').value / 100;
 
   const olGap = +$('olGap').value, olW = +$('olW').value, olR = +$('olR').value;
-  let sidePad = 14, topPad = 14, botPad = 14;
-  switch (opt.frame) {
-    case 'polaroid': sidePad = 16; topPad = 16; botPad = 16; break;
-    case 'phone':    sidePad = 14; topPad = 14; botPad = 14; break;
-    case 'window':   sidePad = 12; topPad = 36; botPad = 12; break;
-    case 'film':     sidePad = 34; topPad = 20; botPad = 32; break;
-    case 'glass':    sidePad = 20; topPad = 20; botPad = 20; break;
-    case 'outline':  sidePad = topPad = botPad = olGap + olW; break;
-    case 'index':    sidePad = 18; topPad = 44; botPad = 52; break;
-    case 'fold':     sidePad = 14; topPad = 14; botPad = 14; break;
-    case 'pill':     sidePad = 14; topPad = 14; botPad = 62; break;
-    case 'stamp':    sidePad = 20; topPad = 20; botPad = 20; break;
-  }
-
+  
   const NEWLAY = LAYOUT_NEW[lay];
   const rows = (NEWLAY && NEWLAY.rows === 2 && n > 1) ? 2 : 1;
   const cols = rows === 2 ? Math.ceil(n / 2) : n;
@@ -1115,6 +1102,25 @@ function geometry() {
     : (lay === 'accordion'
       ? 1040 / n
       : (lay === 'stack' ? 1040 / (n - (n - 1) * 0.14) : (1040 - (lay === 'flat' ? 24 : 12) * (n - 1)) / n));
+
+  // 核心比例缩放
+  const scale = fw0 / 300; 
+  const basePad = 14 * scale;
+  let sidePad = basePad, topPad = basePad, botPad = basePad;
+  
+  switch (opt.frame) {
+    case 'polaroid': sidePad = 16 * scale; topPad = 16 * scale; botPad = 16 * scale; break;
+    case 'phone':    sidePad = 14 * scale; topPad = 14 * scale; botPad = 14 * scale; break;
+    case 'window':   sidePad = 12 * scale; topPad = 36 * scale; botPad = 12 * scale; break;
+    case 'film':     sidePad = 34 * scale; topPad = 20 * scale; botPad = 32 * scale; break;
+    case 'glass':    sidePad = 20 * scale; topPad = 20 * scale; botPad = 20 * scale; break;
+    case 'outline':  sidePad = topPad = botPad = olGap + olW; break;
+    case 'index':    sidePad = 18 * scale; topPad = 44 * scale; botPad = 52 * scale; break;
+    case 'fold':     sidePad = 14 * scale; topPad = 14 * scale; botPad = 14 * scale; break;
+    case 'pill':     sidePad = 14 * scale; topPad = 14 * scale; botPad = 62 * scale; break;
+    case 'stamp':    sidePad = 20 * scale; topPad = 20 * scale; botPad = 20 * scale; break;
+  }
+
   const gap = NEWLAY
     ? (lay === 'fan' ? -0.14 * fw0 : 24)
     : (lay === 'accordion' ? 0 : (lay === 'stack' ? -0.14 * fw0 : (lay === 'flat' ? 24 : 12)));
@@ -1127,16 +1133,19 @@ function geometry() {
   const sizeScale = Math.max(1, +$('textSize').value / 100);
   const titleBlockH = (42 * sizeScale * 1.35 + 20 * sizeScale * 1.35 + 32);
 
+  // 拍立得留白基于图片高度的 15%
+  const polaroidExtraRatio = 0.15;
+
   if (opt.ratio === 'auto') {
     sw = swW * k;
-    const eb = opt.frame === 'polaroid' ? sw * 0.25 : 0;
+    const eb = opt.frame === 'polaroid' ? Math.max(16, (sw * r) * polaroidExtraRatio) : 0;
     const fhU = sw * r + topPad + botPad + eb;
     h = Math.ceil(180 + fhU + stag + (rows - 1) * (fhU + rowGap) + titleBlockH + candyExtra);
   } else {
     h = Math.round(1200 / +opt.ratio);
     sw = Math.min(swW, ((h - 220 - candyExtra - stag - (rows - 1) * rowGap) / rows - topPad - botPad) / r) * k;
   }
-  const extraBot = opt.frame === 'polaroid' ? sw * 0.25 : 0;
+  const extraBot = opt.frame === 'polaroid' ? Math.max(16, (sw * r) * polaroidExtraRatio) : 0;
   const fhFinal = sw * r + topPad + botPad + extraBot;
   const stagTotal = stag + (rows - 1) * (fhFinal + rowGap);
   const paddingLeft = (opt.collageBase === 'twinCoil' || opt.collageBase === 'sideWin') ? 40 : (opt.collageBase === 'rulerWin' ? 14 : 0);
@@ -1197,6 +1206,10 @@ function drawWashiTape(c, x, y, width, height, angle, style, R, tapeCustomColor)
 }
 
 function drawCoverImage(c, img, x, y, w, h) {
+  c.imageSmoothingEnabled = true;
+  c.imageSmoothingQuality = 'high';
+  c.imageSmoothingEnabled = true;
+  c.imageSmoothingQuality = 'high';
   const imgRatio = img.height / img.width;
   const boxRatio = h / w;
   let sw, sh, sx, sy;
@@ -2712,6 +2725,7 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   const tapeCol = $('cTape').value;
   const textCol = $('cText').value;
   const fw = g.sw + 2 * g.sidePad;
+  const scale = fw / 300;
 
   if (!noShadow) {
     if (w > 1500) { c.shadowColor = 'rgba(0,0,0,0.15)'; c.shadowBlur = 4; c.shadowOffsetX = 2; c.shadowOffsetY = 6; }
@@ -2723,32 +2737,35 @@ function drawOneCard(c, i, g, w, noShadow = false) {
 
   const tt = rgb(textCol);
   const tA = al => `rgba(${tt[0]},${tt[1]},${tt[2]},${al})`;
-  const FOLD = Math.min(52, fw * 0.22);
-  let imgR = 2;
+  const FOLD = Math.min(52 * scale, fw * 0.22);
+  let imgR = Math.max(2, 2 * scale);
 
   if (frameType === 'polaroid') {
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 6); c.fill();
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 6 * scale); c.fill();
   } else if (frameType === 'film') {
     c.fillStyle = '#121212';
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 4); c.fill();
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 4 * scale); c.fill();
     c.shadowColor = 'transparent';
     c.fillStyle = '#f4f1ea';
-    for (let y = 16; y < g.fh - 22; y += 30) {
-      c.beginPath(); c.roundRect(11, y, 12, 18, 3); c.fill();
-      c.beginPath(); c.roundRect(fw - 23, y, 12, 18, 3); c.fill();
+    const holeW = 12 * scale, holeH = 18 * scale, step = 30 * scale;
+    for (let y = 16 * scale; y < g.fh - 22 * scale; y += step) {
+      c.beginPath(); c.roundRect(11 * scale, y, holeW, holeH, 3 * scale); c.fill();
+      c.beginPath(); c.roundRect(fw - 23 * scale, y, holeW, holeH, 3 * scale); c.fill();
     }
   } else if (frameType === 'fold') {
     c.beginPath();
     c.moveTo(0, 0); c.lineTo(fw - FOLD, 0); c.lineTo(fw, FOLD); c.lineTo(fw, g.fh); c.lineTo(0, g.fh);
     c.closePath(); c.fill();
   } else if (frameType === 'phone') {
-    imgR = 32;
-    const BR = 46;
+    const BR = Math.max(12, Math.min(46 * scale, fw * 0.2));
+    imgR = Math.max(4, BR - 14 * scale);
     const dark = mixHex(frameCol, '#000000', 0.3);
     c.save();
-    [[-3, 70, 26], [-3, 120, 46], [-3, 176, 46], [fw - 2, 140, 72]].forEach(([bx, by, bh]) => {
-      if (by + bh > g.fh - 30) return;
-      c.fillStyle = dark; c.beginPath(); c.roundRect(bx, by, 5, bh, 2); c.fill();
+    [[-3 * scale, g.fh*0.15, g.fh*0.05],
+     [-3 * scale, g.fh*0.25, g.fh*0.08],
+     [-3 * scale, g.fh*0.35, g.fh*0.08],
+     [fw - 2 * scale, g.fh*0.3, g.fh*0.12]].forEach(([bx, by, bh]) => {
+      c.fillStyle = dark; c.beginPath(); c.roundRect(bx, by, 5 * scale, bh, 2 * scale); c.fill();
     });
     c.restore();
     const bg = c.createLinearGradient(0, 0, fw, g.fh);
@@ -2757,55 +2774,53 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.shadowColor = 'transparent';
     const rg = c.createLinearGradient(0, 0, fw, g.fh);
     rg.addColorStop(0, 'rgba(255,255,255,.75)'); rg.addColorStop(0.45, 'rgba(255,255,255,.12)'); rg.addColorStop(1, 'rgba(255,255,255,.5)');
-    c.strokeStyle = rg; c.lineWidth = 2.5; c.beginPath(); c.roundRect(1.25, 1.25, fw - 2.5, g.fh - 2.5, BR - 1.25); c.stroke();
-    c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 1; c.beginPath(); c.roundRect(3.5, 3.5, fw - 7, g.fh - 7, BR - 3.5); c.stroke();
-    c.fillStyle = '#0b0b0d'; c.beginPath(); c.roundRect(5, 5, fw - 10, g.fh - 10, BR - 5); c.fill();
-    c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 1; c.beginPath(); c.roundRect(5.5, 5.5, fw - 11, g.fh - 11, BR - 5.5); c.stroke();
+    c.strokeStyle = rg; c.lineWidth = 2.5 * scale; c.beginPath(); c.roundRect(1.25 * scale, 1.25 * scale, fw - 2.5 * scale, g.fh - 2.5 * scale, BR - 1.25 * scale); c.stroke();
+    c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 1 * scale; c.beginPath(); c.roundRect(3.5 * scale, 3.5 * scale, fw - 7 * scale, g.fh - 7 * scale, BR - 3.5 * scale); c.stroke();
+    c.fillStyle = '#0b0b0d'; c.beginPath(); c.roundRect(5 * scale, 5 * scale, fw - 10 * scale, g.fh - 10 * scale, BR - 5 * scale); c.fill();
+    c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 1 * scale; c.beginPath(); c.roundRect(5.5 * scale, 5.5 * scale, fw - 11 * scale, g.fh - 11 * scale, BR - 5.5 * scale); c.stroke();
   } else if (frameType === 'window') {
-    imgR = 4;
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 8); c.fill();
-    c.fillStyle = 'rgba(0,0,0,0.06)'; c.beginPath(); c.roundRect(0, 0, fw, 30, [8, 8, 0, 0]); c.fill();
-    ['#ff5f56', '#ffbd2e', '#27c93f'].forEach((col, idx) => { c.fillStyle = col; c.beginPath(); c.arc(16 + idx * 16, 15, 5, 0, Math.PI * 2); c.fill(); });
-    c.strokeStyle = 'rgba(0,0,0,0.1)'; c.lineWidth = 1;
-    c.beginPath(); c.moveTo(0, 30); c.lineTo(fw, 30); c.stroke();
+    imgR = 4 * scale;
+    const topH = Math.max(24 * scale, 30 * scale);
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 8 * scale); c.fill();
+    c.fillStyle = 'rgba(0,0,0,0.06)'; c.beginPath(); c.roundRect(0, 0, fw, topH, [8 * scale, 8 * scale, 0, 0]); c.fill();
+    ['#ff5f56', '#ffbd2e', '#27c93f'].forEach((col, idx) => { c.fillStyle = col; c.beginPath(); c.arc(16 * scale + idx * 16 * scale, topH / 2, 5 * scale, 0, Math.PI * 2); c.fill(); });
+    c.strokeStyle = 'rgba(0,0,0,0.1)'; c.lineWidth = 1 * scale;
+    c.beginPath(); c.moveTo(0, topH); c.lineTo(fw, topH); c.stroke();
   } else if (frameType === 'outline') {
     const lw = g.olW;
     imgR = g.olR;
     c.shadowColor = 'transparent';
     c.strokeStyle = frameCol; c.lineWidth = lw;
     c.beginPath();
-    if (g.olR === 0) {
-      c.rect(lw / 2, lw / 2, fw - lw, g.fh - lw);
-    } else {
-      c.roundRect(lw / 2, lw / 2, fw - lw, g.fh - lw, g.olR + g.olGap + lw / 2);
-    }
+    if (g.olR === 0) c.rect(lw / 2, lw / 2, fw - lw, g.fh - lw);
+    else c.roundRect(lw / 2, lw / 2, fw - lw, g.fh - lw, g.olR + g.olGap + lw / 2);
     c.stroke();
   } else if (frameType === 'glass') {
     if (!noShadow) { c.shadowColor = 'rgba(0,0,0,0.1)'; c.shadowBlur = w > 1500 ? 4 : 10; }
     c.fillStyle = 'rgba(255,255,255,0.3)';
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 16); c.fill();
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 16 * scale); c.fill();
     c.shadowColor = 'transparent';
-    c.strokeStyle = 'rgba(255,255,255,0.6)'; c.lineWidth = 2;
-    c.beginPath(); c.roundRect(1, 1, fw - 2, g.fh - 2, 15); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,0.6)'; c.lineWidth = 2 * scale;
+    c.beginPath(); c.roundRect(1 * scale, 1 * scale, fw - 2 * scale, g.fh - 2 * scale, 15 * scale); c.stroke();
   } else if (frameType === 'index') {
-    imgR = 4;
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 10); c.fill();
+    imgR = 4 * scale;
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 10 * scale); c.fill();
     c.shadowColor = 'transparent';
-    c.strokeStyle = tA(0.35); c.lineWidth = 1.5;
-    c.beginPath(); c.arc(fw / 2, 22, 7, 0, Math.PI * 2); c.stroke();
+    c.strokeStyle = tA(0.35); c.lineWidth = 1.5 * scale;
+    c.beginPath(); c.arc(fw / 2, 22 * scale, 7 * scale, 0, Math.PI * 2); c.stroke();
   } else if (frameType === 'pill') {
-    imgR = 12;
-    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 26); c.fill();
+    imgR = 12 * scale;
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, 26 * scale); c.fill();
   } else if (frameType === 'stamp') {
-    drawStampEdge(c, 4, 4, fw - 8, g.fh - 8, 16); c.fill();
+    drawStampEdge(c, 4 * scale, 4 * scale, fw - 8 * scale, g.fh - 8 * scale, 16 * scale); c.fill();
     c.shadowColor = 'transparent';
     c.save();
-    c.strokeStyle = textCol; c.globalAlpha = 0.35; c.lineWidth = 1.1;
-    c.setLineDash([3, 3]);
-    c.beginPath(); c.rect(14, 14, fw - 28, g.fh - 28); c.stroke();
+    c.strokeStyle = textCol; c.globalAlpha = 0.35; c.lineWidth = 1.1 * scale;
+    c.setLineDash([3 * scale, 3 * scale]);
+    c.beginPath(); c.rect(14 * scale, 14 * scale, fw - 28 * scale, g.fh - 28 * scale); c.stroke();
     c.setLineDash([]); c.restore();
   } else {
-    drawTornEdge(c, 0, 0, fw, g.fh, 2.5, 12, R); c.fill();
+    drawTornEdge(c, 0, 0, fw, g.fh, 2.5 * scale, 12 * scale, R); c.fill();
   }
 
   if (frameType !== 'outline' && frameType !== 'glass') {
@@ -2836,61 +2851,60 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   } else {
     buildImagePath();
     c.strokeStyle = tA(0.32);
-    c.lineWidth = Math.max(1.2, imgW * 0.005);
-    c.setLineDash([Math.max(6, imgW * 0.022), Math.max(5, imgW * 0.016)]);
+    c.lineWidth = Math.max(1.2 * scale, imgW * 0.005);
+    c.setLineDash([Math.max(6 * scale, imgW * 0.022), Math.max(5 * scale, imgW * 0.016)]);
     c.lineCap = 'round';
     c.stroke();
     c.setLineDash([]);
 
-    c.font = `600 ${Math.max(13, Math.round(imgW * 0.03))}px ${SANS}`;
+    c.font = `600 ${Math.max(13 * scale, Math.round(imgW * 0.03))}px ${SANS}`;
     c.fillStyle = tA(0.5);
     c.textAlign = 'center'; c.textBaseline = 'middle';
     c.fillText('等待导入截图', imgX + imgW / 2, imgY + imgH / 2);
   }
   c.restore();
 
-  const pb = g.topPad + imgH;
   if (frameType === 'polaroid') {
-    c.font = `600 12px ${SANS}`; c.fillStyle = 'rgba(0,0,0,0.4)';
-    c.textAlign = 'center'; c.fillText(`SHOT 0${i + 1}`, fw / 2, g.fh - 14);
+    c.font = `600 ${12 * scale}px ${SANS}`; c.fillStyle = 'rgba(0,0,0,0.4)';
+    c.textAlign = 'center'; c.fillText(`SHOT 0${i + 1}`, fw / 2, g.fh - 14 * scale);
   } else if (frameType === 'film') {
     c.save();
-    c.font = `500 11px ${BGF.ruler}`; c.fillStyle = '#f5a623';
+    c.font = `500 ${11 * scale}px ${BGF.ruler}`; c.fillStyle = '#f5a623';
     c.textBaseline = 'middle';
-    c.textAlign = 'left'; c.fillText(`▸ ${i + 1}`, imgX, g.fh - 15);
-    c.textAlign = 'right'; c.fillText(`${i + 1}A`, imgX + imgW, g.fh - 15);
+    c.textAlign = 'left'; c.fillText(`▸ ${i + 1}`, imgX, g.fh - 15 * scale);
+    c.textAlign = 'right'; c.fillText(`${i + 1}A`, imgX + imgW, g.fh - 15 * scale);
     c.restore();
   } else if (frameType === 'index') {
     const d = new Date();
     const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`;
     c.save();
-    c.strokeStyle = tA(0.25); c.lineWidth = 1;
-    c.beginPath(); c.moveTo(imgX, pb + 20); c.lineTo(imgX + imgW, pb + 20); c.stroke();
-    c.font = `600 12px ${BGF.ruler}`; c.fillStyle = tA(0.7); c.textBaseline = 'middle';
-    try { c.letterSpacing = '2px'; } catch (e) {}
-    c.textAlign = 'left'; c.fillText(`NO. 0${i + 1}`, imgX, pb + 34);
-    c.textAlign = 'right'; c.fillText(date, imgX + imgW, pb + 34);
+    c.strokeStyle = tA(0.25); c.lineWidth = 1 * scale;
+    c.beginPath(); c.moveTo(imgX, g.fh - g.botPad + 16 * scale); c.lineTo(imgX + imgW, g.fh - g.botPad + 16 * scale); c.stroke();
+    c.font = `600 ${12 * scale}px ${BGF.ruler}`; c.fillStyle = tA(0.7); c.textBaseline = 'middle';
+    try { c.letterSpacing = `${2 * scale}px`; } catch (e) {}
+    c.textAlign = 'left'; c.fillText(`NO. 0${i + 1}`, imgX, g.fh - g.botPad + 34 * scale);
+    c.textAlign = 'right'; c.fillText(date, imgX + imgW, g.fh - g.botPad + 34 * scale);
     c.restore();
   } else if (frameType === 'pill') {
-    const cy = pb + 32;
+    const cy = g.fh - g.botPad + 32 * scale;
     c.save();
     c.fillStyle = tA(0.06);
-    c.beginPath(); c.roundRect(imgX, pb + 14, imgW, 36, 18); c.fill();
-    c.strokeStyle = tA(0.7); c.lineWidth = 1.8; c.lineCap = 'round'; c.lineJoin = 'round';
-    const hx = imgX + 28, s6 = 6;
+    c.beginPath(); c.roundRect(imgX, cy - 18 * scale, imgW, 36 * scale, 18 * scale); c.fill();
+    c.strokeStyle = tA(0.7); c.lineWidth = 1.8 * scale; c.lineCap = 'round'; c.lineJoin = 'round';
+    const hx = imgX + 28 * scale, s6 = 6 * scale;
     c.beginPath();
-    c.moveTo(hx, cy - 4 + s6 * 0.35);
-    c.bezierCurveTo(hx + s6, cy - 4 - s6 * 0.5, hx + s6 * 1.1, cy - 4 + s6 * 0.6, hx, cy - 4 + s6 * 1.2);
-    c.bezierCurveTo(hx - s6 * 1.1, cy - 4 + s6 * 0.6, hx - s6, cy - 4 - s6 * 0.5, hx, cy - 4 + s6 * 0.35);
+    c.moveTo(hx, cy - 4 * scale + s6 * 0.35);
+    c.bezierCurveTo(hx + s6, cy - 4 * scale - s6 * 0.5, hx + s6 * 1.1, cy - 4 * scale + s6 * 0.6, hx, cy - 4 * scale + s6 * 1.2);
+    c.bezierCurveTo(hx - s6 * 1.1, cy - 4 * scale + s6 * 0.6, hx - s6, cy - 4 * scale - s6 * 0.5, hx, cy - 4 * scale + s6 * 0.35);
     c.stroke();
-    c.beginPath(); c.arc(imgX + 62, cy, 7, 0, Math.PI * 2); c.stroke();
-    c.beginPath(); c.moveTo(imgX + 92, cy - 7); c.lineTo(imgX + 104, cy); c.lineTo(imgX + 92, cy + 7); c.lineTo(imgX + 95, cy); c.closePath(); c.stroke();
-    const bx = imgX + imgW - 28;
-    c.beginPath(); c.moveTo(bx - 5, cy - 8); c.lineTo(bx + 5, cy - 8); c.lineTo(bx + 5, cy + 8); c.lineTo(bx, cy + 3); c.lineTo(bx - 5, cy + 8); c.closePath(); c.stroke();
+    c.beginPath(); c.arc(imgX + 62 * scale, cy, 7 * scale, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.moveTo(imgX + 92 * scale, cy - 7 * scale); c.lineTo(imgX + 104 * scale, cy); c.lineTo(imgX + 92 * scale, cy + 7 * scale); c.lineTo(imgX + 95 * scale, cy); c.closePath(); c.stroke();
+    const bx = imgX + imgW - 28 * scale;
+    c.beginPath(); c.moveTo(bx - 5 * scale, cy - 8 * scale); c.lineTo(bx + 5 * scale, cy - 8 * scale); c.lineTo(bx + 5 * scale, cy + 8 * scale); c.lineTo(bx, cy + 3 * scale); c.lineTo(bx - 5 * scale, cy + 8 * scale); c.closePath(); c.stroke();
     c.restore();
   } else if (frameType === 'fold') {
     c.save();
-    c.shadowColor = 'rgba(0,0,0,0.25)'; c.shadowBlur = 6; c.shadowOffsetX = -2; c.shadowOffsetY = 2;
+    c.shadowColor = 'rgba(0,0,0,0.25)'; c.shadowBlur = 6 * scale; c.shadowOffsetX = -2 * scale; c.shadowOffsetY = 2 * scale;
     c.fillStyle = frameCol;
     c.beginPath(); c.moveTo(fw - FOLD, 0); c.lineTo(fw - FOLD, FOLD); c.lineTo(fw, FOLD); c.closePath(); c.fill();
     c.shadowColor = 'transparent';
@@ -2899,9 +2913,9 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   }
 
   if (opt.tapeStyle !== 'none') {
-    const tapeW = Math.min(90, fw * 0.45);
-    const tapeH = 22;
-    drawWashiTape(c, fw / 2 + (R() - 0.5) * 30, 5, tapeW, tapeH, (R() - 0.5) * 0.15, opt.tapeStyle, R, tapeCol);
+    const tapeW = Math.min(90 * scale, fw * 0.45);
+    const tapeH = 22 * scale;
+    drawWashiTape(c, fw / 2 + (R() - 0.5) * 30 * scale, 5 * scale, tapeW, tapeH, (R() - 0.5) * 0.15, opt.tapeStyle, R, tapeCol);
   }
 }
 
@@ -2923,7 +2937,16 @@ function renderAccordion(c, w, h, g, useCache) {
   const cardsStartY = Math.max(80, availableTopSpace * 0.32) + titleBlockH + 24;
   const fw = g.sw + 2 * g.sidePad, m = g.n;
   const x0 = (w - m * fw) / 2;
-  const ts = useCache ? 2 : 3;
+  
+  let maxImgDpr = window.currentDPR || 3;
+  for (let i = 0; i < m; i++) {
+      if (state.images[i] && state.images[i].img) {
+          const ratio = state.images[i].img.width / g.sw;
+          if (ratio > maxImgDpr) maxImgDpr = Math.min(ratio, 8);
+      }
+  }
+  const ts = useCache ? maxImgDpr : 4;
+  
   const scaleAt = j => (j % 2 === 1 ? 0.95 : 1.035);
   const cy = cardsStartY + g.fh / 2;
 
@@ -2994,6 +3017,8 @@ function renderAccordion(c, w, h, g, useCache) {
     c.shadowBlur = 15;
     c.shadowOffsetX = 4;
     c.shadowOffsetY = 10;
+    c.imageSmoothingEnabled = true;
+    c.imageSmoothingQuality = 'high';
     c.drawImage(item.canvas, 0, 0, fw * ts, compH * ts, xl, yl, fw, compH);
     c.restore();
   }
@@ -3028,17 +3053,31 @@ function renderCards(c, w, h, g, useCache = false) {
 
     if (useCache) {
       let cc = cardCache[i];
-      const cw = Math.ceil(fw + pad * 2), ch = Math.ceil(g.fh + pad * 2);
+      
+      // 动态计算超采样率：如果原图很大，让缓存画布的尺寸迎合原图，保留极致的细节
+      let imgDpr = window.currentDPR || 3;
+      if (state.images[i] && state.images[i].img) {
+         const ratio = state.images[i].img.width / g.sw;
+         if (ratio > imgDpr) {
+            imgDpr = Math.min(ratio, 8); // 最高允许 8 倍超采样
+         }
+      }
+      
+      const cw = Math.ceil((fw + pad * 2) * imgDpr), ch = Math.ceil((g.fh + pad * 2) * imgDpr);
+      
       if (!cc || cc.width !== cw || cc.height !== ch || cc._key !== key) {
         cc = document.createElement('canvas');
         cc.width = cw; cc.height = ch;
         const cx = cc.getContext('2d');
+        cx.scale(imgDpr, imgDpr);
         cx.translate(pad, pad);
         drawOneCard(cx, i, g, w);
         cc._key = key;
         cardCache[i] = cc;
       }
-      c.drawImage(cc, -pad, -pad);
+      c.imageSmoothingEnabled = true;
+      c.imageSmoothingQuality = 'high';
+      c.drawImage(cc, -pad, -pad, fw + pad * 2, g.fh + pad * 2);
     } else {
       drawOneCard(c, i, g, w);
     }
@@ -3295,25 +3334,34 @@ function draw(cv, W, isExport) {
     renderCards(c, g.w, g.h, g, false);
     tData = renderText(c, g.w, g.h, g);
   } else {
-    if (cacheDirty.bg || bgCacheCanvas.height !== g.h) {
-      bgCacheCanvas.width = g.w; bgCacheCanvas.height = g.h;
-      renderBookPageBackground(bgCacheCanvas.getContext('2d'), g.w, g.h);
+    const scaleFactor = W / g.w;
+    const cacheW = Math.round(g.w * scaleFactor);
+    const cacheH = Math.round(g.h * scaleFactor);
+
+    if (cacheDirty.bg || bgCacheCanvas.height !== cacheH || bgCacheCanvas.width !== cacheW) {
+      bgCacheCanvas.width = cacheW; bgCacheCanvas.height = cacheH;
+      const bc = bgCacheCanvas.getContext('2d');
+      bc.scale(scaleFactor, scaleFactor);
+      renderBookPageBackground(bc, g.w, g.h);
       cacheDirty.bg = false;
     }
-    if (cacheDirty.cards || cardsCacheCanvas.height !== g.h) {
-      cardsCacheCanvas.width = g.w; cardsCacheCanvas.height = g.h;
-      renderCards(cardsCacheCanvas.getContext('2d'), g.w, g.h, g, true);
+    if (cacheDirty.cards || cardsCacheCanvas.height !== cacheH || cardsCacheCanvas.width !== cacheW) {
+      cardsCacheCanvas.width = cacheW; cardsCacheCanvas.height = cacheH;
+      const cc = cardsCacheCanvas.getContext('2d');
+      cc.scale(scaleFactor, scaleFactor);
+      renderCards(cc, g.w, g.h, g, true);
       cacheDirty.cards = false;
     }
-    if (cacheDirty.text || !cachedTextInfo || textCacheCanvas.height !== g.h) {
-      textCacheCanvas.width = g.w; textCacheCanvas.height = g.h;
+    if (cacheDirty.text || !cachedTextInfo || textCacheCanvas.height !== cacheH || textCacheCanvas.width !== cacheW) {
+      textCacheCanvas.width = cacheW; textCacheCanvas.height = cacheH;
       const tc = textCacheCanvas.getContext('2d');
+      tc.scale(scaleFactor, scaleFactor);
       cachedTextInfo = renderText(tc, g.w, g.h, g);
       cacheDirty.text = false;
     }
-    c.drawImage(bgCacheCanvas, 0, 0);
-    c.drawImage(cardsCacheCanvas, 0, 0);
-    c.drawImage(textCacheCanvas, 0, 0);
+    c.drawImage(bgCacheCanvas, 0, 0, g.w, g.h);
+    c.drawImage(cardsCacheCanvas, 0, 0, g.w, g.h);
+    c.drawImage(textCacheCanvas, 0, 0, g.w, g.h);
     tData = cachedTextInfo;
   }
 
@@ -3358,8 +3406,11 @@ function draw(cv, W, isExport) {
   return cv;
 }
 
+let currentDPR = 1;
 function render() {
-  draw($('preview'), 1200, false);
+  currentDPR = Math.min(4, Math.max(3, window.devicePixelRatio || 1));
+  draw($('preview'), Math.round(1200 * currentDPR), false);
+  
   const g = geometry();
   $('dims').textContent = ` ${opt.res} × ${Math.round(opt.res * g.h / g.w)} px`;
   $('scaleV').textContent = $('scale').value + '%';
@@ -4102,4 +4153,4 @@ setTimeout(initThemeToggle, 100);
 
 </script>
 </body>
-  </html>
+</html>
