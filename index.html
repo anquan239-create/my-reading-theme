@@ -192,6 +192,39 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
   .tabs button { font-size: 11px; padding: 0 2px; }
   .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
+
+
+
+/* PATCH: Tabs Drag Style */
+.tabs button {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 0.1s, opacity 0.1s, background 0.1s;
+}
+.tabs button.dragging-tab {
+  opacity: 0.85;
+  transform: scale(0.9);
+  background: #eaf3ff !important;
+  border-color: #007aff !important;
+  box-shadow: 0 4px 12px rgba(0,122,255,.3) !important;
+  z-index: 100;
+}
+
+
+    /* PATCH: Tip Single Line */
+    .tip {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      padding: 5px 10px !important;
+    }
+    .tip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -207,7 +240,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 
   <div class="tip">
     <svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-    <span>单指长按文字或截图可拖动位置；取色器提示条也可长按拖动</span>
+    <span>长按文字、截图、标签栏或取色条可拖动</span>
   </div>
 
   <main class="stage">
@@ -220,6 +253,14 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>
         截图
       </button>
+      <button role="tab" data-t="p3" aria-selected="false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="12" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
+        构图
+      </button>
+      <button role="tab" data-t="p2" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        文字
+      </button>
       <button role="tab" data-t="p4" aria-selected="false">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z"/></svg>
         色彩
@@ -228,17 +269,9 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         <svg viewBox="0 0 24 24"><path d="M12 3.5l2.4 6.1 6.1 2.4-6.1 2.4L12 20.5l-2.4-6.1L3.5 12l6.1-2.4z"/></svg>
         预设
       </button>
-      <button role="tab" data-t="p3" aria-selected="false">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="12" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
-        构图
-      </button>
       <button role="tab" data-t="p6" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         素材
-      </button>
-      <button role="tab" data-t="p2" aria-selected="false">
-        <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
-        文字
       </button>
       <button role="tab" data-t="p5" aria-selected="false">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -3846,6 +3879,109 @@ if (addBtn && !addBtn.dataset.bound) {
 }
 
 setTimeout(renderCustomTextUI, 100);
+
+
+
+/* PATCH: Tabs Drag & Sort Logic - 终极防误触 */
+function initTabsDrag() {
+  const tabsContainer = document.querySelector('.tabs');
+  if (!tabsContainer || tabsContainer.dataset.dragReady) return;
+  tabsContainer.dataset.dragReady = '1';
+
+  let pressTimer = null;
+  let isDragging = false;
+  let dragItem = null;
+  let startX = 0, startY = 0;
+  let wasDragging = false;
+
+  document.querySelectorAll('.tabs button').forEach(b => {
+    const origOnClick = b.onclick;
+    b.onclick = (e) => {
+      if (wasDragging) { 
+        wasDragging = false; 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        return; 
+      }
+      if (origOnClick) origOnClick.call(b, e);
+    };
+
+    b.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      dragItem = b;
+      wasDragging = false;
+
+      clearTimeout(pressTimer);
+
+      pressTimer = setTimeout(() => {
+        isDragging = true;
+        b.classList.add('dragging-tab');
+        if (navigator.vibrate) navigator.vibrate(20);
+      }, 500);
+    }, { passive: true });
+
+    b.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      
+      if (isDragging) {
+        if (e.cancelable) e.preventDefault();
+        
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetTab = target ? target.closest('.tabs button') : null;
+        
+        if (targetTab && targetTab !== dragItem) {
+          const rect = targetTab.getBoundingClientRect();
+          const isAfter = touch.clientX > rect.left + rect.width / 2;
+          if (isAfter) {
+            targetTab.parentNode.insertBefore(dragItem, targetTab.nextSibling);
+          } else {
+            targetTab.parentNode.insertBefore(dragItem, targetTab);
+          }
+        }
+      } else {
+        const dx = Math.abs(touch.clientX - startX);
+        const dy = Math.abs(touch.clientY - startY);
+        if (dx > 8 || dy > 8) {
+          clearTimeout(pressTimer);
+        }
+      }
+    }, { passive: false });
+
+    const endDrag = () => {
+      clearTimeout(pressTimer); 
+      if (isDragging) {
+        isDragging = false;
+        b.classList.remove('dragging-tab');
+        wasDragging = true;
+        saveTabOrder();
+      }
+    };
+
+    b.addEventListener('touchend', endDrag);
+    b.addEventListener('touchcancel', endDrag);
+  });
+
+  function saveTabOrder() {
+    const order = Array.from(tabsContainer.querySelectorAll('button')).map(btn => btn.dataset.t);
+    try { localStorage.setItem('q_tabOrder', JSON.stringify(order)); } catch(err) {}
+  }
+
+  try {
+    const saved = localStorage.getItem('q_tabOrder');
+    if (saved) {
+      const order = JSON.parse(saved);
+      order.forEach(id => {
+        const btn = tabsContainer.querySelector(`button[data-t="${id}"]`);
+        if (btn) tabsContainer.appendChild(btn);
+      });
+    }
+  } catch(err) {}
+}
+
+setTimeout(initTabsDrag, 100);
+
 </script>
 </body>
-  </html>
+</html>
