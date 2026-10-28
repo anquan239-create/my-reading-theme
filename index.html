@@ -183,6 +183,26 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
   gap: 6px;
 }
 
+/* ===== 顶部提示条 ===== */
+.tip {
+  flex: none;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 5px 16px;
+  background: #efefef;
+  border-bottom: 1px solid #d8d8d8;
+  color: #777;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  text-align: center;
+  user-select: none;
+}
+.tip svg {
+  width: 12px; height: 12px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  opacity: .7;
+}
+
 input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: #dcdcdc; border-radius: 2px; outline: none; border: 1px solid #b3b3b3; }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
@@ -212,6 +232,11 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
   .tabs button { font-size: 11px; padding: 0 2px; }
   .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
+
+/* PATCH: pickBar drag */
+#pickBar { touch-action: none; cursor: grab; }
+#pickBar.dragging { cursor: grabbing; box-shadow: 0 12px 30px rgba(0,0,0,.32); opacity: .96; }
+#pickBar.dragging * { pointer-events: none; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,6 +249,11 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
     <span id="status">准备就绪</span>
     <button class="go" id="exportTop" disabled>导出</button>
   </header>
+
+  <div class="tip">
+    <svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+    <span>单指长按标题或截图可拖动位置；取色器提示条也可长按拖动</span>
+  </div>
 
   <main class="stage">
     <canvas id="preview" aria-label="拼贴风格主题展示图"></canvas>
@@ -545,8 +575,6 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 <script>
 'use strict';
 
-/* ===== 浏览器兼容补丁开始 ===== */
-
 if (typeof CanvasRenderingContext2D !== 'undefined' &&
     !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -604,8 +632,6 @@ const SUPPORTS_CANVAS_FILTER = (function () {
   try { return 'filter' in document.createElement('canvas').getContext('2d'); }
   catch (e) { return false; }
 })();
-
-/* ===== 浏览器兼容补丁结束 ===== */
 
 const $ = id => document.getElementById(id);
 const SANS = '"Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
@@ -666,45 +692,54 @@ function setOpt(k, v) {
 }
 
 const PRESETS = [
-  { name:'大刊头', grp:'杂志版式', title:'masthead',   colors:['#f9f8f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magMast',       frame:'fold', tape:'none'  },
-  { name:'杂志封面', grp:'杂志版式', title:'magazine', colors:['#f4f6fa','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magCover',      frame:'fold', tape:'none'  },
-  { name:'编辑排版', grp:'杂志版式', title:'kicker', colors:['#ffffff','#ffffff','#00aeef','#ffffff','#1d1d1f'], bg:'magGrid',       frame:'fold', tape:'none'  },
+  { name:'大刊头', grp:'杂志版式', title:'masthead',   colors:['#f9f8f5','#1d1d1f','#c9c2b6','#ffffff','#1d1d1f'], bg:'magMast',       frame:'outline', tape:'none'  },
+  { name:'杂志封面', grp:'杂志版式', title:'magazine', colors:['#f4f6fa','#ffffff','#e2231a','#ffffff','#1d1d1f'], bg:'magCover',      frame:'fold', tape:'none'  },
+  { name:'编辑排版', grp:'杂志版式', title:'kicker', colors:['#ffffff','#1d1d1f','#00aeef','#ffffff','#1d1d1f'], bg:'magGrid',       frame:'outline', tape:'none'  },
   { name:'色块海报', grp:'杂志版式', title:'label', colors:['#f2f3f6','#ffffff','#ec008c','#ffffff','#1d1d1f'], bg:'magColor',      frame:'fold', tape:'none'  },
   { name:'报纸版面', grp:'杂志版式', title:'masthead', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], bg:'magNews',       frame:'fold', tape:'none'  },
-  { name:'展签留白', grp:'杂志版式', title:'italicMag', colors:['#ffffff','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magLabel',      frame:'fold', tape:'none'  },
-  { name:'对开内页', grp:'杂志版式', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magSpread',     frame:'fold', tape:'none'  },
+  { name:'展签留白', grp:'杂志版式', title:'italicMag', colors:['#ffffff','#cccccc','#1d1d1f','#ffffff','#1d1d1f'], bg:'magLabel',      frame:'outline', tape:'none'  },
+  { name:'对开内页', grp:'杂志版式', title:'masthead', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magSpread',     frame:'fold', tape:'none'  },
   { name:'纸·大刊头', grp:'纸张', title:'masthead', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperMast',   frame:'fold', tape:'none' },
-  { name:'纸·信息框', grp:'纸张', title:'boxed', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperBox',    frame:'outline', tape:'none' },
+  { name:'纸·信息框', grp:'纸张', title:'boxed', colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperBox',    frame:'outline', tape:'none' },
   { name:'纸·邮戳', grp:'纸张', title:'stamp',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperPost',   frame:'polaroid', tape:'none' },
   { name:'纸·信息栏', grp:'纸张', title:'kicker', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperLedger', frame:'fold', tape:'none' },
-  { name:'纸·角标', grp:'纸张', title:'issue',   colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperCorner', frame:'outline', tape:'none' },
+  { name:'纸·角标', grp:'纸张', title:'issue',   colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperCorner', frame:'outline', tape:'none' },
   { name:'经典羊皮', grp:'纸张', title:'italicMag', colors:['#e8d9c2','#f3ebd9','#c49a6c','#f5eee1','#3b2d1f'], bg:'parchment',     frame:'torn',    tape:'washi' },
-  { name:'可爱·蓝条纹', grp:'可爱', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], bg:'candyBlueStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·蓝星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#e3f6fa','#ffffff','#6b4c45'], bg:'candyBlueStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉条纹', grp:'可爱', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyPinkStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyPinkStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·蝴蝶结', grp:'可爱', title:'ribbon', colors:['#ffffff','#ffffff','#f8e1ec','#ffffff','#6b4c45'], bg:'candyBowTape', frame:'polaroid', tape:'none' },
+  { name:'宋韵青瓷', grp:'宋韵', title:'ink', colors:['#e9efea','#f6faf7','#8fa399','#ffffff','#2e3a34'], bg:'songPorcelain', frame:'torn',     tape:'none' },
+  { name:'宋式绢本', grp:'宋韵', title:'ink', colors:['#efe4c9','#f7f0df','#b8a074','#fffaf0','#4a3b28'], bg:'songSilk',      frame:'torn',     tape:'none' },
+  { name:'宋式雕窗', grp:'宋韵', title:'ink', colors:['#f3ece0','#8a7a5e','#8a7a5e','#ffffff','#3a2f24'], bg:'songWindow',    frame:'outline',   tape:'none' },
+  { name:'点茶暗香', grp:'宋韵', title:'seal', colors:['#efe9dc','#f7f2e8','#a89a7c','#ffffff','#3d3427'], bg:'songTea',       frame:'polaroid', tape:'none' },
+  { name:'哥窑开片', grp:'宋韵', title:'seal', colors:['#e6e2d6','#f2efe6','#9a8f7a','#ffffff','#4a443a'], bg:'crackedGlaze',  frame:'torn',     tape:'none' },
+  { name:'水墨山水', grp:'宋韵', title:'ink', colors:['#f4f1e8','#faf8f2','#c8423a','#ffffff','#2a2a2a'], bg:'inkMountain',   frame:'torn',     tape:'none' },
+  { name:'竹影月夜', grp:'宋韵', title:'ink', colors:['#eef2ee','#f7faf7','#5a7a62','#ffffff','#2c3a30'], bg:'bambooMoon',    frame:'torn',     tape:'none' },
+  { name:'卷轴装裱', grp:'宋韵', title:'seal', colors:['#f2e8d5','#faf3e4','#b8332b','#fffdf8','#3a2f24'], bg:'scroll',        frame:'polaroid', tape:'none' },
+  { name:'可爱·蓝条纹', grp:'可爱', title:'ribbon', colors:['#e3f6fa','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBlueStripe', frame:'polaroid', tape:'none' },
+  { name:'可爱·蓝星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBlueStar', frame:'polaroid', tape:'none' },
+  { name:'可爱·粉条纹', grp:'可爱', title:'ribbon', colors:['#f8e1ec','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyPinkStripe', frame:'polaroid', tape:'none' },
+  { name:'可爱·粉星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyPinkStar', frame:'polaroid', tape:'none' },
+  { name:'可爱·蝴蝶结', grp:'可爱', title:'ribbon', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBowTape', frame:'polaroid', tape:'none' },
   { name:'云朵波点', grp:'可爱', title:'sparkle', colors:['#eaf3fb','#ffffff','#a9d8ff','#ffffff','#3b4a5a'], bg:'cloudDots',     frame:'polaroid',tape:'washi' },
   { name:'格纹野餐', grp:'可爱', title:'wave', colors:['#fdf0f2','#ffffff','#8fd3a4','#ffffff','#3a2d2f'], bg:'gingham',       frame:'polaroid',tape:'washi' },
-  { name:'海报·瑞士网格', grp:'海报', title:'kicker', colors:['#f1eee6','#ffffff','#e2231a','#ffffff','#111111'], bg:'pstSwiss', frame:'polaroid', tape:'none' },
+  { name:'海报·瑞士网格', grp:'海报', title:'kicker', colors:['#f1eee6','#111111','#e2231a','#ffffff','#111111'], bg:'pstSwiss', frame:'outline', tape:'none' },
   { name:'海报·构成主义', grp:'海报', title:'banner', colors:['#eee4cd','#ffffff','#d62f26','#ffffff','#151515'], bg:'pstConstruct', frame:'polaroid', tape:'none' },
   { name:'海报·波普网点', grp:'海报', title:'cutout', colors:['#ffd23f','#ffffff','#e8362c','#ffffff','#111111'], bg:'pstPop', frame:'polaroid', tape:'none' },
-  { name:'海报·电影', grp:'海报', colors:['#0d0d10','#ffffff','#e9561f','#ffffff','#f4efe6'], bg:'pstCinema', frame:'polaroid', tape:'none' },
+  { name:'海报·电影', grp:'海报', title:'masthead', colors:['#0d0d10','#f4efe6','#e9561f','#ffffff','#f4efe6'], bg:'pstCinema', frame:'outline', tape:'none' },
   { name:'撕边海报', grp:'撕纸拼贴', title:'sticker', colors:['#f2ede4','#ffffff','#ff5f56','#fff8ee','#1a1a1a'], bg:'poster',        frame:'torn',    tape:'washi' },
-  { name:'撕页·杂志剪报', grp:'撕纸拼贴', title:'ransom', colors:['#cdbfa8','#ffffff','#c9573a','#ffffff','#2b2b2b'], bg:'tornClip', frame:'polaroid', tape:'none' },
+  { name:'撕页·杂志剪报', grp:'撕纸拼贴', title:'ransom', colors:['#cdbfa8','#f8f2e4','#c9573a','#ffffff','#2b2b2b'], bg:'tornClip', frame:'polaroid', tape:'none' },
   { name:'撕页·撕纸拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fbf7ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCollage', frame:'polaroid', tape:'none' },
-  { name:'撕页·翻角连页', grp:'撕纸拼贴', colors:['#e6dece','#ffffff','#d33a2f','#ffffff','#2b2b2b'], bg:'tornRip', frame:'polaroid', tape:'none' },
-  { name:'撕纸·条纹拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#cfe4f5','#ffffff','#3a2e30'], bg:'tornStripe', frame:'polaroid', tape:'none' },
+  { name:'撕页·翻角连页', grp:'撕纸拼贴', title:'ransom', colors:['#e6dece','#fffdf6','#d33a2f','#ffffff','#2b2b2b'], bg:'tornRip', frame:'polaroid', tape:'none' },
+  { name:'撕纸·条纹拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornStripe', frame:'polaroid', tape:'none' },
   { name:'撕纸·侧边拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fdf9f0','#ffffff','#d4ebdd','#ffffff','#3a2e30'], bg:'tornSide', frame:'polaroid', tape:'none' },
-  { name:'撕纸·牛皮纸框', grp:'撕纸拼贴', title:'sticker', colors:['#d7b98e','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornFrame', frame:'polaroid', tape:'none' },
+  { name:'撕纸·牛皮纸框', grp:'撕纸拼贴', title:'sticker', colors:['#d7b98e','#fffaf0','#f6c9d4','#ffffff','#3a2e30'], bg:'tornFrame', frame:'polaroid', tape:'none' },
   { name:'撕纸·对角拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCorner', frame:'polaroid', tape:'none' },
   { name:'撕纸·补丁拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#faf4e6','#ffffff','#fbe7a6','#ffffff','#3a2e30'], bg:'tornPatch', frame:'polaroid', tape:'none' },
-  { name:'折页', grp:'界面窗口', colors:['#f5f3ee','#ffffff','#d8d5ce','#ffffff','#333333'], bg:'appLight', frame:'outline', tape:'none', layout:'accordion' },
-  { name:'浅色系统', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], bg:'appLight',      frame:'fold',    tape:'none'  },
+  { name:'折页', grp:'界面窗口', title:'kicker', colors:['#f5f3ee','#d8d5ce','#d8d5ce','#ffffff','#333333'], bg:'appLight', frame:'outline', tape:'none', layout:'accordion' },
+  { name:'折页·暖米', grp:'界面窗口', title:'masthead', colors:['#f2efe6','#cfc6b2','#cfc6b2','#ffffff','#3a352e'], bg:'accordionBg', frame:'outline', tape:'none', layout:'accordion' },
+  { name:'浅色系统', grp:'界面窗口', title:'text', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], bg:'appLight',      frame:'fold',    tape:'none'  },
   { name:'网页展示', grp:'界面窗口', title:'kicker', colors:['#ffffff','#f6f6f6','#4a9eff','#ffffff','#1d1d1f'], bg:'webLight',      frame:'window',  tape:'none'  },
-  { name:'标尺窗口', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], bg:'rulerWin',      frame:'outline', tape:'none'  },
-  { name:'侧栏窗口', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#007aff','#ffffff','#1d1d1f'], bg:'sideWin',       frame:'outline', tape:'none'  },
-  { name:'双线圈本', grp:'界面窗口', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], bg:'twinCoil',      frame:'polaroid',tape:'none'  },
+  { name:'标尺窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'rulerWin',      frame:'outline', tape:'none'  },
+  { name:'侧栏窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'sideWin',       frame:'outline', tape:'none'  },
+  { name:'双线圈本', grp:'界面窗口', title:'sticker', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], bg:'twinCoil',      frame:'polaroid',tape:'none'  },
   { name:'暗夜迷雾', grp:'悬疑档案', title:'drip', colors:['#0f141c','#1b2230','#8b0000','#18202e','#e2e8f0'], bg:'suspenseFog',   frame:'window',  tape:'none'  },
   { name:'犯罪现场', grp:'悬疑档案', title:'tape', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], bg:'crimeDna',      frame:'outline', tape:'none'  },
   { name:'绝密档案', grp:'悬疑档案', title:'stamp', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], bg:'classifiedDossier', frame:'index', tape:'none' },
@@ -716,6 +751,9 @@ const PRESETS = [
   { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' }
 ]
 
+
+
+
 function clearPresetHighlight() {
   document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
 }
@@ -723,11 +761,26 @@ function clearPresetHighlight() {
 function applyPreset(p) {
   applyingPreset = true;
   const [base, frame, tape, chip, text] = p.colors;
-  $('cBase').value = base;
-  $('cFrame').value = frame;
-  $('cTape').value = tape;
-  $('cChip').value = chip;
-  $('cText').value = text;
+
+  const updateColor = (id, val) => {
+    const el = $(id);
+    if (!el) return;
+    el.value = val;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    const cell = el.closest('.color-cell');
+    if (cell) {
+      const hexInput = cell.querySelector('.color-hex');
+      if (hexInput) hexInput.value = val.toUpperCase();
+    }
+  };
+
+  updateColor('cBase', base);
+  updateColor('cFrame', frame);
+  updateColor('cTape', tape);
+  updateColor('cChip', chip);
+  updateColor('cText', text);
+
   document.body.style.background = base;
 
   if (p.title) setOpt('titleStyle', p.title);
@@ -1828,16 +1881,18 @@ function creditLine(c, w, h, cb, o) {
     sans: 'Inter, "Segoe UI", Roboto, "PingFang SC", sans-serif',
     mono: '"JetBrains Mono", "SF Mono", Menlo, Consolas, monospace',
     round: 'Nunito, "SF Pro Rounded", system-ui, sans-serif',
-    poster: '"Bebas Neue", Anton, Impact, sans-serif'
+    poster: '"Bebas Neue", Anton, Impact, sans-serif',
+    paper: '"Times New Roman", "Noto Serif SC", "Songti SC", Georgia, serif',
+    app: '-apple-system, "BlinkMacSystemFont", "Helvetica Neue", "Segoe UI", sans-serif'
   };
   const D = 0.9;
 
   switch (cb) {
     case 'paperMast':
-      T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.play, sp: 1, align: 'left', col: tcol(1) });
+      T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.paper, sp: 1, align: 'left', col: tcol(1) });
       break;
     case 'paperBox': case 'paperPost': case 'paperLedger': case 'paperCorner':
-      T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.play, sp: 1, align: 'left', col: tcol(1) });
+      T('Creator / Q.', 76, h - 28, { size: 24, weight: 700, family: F.paper, sp: 1, align: 'left', col: tcol(1) });
       break;
     case 'magMast':
       T('Created by Q.', w / 2, h - 30, { size: 15, weight: 700, italic: true, family: F.play, sp: 2, col: tcol(D) });
@@ -1862,7 +1917,7 @@ function creditLine(c, w, h, cb, o) {
       break;
 
     case 'appLight':
-      T('Creator / Q.', w / 2, h - 24, { size: 12, weight: 600, family: F.sans, sp: 0.5, col: tcol(0.85) });
+      T('Creator / Q.', w / 2, h - 24, { size: 12, weight: 600, family: F.app, sp: 0.5, col: tcol(0.85) });
       break;
     case 'webLight':
       T('Home  /  Creator  /  Q.', 112, 30, { size: 12, weight: 600, align: 'left', family: F.sans, col: tcol(0.85) });
@@ -1911,7 +1966,7 @@ function creditLine(c, w, h, cb, o) {
       break;
     }
     case 'classifiedDossier': {
-      const tw = T('CREATED BY: Q.', 50, h - 45, { size: 14, family: F.type, sp: 2, align: 'left', col: tcol(0.92) });
+      const tw = T('CREATED BY: Q.', 50, h - 45, { size: 14, family: F.mono, sp: 2, align: 'left', col: tcol(0.92) });
       c.fillStyle = tcol(0.6); c.fillRect(50, h - 35, tw, 1.5);
       break;
     }
@@ -2662,10 +2717,8 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.strokeStyle = frameCol; c.lineWidth = lw;
     c.beginPath();
     if (g.olR === 0) {
-      // 截图为直角 → 线框也是直角
       c.rect(lw / 2, lw / 2, fw - lw, g.fh - lw);
     } else {
-      // 截图为圆角 → 线框圆角 = 截图圆角 + 间距，与截图四角同心
       c.roundRect(lw / 2, lw / 2, fw - lw, g.fh - lw, g.olR + g.olGap + lw / 2);
     }
     c.stroke();
@@ -3439,7 +3492,6 @@ function handleStart(e) {
   const target = findDragTarget(getCanvasPoint(e));
   if (!target) return;
   if (e.touches) {
-    // 触屏：短按滑动 = 滚动页面；长按约 0.25 秒后才进入拖拽
     pendingDrag = target;
     touchStartXY = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     clearTimeout(pressTimer);
@@ -3685,6 +3737,69 @@ $('resetFont').onclick = () => {
 Object.entries(opt).forEach(([k, v]) => setOpt(k, v));
 document.body.style.background = $('cBase').value;
 render();
+
+/* PATCH: pickBar drag */
+function initPickBarDrag() {
+  const bar = document.getElementById('pickBar');
+  if (!bar || bar.dataset.dragReady) return;
+  bar.dataset.dragReady = '1';
+  let pressTimer = null, drag = null, startPt = null;
+  const getPoint = e => (e.touches && e.touches[0]) ? e.touches[0] : e;
+
+  function beginDrag(p) {
+    const r = bar.getBoundingClientRect();
+    bar.style.left = r.left + 'px';
+    bar.style.top = r.top + 'px';
+    bar.style.bottom = 'auto';
+    bar.style.transform = 'none';
+    bar.style.width = r.width + 'px';
+    drag = { dx: p.clientX - r.left, dy: p.clientY - r.top, w: r.width, h: r.height };
+    bar.classList.add('dragging');
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+
+  function onDown(e) {
+    if (e.target.closest('button')) return;
+    const p = getPoint(e);
+    startPt = { x: p.clientX, y: p.clientY };
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => beginDrag(p), 250);
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function onMove(e) {
+    const p = getPoint(e);
+    if (!drag) {
+      if (startPt && (Math.abs(p.clientX - startPt.x) > 8 || Math.abs(p.clientY - startPt.y) > 8)) {
+        clearTimeout(pressTimer); startPt = null;
+      }
+      return;
+    }
+    let x = p.clientX - drag.dx;
+    let y = p.clientY - drag.dy;
+    x = Math.max(4, Math.min(window.innerWidth - drag.w - 4, x));
+    y = Math.max(4, Math.min(window.innerHeight - drag.h - 4, y));
+    bar.style.left = x + 'px';
+    bar.style.top = y + 'px';
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function onUp() {
+    clearTimeout(pressTimer);
+    if (drag) bar.classList.remove('dragging');
+    drag = null; startPt = null;
+  }
+
+  bar.addEventListener('touchstart', onDown, { passive: false });
+  bar.addEventListener('mousedown', onDown);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchend', onUp);
+  window.addEventListener('touchcancel', onUp);
+  window.addEventListener('mouseup', onUp);
+}
+initPickBarDrag();
+
 </script>
 </body>
   </html>
