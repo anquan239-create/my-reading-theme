@@ -278,7 +278,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
         <div class="r"><span>线框粗细</span><input id="olW" type="range" min="1" max="10" value="3"><output id="olWV" style="width:36px;text-align:right;font-size:11px">3px</output></div>
         <div class="r"><span>截图圆角</span><input id="olR" type="range" min="0" max="120" value="0"><output id="olRV" style="width:36px;text-align:right;font-size:11px">0px</output></div>
         <div class="r" style="margin-bottom:4px"><span></span><button id="olDetect" style="flex:1">识别截图圆角</button></div>
-        <p class="hint">线框圆角 = 截图圆角 + 间距，始终与截图四角同心；间距为 0 时线框紧贴截图。线框颜色取自"色彩 → 相框边框"。</p>
+        <p class="hint">截图圆角为 0 时线框为直角；截图有圆角时线框跟随圆角并与截图四角同心。间距控制线框与截图的距离。线框颜色取自"色彩 → 相框边框"。</p>
       </div>
       <div class="r">
         <span>比例</span>
@@ -304,15 +304,8 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
       <div class="r" style="align-items:flex-start">
         <span style="padding-top:6px">背景样式</span>
         <div class="chips" data-k="collageBase">
+          <button data-v="custom">+ 导入图片</button>
           <button data-v="none">透明底</button>
-          <button data-v="songPorcelain">宋韵青瓷</button>
-          <button data-v="songSilk">宋式绢本</button>
-          <button data-v="songWindow">宋式雕窗</button>
-          <button data-v="songTea">点茶暗香</button>
-          <button data-v="crackedGlaze">哥窑开片</button>
-          <button data-v="inkMountain">水墨山水</button>
-          <button data-v="bambooMoon">竹影月夜</button>
-          <button data-v="scroll">卷轴装裱</button>
           <button data-v="parchment">羊皮纸</button>
           <button data-v="poster">撕边海报</button>
           <button data-v="webLight">网页</button>
@@ -361,7 +354,14 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
           <button data-v="classifiedDossier">绝密档案</button>
           <button data-v="detectiveBoard">侦探线索板</button>
           <button data-v="glitchArchive">故障档案</button>
-          <button data-v="custom">+ 导入图片</button>
+          <button data-v="songPorcelain">宋韵青瓷</button>
+          <button data-v="songSilk">宋式绢本</button>
+          <button data-v="songWindow">宋式雕窗</button>
+          <button data-v="songTea">点茶暗香</button>
+          <button data-v="crackedGlaze">哥窑开片</button>
+          <button data-v="inkMountain">水墨山水</button>
+          <button data-v="bambooMoon">竹影月夜</button>
+          <button data-v="scroll">卷轴装裱</button>
         </div>
       </div>
       <div class="r" id="bgImgControls" style="display:none;flex-direction:column;gap:8px;margin-bottom:12px;padding:10px;background:#f9f9f9;border-radius:4px;border:1px solid #e0e0e0">
@@ -599,10 +599,6 @@ const PRESETS = [
   { name:'报纸版面', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], title:'masthead',  bg:'magNews',       frame:'fold', tape:'none'  },
   { name:'展签留白', colors:['#ffffff','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'italicMag', bg:'magLabel',      frame:'fold', tape:'none'  },
   { name:'对开内页', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], title:'text',      bg:'magSpread',     frame:'fold', tape:'none'  },
-  { name:'夜航星图', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], title:'text', bg:'starChart', frame:'fold', tape:'none' },
-  { name:'余烬黄昏', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], title:'text', bg:'emberDusk',  frame:'fold', tape:'none' },
-  { name:'深海潮汐', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], title:'text', bg:'deepSea',    frame:'fold', tape:'none' },
-  { name:'霓虹雨夜', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], title:'text', bg:'neonRain',   frame:'fold', tape:'none' },
   { name:'纸·大刊头', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperMast',   frame:'fold', tape:'none' },
   { name:'纸·信息框', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperBox',    frame:'outline', tape:'none' },
   { name:'纸·邮戳',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], title:'text', bg:'paperPost',   frame:'polaroid', tape:'none' },
@@ -639,7 +635,11 @@ const PRESETS = [
   { name:'犯罪现场', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], title:'tape',      bg:'crimeDna',      frame:'outline', tape:'none'  },
   { name:'绝密档案', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], title:'stamp',     bg:'classifiedDossier', frame:'index', tape:'none' },
   { name:'侦探线索', colors:['#2b231d','#3a2f26','#dc2626','#352b22','#f3eee3'], title:'ransom',    bg:'detectiveBoard',frame:'polaroid',tape:'none'  },
-  { name:'故障档案', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], title:'glitch',    bg:'glitchArchive', frame:'window',  tape:'none'  }
+  { name:'故障档案', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], title:'glitch',    bg:'glitchArchive', frame:'window',  tape:'none'  },
+  { name:'夜航星图', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], title:'text', bg:'starChart', frame:'fold', tape:'none' },
+  { name:'余烬黄昏', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], title:'text', bg:'emberDusk',  frame:'fold', tape:'none' },
+  { name:'深海潮汐', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], title:'text', bg:'deepSea',    frame:'fold', tape:'none' },
+  { name:'霓虹雨夜', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], title:'text', bg:'neonRain',   frame:'fold', tape:'none' }
 ];
 
 function clearPresetHighlight() {
@@ -794,7 +794,7 @@ const rng = s => () => {
 };
 
 function geometry() {
-  const n = state.images.length || 2;
+  const n = state.images.length || 3;
   const im = state.images[0];
   const r = im ? im.img.height / im.img.width : 2.16;
   const lay = opt.layout;
@@ -814,9 +814,7 @@ function geometry() {
     case 'pill':     sidePad = 14; topPad = 14; botPad = 62; break;
     case 'stamp':    sidePad = 20; topPad = 20; botPad = 20; break;
   }
-  // 折页不再覆盖各边框自身 padding，仅保留边框自身特性。
 
-  // fw0 只和布局有关，不乘 k（避免折页卡片被缩放系数拉宽/收窄）
   const fw0 = lay === 'accordion'
     ? 1040 / n
     : (lay === 'stack' ? 1040 / (n - (n - 1) * 0.14) : (1040 - (lay === 'flat' ? 24 : 12) * (n - 1)) / n);
@@ -1989,6 +1987,7 @@ function candyBackground(c, w, h, cb, o) {
 
 function posterBackground(c, w, h, cb, o) {
   const { baseCol, transparent, R } = o;
+  const ACC = $('cTape').value, INK = $('cText').value;
   const DISP = '"Bebas Neue", Anton, Impact, "Arial Narrow", sans-serif';
   const SANS = 'Inter, "Helvetica Neue", Arial, "PingFang SC", sans-serif';
   const MONO = '"JetBrains Mono", "SF Mono", Menlo, Consolas, monospace';
@@ -1996,29 +1995,29 @@ function posterBackground(c, w, h, cb, o) {
   const fill = col => { if (!transparent) { c.fillStyle = col; c.fillRect(0, 0, w, h); } };
 
   if (cb === 'pstSwiss') {
-    fill('#f1eee6');
+    fill(baseCol);
     c.strokeStyle = 'rgba(0,0,0,0.07)'; c.lineWidth = 1;
     for (let x = 100; x < w; x += 100) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
     for (let y = 100; y < h; y += 100) { c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); }
-    c.fillStyle = '#e2231a'; c.fillRect(0, 0, 26, h);
-    c.fillStyle = '#111'; c.fillRect(56, 30, w - 112, 6);
-    T('READING THEMES', 56, 54, 13, '#111', { align: 'left', sp: 4 });
-    T('NO. 07 / 2026', w - 56, 54, 13, '#111', { align: 'right', sp: 4, family: MONO });
-    c.fillStyle = '#111'; c.fillRect(56, h - 84, w - 112, 6);
-    c.fillStyle = '#e2231a'; c.beginPath(); c.arc(w - 82, h - 44, 18, 0, 7); c.fill();
-    T('Creator / Q.', 56, h - 44, 24, '#111', { align: 'left', sp: 1 });
+    c.fillStyle = ACC; c.fillRect(0, 0, 26, h);
+    c.fillStyle = INK; c.fillRect(56, 30, w - 112, 6);
+    T('READING THEMES', 56, 54, 13, INK, { align: 'left', sp: 4 });
+    T('NO. 07 / 2026', w - 56, 54, 13, INK, { align: 'right', sp: 4, family: MONO });
+    c.fillStyle = INK; c.fillRect(56, h - 84, w - 112, 6);
+    c.fillStyle = ACC; c.beginPath(); c.arc(w - 82, h - 44, 18, 0, 7); c.fill();
+    T('Creator / Q.', 56, h - 44, 24, INK, { align: 'left', sp: 1 });
   } else if (cb === 'pstConstruct') {
-    fill('#eee4cd');
-    c.fillStyle = '#d62f26'; c.beginPath();
+    fill(baseCol);
+    c.fillStyle = ACC; c.beginPath();
     c.moveTo(0, h * 0.70); c.lineTo(w, h * 0.50); c.lineTo(w, h * 0.50 + 92); c.lineTo(0, h * 0.70 + 92); c.closePath(); c.fill();
-    c.fillStyle = '#151515'; c.beginPath(); c.arc(w - 100, 112, 62, 0, 7); c.fill();
-    c.fillStyle = '#eee4cd'; c.beginPath(); c.arc(w - 100, 112, 22, 0, 7); c.fill();
-    c.fillStyle = '#151515'; c.fillRect(0, 0, w, 16); c.fillRect(0, h - 68, w, 68);
-    c.strokeStyle = '#151515'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, h * 0.70 - 18); c.lineTo(w, h * 0.50 - 18); c.stroke();
-    T('Creator / Q.', 40, h - 34, 24, '#eee4cd', { align: 'left', sp: 2 });
-    T('№ 07', w - 40, h - 34, 24, '#d62f26', { align: 'right', sp: 2, family: DISP, weight: 400 });
+    c.fillStyle = INK; c.beginPath(); c.arc(w - 100, 112, 62, 0, 7); c.fill();
+    c.fillStyle = baseCol; c.beginPath(); c.arc(w - 100, 112, 22, 0, 7); c.fill();
+    c.fillStyle = INK; c.fillRect(0, 0, w, 16); c.fillRect(0, h - 68, w, 68);
+    c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(0, h * 0.70 - 18); c.lineTo(w, h * 0.50 - 18); c.stroke();
+    T('Creator / Q.', 40, h - 34, 24, baseCol, { align: 'left', sp: 2 });
+    T('№ 07', w - 40, h - 34, 24, ACC, { align: 'right', sp: 2, family: DISP, weight: 400 });
   } else if (cb === 'pstPop') {
-    fill('#ffd23f');
+    fill(baseCol);
     const dots = (cx, cy, rr, col) => {
       c.fillStyle = col;
       for (let y = 0; y < h; y += 18) for (let x = ((y / 18) % 2 ? 9 : 0); x < w; x += 18) {
@@ -2027,25 +2026,27 @@ function posterBackground(c, w, h, cb, o) {
       }
     };
     dots(0, h, 420, '#ef4d7c'); dots(w, 0, 300, '#2f7fd8');
-    c.fillStyle = '#111'; c.fillRect(0, 0, w, 6); c.fillRect(0, h - 70, w, 70);
-    c.fillStyle = '#e8362c'; c.fillRect(0, h - 64, w, 58);
-    T('POP! READING THEMES', w / 2, 44, 20, '#111', { family: DISP, sp: 4, weight: 400 });
+    c.fillStyle = INK; c.fillRect(0, 0, w, 6); c.fillRect(0, h - 70, w, 70);
+    c.fillStyle = ACC; c.fillRect(0, h - 64, w, 58);
+    T('POP! READING THEMES', w / 2, 44, 20, INK, { family: DISP, sp: 4, weight: 400 });
     T('Creator / Q.', 40, h - 35, 24, '#fff', { align: 'left', sp: 2 });
     T('SERIES 07', w - 40, h - 35, 18, '#fff', { align: 'right', sp: 3, family: DISP, weight: 400 });
   } else if (cb === 'pstCinema') {
-    fill('#0d0d10');
-    c.fillStyle = '#e9561f'; c.fillRect(0, 0, w, 8);
+    fill(baseCol);
+    c.fillStyle = ACC; c.fillRect(0, 0, w, 8);
     c.fillStyle = 'rgba(244,239,230,0.85)';
     for (let y = 20; y < h - 20; y += 30) { c.beginPath(); c.roundRect(10, y, 12, 18, 3); c.fill(); c.beginPath(); c.roundRect(w - 22, y, 12, 18, 3); c.fill(); }
-    T('A   Q.   P R O D U C T I O N', w / 2, 44, 18, '#e9561f', { family: DISP, sp: 6, weight: 400 });
+    T('A   Q.   P R O D U C T I O N', w / 2, 44, 18, ACC, { family: DISP, sp: 6, weight: 400 });
     c.fillStyle = 'rgba(244,239,230,0.35)'; c.fillRect(52, h - 84, w - 104, 1);
     T('STARRING  THEMES  ·  SCREENSHOTS  ·  READING', w / 2, h - 66, 12, 'rgba(244,239,230,0.5)', { sp: 5, weight: 500 });
-    T('Creator / Q.', w / 2, h - 36, 26, '#f4efe6', { sp: 4, family: DISP, weight: 400 });
+    T('Creator / Q.', w / 2, h - 36, 26, INK, { sp: 4, family: DISP, weight: 400 });
   }
 }
 
 function sketchBackground(c, w, h, cb, o) {
   const { baseCol, transparent, R } = o;
+  const ACC = $('cTape').value, TXT = $('cText').value;
+  const accA = al => { const t = rgb(ACC); return `rgba(${t[0]},${t[1]},${t[2]},${al})`; };
   const HAND = 'Caveat, "Bradley Hand", "Marker Felt", "Kaiti SC", KaiTi, cursive';
   const SERIF = '"Playfair Display", "Old Standard TT", Georgia, serif';
   const SANS = 'Inter, "Helvetica Neue", Arial, "PingFang SC", sans-serif';
@@ -2055,40 +2056,40 @@ function sketchBackground(c, w, h, cb, o) {
   const jag = (x0, x1, y, amp, step) => { for (let x = x0; x <= x1; x += step) c.lineTo(x, y + (R() - 0.5) * amp * 2); };
 
   if (cb === 'tornClip') {
-    fill('#cdbfa8'); grain('rgba(70,50,30,0.12)', 1600);
+    fill(baseCol); grain('rgba(70,50,30,0.12)', 1600);
     c.save(); c.shadowColor = 'rgba(0,0,0,0.35)'; c.shadowBlur = 18; c.shadowOffsetY = 8; c.fillStyle = '#f8f2e4';
     drawTornEdge(c, 26, 26, w - 52, h - 52, 5, 14, R); if (!transparent) c.fill(); c.restore();
     T('THE MONTHLY  —  PAGE 42', 60, 56, 13, 'rgba(40,32,24,0.7)', { family: SANS, align: 'left', sp: 3 });
     T('FEATURE', w - 60, 56, 13, 'rgba(40,32,24,0.7)', { family: SANS, align: 'right', sp: 3 });
     c.fillStyle = 'rgba(40,32,24,0.14)';
     for (let col = 0; col < 3; col++) for (let y = h - 120; y < h - 60; y += 11) c.fillRect(60 + col * ((w - 120) / 3), y, (w - 120) / 3 - 20, 3);
-    T('Creator / Q.', 60, h - 140, 30, '#3a2e22', { align: 'left' });
+    T('Creator / Q.', 60, h - 140, 30, TXT, { align: 'left' });
   } else if (cb === 'tornCollage') {
-    fill('#fbf7ef');
+    fill(baseCol);
     const band = (y0, y1, col, dir) => { c.fillStyle = col; c.beginPath(); c.moveTo(0, y0); c.lineTo(w, y0); if (dir === 'down') { c.lineTo(w, y1); jag(w, 0, y1, 7, 18); c.lineTo(0, y1); } else { c.lineTo(w, y1); c.lineTo(0, y1); } c.closePath(); c.fill(); };
     c.save(); c.shadowColor = 'rgba(0,0,0,0.22)'; c.shadowBlur = 10; c.shadowOffsetY = 4;
-    band(0, 108, '#d9eadf', 'down'); band(0, 82, '#f6c9d4', 'down');
+    band(0, 108, '#d9eadf', 'down'); band(0, 82, ACC, 'down');
     c.restore();
     c.fillStyle = 'rgba(255,255,255,0.45)'; for (let y = 8; y < 70; y += 12) for (let x = ((y / 12) % 2 ? 6 : 0); x < w; x += 12) { c.beginPath(); c.arc(x, y, 2.2, 0, 7); c.fill(); }
     c.save(); c.shadowColor = 'rgba(0,0,0,0.22)'; c.shadowBlur = 10; c.shadowOffsetY = -3;
     c.fillStyle = '#d7b98e'; c.beginPath(); c.moveTo(0, h); c.lineTo(0, h - 110); jag(0, w, h - 110, 7, 18); c.lineTo(w, h); c.closePath(); c.fill();
-    c.fillStyle = '#f6c9d4'; c.beginPath(); c.moveTo(0, h); c.lineTo(0, h - 78); jag(0, w, h - 78, 7, 18); c.lineTo(w, h); c.closePath(); c.fill();
+    c.fillStyle = ACC; c.beginPath(); c.moveTo(0, h); c.lineTo(0, h - 78); jag(0, w, h - 78, 7, 18); c.lineTo(w, h); c.closePath(); c.fill();
     c.restore();
-    T('Creator / Q.', w / 2, h - 36, 32, '#4a3a30');
+    T('Creator / Q.', w / 2, h - 36, 32, TXT);
     T('cut  &  paste', 50, 40, 22, '#6a4a52', { align: 'left' });
   } else if (cb === 'tornRip') {
-    fill('#e6dece'); grain('rgba(80,60,40,0.1)', 1200);
+    fill(baseCol); grain('rgba(80,60,40,0.1)', 1200);
     c.save(); c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 16; c.shadowOffsetX = 5; c.shadowOffsetY = 6;
     c.fillStyle = '#fffdf6'; c.beginPath(); c.moveTo(60, 0); c.lineTo(w - 14, 0); c.lineTo(w - 14, h - 14);
     c.lineTo(60, h - 14); for (let y = h - 14; y > 0; y -= 22) c.lineTo(60 + (R() - 0.3) * 16, y); c.closePath(); if (!transparent) c.fill(); c.restore();
-    c.fillStyle = '#e6dece'; for (let y = 60; y < h - 40; y += 86) { c.beginPath(); c.arc(36, y, 9, 0, 7); c.fill(); }
-    c.fillStyle = '#d33a2f'; c.fillRect(96, 26, 150, 34);
+    c.fillStyle = baseCol; for (let y = 60; y < h - 40; y += 86) { c.beginPath(); c.arc(36, y, 9, 0, 7); c.fill(); }
+    c.fillStyle = ACC; c.fillRect(96, 26, 150, 34);
     T('FEATURE', 171, 44, 17, '#fff', { family: SANS, sp: 5 });
     c.fillStyle = '#e8e0cd'; c.beginPath(); c.moveTo(w - 14, 0); c.lineTo(w - 84, 0); c.lineTo(w - 14, 70); c.closePath(); c.fill();
     c.strokeStyle = 'rgba(0,0,0,0.2)'; c.lineWidth = 1; c.beginPath(); c.moveTo(w - 84, 0); c.lineTo(w - 14, 70); c.stroke();
-    T('42', w - 56, h - 54, 26, '#2b2b2b', { family: SERIF, italic: true, weight: 400 });
-    c.fillStyle = '#2b2b2b'; c.fillRect(96, h - 112, w - 192, 1.5);
-    T('Creator / Q.', 96, h - 76, 30, '#2b2b2b', { align: 'left' });
+    T('42', w - 56, h - 54, 26, TXT, { family: SERIF, italic: true, weight: 400 });
+    c.fillStyle = TXT; c.fillRect(96, h - 112, w - 192, 1.5);
+    T('Creator / Q.', 96, h - 76, 30, TXT, { align: 'left' });
   } else if (['tornStripe', 'tornSide', 'tornFrame', 'tornCorner', 'tornPatch'].includes(cb)) {
     const rectPts = (x, y, ww, hh, amp = 5, st = 16) => {
       const P = [];
@@ -2111,44 +2112,44 @@ function sketchBackground(c, w, h, cb, o) {
     const stitch = (x1, y1, x2, y2, col = 'rgba(120,90,80,0.55)') => { c.save(); c.strokeStyle = col; c.lineWidth = 2; c.setLineDash([8, 7]); c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); c.restore(); };
     const tag = (txt, cx, cy, col = '#fffaf0') => {
       piece(rectPts(cx - 140, cy - 24, 280, 48, 2.5, 12), col, null);
-      T(txt, cx, cy + 1, 28, '#4a3a30');
+      T(txt, cx, cy + 1, 28, TXT);
     };
     const tape = (x, y, ang, col, pat) => { c.save(); c.translate(x, y); c.rotate(ang * Math.PI / 180); c.globalAlpha = 0.9; c.fillStyle = col; c.fillRect(-42, -12, 84, 24); c.save(); c.beginPath(); c.rect(-42, -12, 84, 24); c.clip(); if (pat) { c.translate(-x, -y); c.rotate(0); pat(); } c.restore(); c.restore(); };
     const KRAFT = '#d7b98e', PINK = '#f6c9d4', MINT = '#d4ebdd', BLUE = '#cfe4f5', BUTTER = '#fbe7a6', LAV = '#e1d6f0';
 
     if (cb === 'tornStripe') {
-      fill('#fcf8ef');
-      piece(rectPts(-20, -20, w + 40, 118, 6, 18), BLUE, stripeP('rgba(255,255,255,0.7)', 30, 14));
+      fill(baseCol);
+      piece(rectPts(-20, -20, w + 40, 118, 6, 18), ACC, stripeP('rgba(255,255,255,0.7)', 30, 14));
       piece(rectPts(-20, -20, w + 40, 84, 5, 18), BUTTER, dotsP('rgba(255,255,255,0.7)', 18, 3));
       piece(rectPts(-20, h - 118, w + 40, 140, 6, 18), PINK, starsP('rgba(255,255,255,0.75)', 44, 8));
       piece(rectPts(-20, h - 84, w + 40, 110, 5, 18), MINT, gingP('rgba(255,255,255,0.55)', 22));
-      T('Creator / Q.', w / 2, h - 36, 34, '#4a3a30');
+      T('Creator / Q.', w / 2, h - 36, 34, TXT);
     } else if (cb === 'tornSide') {
-      fill('#fdf9f0');
-      piece(rectPts(-24, -20, 78, h + 40, 5, 16), MINT, dotsP('rgba(255,255,255,0.75)', 18, 3));
+      fill(baseCol);
+      piece(rectPts(-24, -20, 78, h + 40, 5, 16), ACC, dotsP('rgba(255,255,255,0.75)', 18, 3));
       piece(rectPts(w - 54, -20, 78, h + 40, 5, 16), PINK, gingP('rgba(255,255,255,0.6)', 20));
       piece(rectPts(-24, -20, 46, h + 40, 4, 16), BLUE, null, false);
       stitch(70, 20, 70, h - 20); stitch(w - 70, 20, w - 70, h - 20);
       tag('Creator / Q.', w / 2, h - 52);
       T('scrap  &  paste', w / 2, 38, 20, '#7a5a5e');
     } else if (cb === 'tornFrame') {
-      fill(KRAFT); grain('rgba(90,60,30,0.16)', 1800);
+      fill(baseCol); grain('rgba(90,60,30,0.16)', 1800);
       piece(rectPts(30, 30, w - 60, h - 60, 5, 15), '#fffaf0', null);
       stitch(52, 52, w - 52, 52); stitch(w - 52, 52, w - 52, h - 52); stitch(w - 52, h - 52, 52, h - 52); stitch(52, h - 52, 52, 52);
-      tape(46, 40, -40, 'rgba(246,201,212,0.92)'); tape(w - 46, 40, 40, 'rgba(212,235,221,0.92)');
+      tape(46, 40, -40, accA(0.92)); tape(w - 46, 40, 40, 'rgba(212,235,221,0.92)');
       tape(46, h - 40, 40, 'rgba(207,228,245,0.92)'); tape(w - 46, h - 40, -40, 'rgba(251,231,166,0.92)');
-      T('Creator / Q.', w / 2, h - 80, 32, '#4a3a30');
+      T('Creator / Q.', w / 2, h - 80, 32, TXT);
     } else if (cb === 'tornCorner') {
-      fill('#fcf8ef');
+      fill(baseCol);
       const tri = (pts) => { const P = []; for (let k = 0; k < pts.length; k++) { const [ax, ay] = pts[k], [bx, by] = pts[(k + 1) % pts.length]; const n = Math.max(2, Math.round(Math.hypot(bx - ax, by - ay) / 16)); for (let i = 0; i < n; i++) P.push([ax + (bx - ax) * i / n + (R() - 0.5) * 8, ay + (by - ay) * i / n + (R() - 0.5) * 8]); } return P; };
-      piece(tri([[-20, -20], [w * 0.62, -20], [-20, 230]]), PINK, dotsP('rgba(255,255,255,0.75)', 18, 3));
+      piece(tri([[-20, -20], [w * 0.62, -20], [-20, 230]]), ACC, dotsP('rgba(255,255,255,0.75)', 18, 3));
       piece(tri([[-20, -20], [w * 0.42, -20], [-20, 150]]), BUTTER, null);
       piece(tri([[w + 20, h + 20], [w * 0.38, h + 20], [w + 20, h - 250]]), BLUE, stripeP('rgba(255,255,255,0.7)', 30, 14));
       piece(tri([[w + 20, h + 20], [w * 0.6, h + 20], [w + 20, h - 150]]), LAV, starsP('rgba(255,255,255,0.8)', 40, 7));
       tag('Creator / Q.', 190, h - 54, '#fff3d6');
     } else if (cb === 'tornPatch') {
-      fill('#faf4e6');
-      const cols = [PINK, MINT, BLUE, BUTTER, LAV, '#f9d9c4'];
+      fill(baseCol);
+      const cols = [PINK, MINT, BLUE, ACC, LAV, '#f9d9c4'];
       const pats = [dotsP('rgba(255,255,255,0.8)', 16, 3), stripeP('rgba(255,255,255,0.7)', 26, 12), gingP('rgba(255,255,255,0.55)', 18), starsP('rgba(255,255,255,0.8)', 36, 6), null, dotsP('rgba(255,255,255,0.7)', 20, 4)];
       const nTop = 6, pw = w / nTop;
       for (let i = 0; i < nTop; i++) {
@@ -2487,7 +2488,15 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     imgR = g.olR;
     c.shadowColor = 'transparent';
     c.strokeStyle = frameCol; c.lineWidth = lw;
-    c.beginPath(); c.roundRect(lw / 2, lw / 2, fw - lw, g.fh - lw, g.olR + g.olGap + lw / 2); c.stroke();
+    c.beginPath();
+    if (g.olR === 0) {
+      // 截图为直角 → 线框也是直角
+      c.rect(lw / 2, lw / 2, fw - lw, g.fh - lw);
+    } else {
+      // 截图为圆角 → 线框圆角 = 截图圆角 + 间距，与截图四角同心
+      c.roundRect(lw / 2, lw / 2, fw - lw, g.fh - lw, g.olR + g.olGap + lw / 2);
+    }
+    c.stroke();
   } else if (frameType === 'glass') {
     if (!noShadow) { c.shadowColor = 'rgba(0,0,0,0.1)'; c.shadowBlur = w > 1500 ? 4 : 10; }
     c.fillStyle = 'rgba(255,255,255,0.3)';
@@ -2692,7 +2701,6 @@ function renderAccordion(c, w, h, g, useCache) {
     if (useCache) { accordionCompCache = comps; accordionCompKey = compKey; }
   }
 
-  // 折页放置卡片时应用拖拽偏移 offsets.cards[i]
   for (let i = 0; i < m; i++) {
     const item = comps[i];
     const cardOff = offsets.cards[i] || { x: 0, y: 0 };
@@ -3033,7 +3041,6 @@ function draw(cv, W, isExport) {
 
   const offsetsY = { flat: [0, 0, 0], scatter: [0, 1.2, 0.4], stack: [0, 1, 0], accordion: [0, 0, 0] }[g.lay];
 
-  // 折页时也允许拖拽卡片
   for (let i = 0; i < g.n; i++) {
     const cardOff = offsets.cards[i] || { x: 0, y: 0 };
     const px = startCardX + i * (fw + g.gap) + cardOff.x;
@@ -3249,7 +3256,6 @@ function handleMove(e) {
   } else if (dragging.type === 'card') {
     offsets.cards[dragging.index].x = dragging.origX + dx;
     offsets.cards[dragging.index].y = dragging.origY + dy;
-    // 折页的卡片是缓存合成图，需重绘卡片层才能应用偏移
     schedule(false, true, false);
   } else if (dragging.type === 'bg') {
     bgOffset.x = dragging.origX + dx;
