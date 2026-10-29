@@ -353,23 +353,23 @@ body.ep-mode {
   --bg-body: #f1ebe4; --border-color: #e0a9bb; --text-main: #3a2a30; --text-muted: #c21f59; --accent: #d6255f;
   --ep-pink: #f8bfd1; --ep-paper: #fbf7f1; --ep-blue: #3e8fbe; --ep-gold: #c9a35a;
   --font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
-  background-color: var(--bg-body) !important; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .3 0 0 0 .22 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>") !important;
+  background-color: var(--bg-body) !important; background-image: var(--ep-grain, none) !important;
 }
 body.ep-mode .app { background: transparent; border: none; box-shadow: none; position: relative; }
 body.ep-mode .top {
-  height: auto; min-height: 76px; padding: 12px 18px 10px 30px; background: transparent; border-bottom: 1px solid rgba(214,37,95,.45); backdrop-filter: blur(6px);
+  height: auto; min-height: 84px; padding: 16px 18px 14px 30px; background: transparent; border-bottom: 1px solid rgba(214,37,95,.45); background: rgba(241,235,228,.96);
 }
 body.ep-mode .top::before { content: none; }
 body.ep-mode .top b { font-size: 0; line-height: 0; }
 body.ep-mode .top b::before { content: "Q. Theme Studio"; display: block; font: 400 31px/1.05 "DM Serif Display", "Playfair Display", Georgia, serif; color: var(--accent); letter-spacing: -.2px; }
-body.ep-mode .top b::after { content: 'Good dates, better people'; display: block; margin-top: 4px; font: 400 17px/1 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); opacity: .85; letter-spacing: .3px; }
+body.ep-mode .top b::after { content: 'Good dates, better people'; display: block; margin-top: 11px; font: 400 17px/1.2 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); opacity: .85; letter-spacing: .3px; }
 body.ep-mode .top span#status {
   background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 3px rgba(214,37,95,.12) inset;
   transform: rotate(-8deg); font-size: 10px; letter-spacing: 1px; padding: 6px 7px; max-width: 74px; text-align: center; line-height: 1.15; opacity: .8;
 }
 body.ep-mode button {
   background: var(--ep-paper); color: var(--accent); border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; box-shadow: none;
-  font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; font-style: italic; font-weight: 600; transition: all .15s;
+  font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; font-style: italic; font-weight: 600; transition: background-color .15s, color .15s, border-color .15s;
 }
 body.ep-mode button:hover { background: #fde7ee; }
 body.ep-mode button:active, body.ep-mode button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: none; font-style: normal; }
@@ -377,13 +377,12 @@ body.ep-mode button:disabled { opacity: .45; }
 body.ep-mode .go { background: var(--accent); color: #fff; border-color: #a8154a; padding: 0 18px; box-shadow: 0 5px 12px rgba(214,37,95,.35), inset 0 0 0 2px rgba(255,255,255,.18); }
 body.ep-mode .go::after { content: ' →'; }
 body.ep-mode .go:hover { background: #e23872; }
-body.ep-mode .tip { background: transparent; border-bottom: 1px dashed rgba(214,37,95,.35); color: #9a5a70; font-style: italic; }
 body.ep-mode .stage { background: transparent; border-bottom: none; padding-bottom: 6px; }
-body.ep-mode canvas { border: 1px solid rgba(214,37,95,.35); border-radius: 2px; box-shadow: 0 12px 28px rgba(150,40,80,.2); }
+body.ep-mode canvas { border: 1px solid rgba(214,37,95,.35); border-radius: 2px; box-shadow: 0 6px 14px rgba(150,40,80,.18); }
 /* 主面板：粉色票券 + 左侧锯齿条 + 金色内框 */
 body.ep-mode .dock {
   position: relative; background: var(--ep-pink); border: none; border-radius: 6px 14px 14px 6px; margin-left: 12px; width: calc(100% - 30px);
-  box-shadow: 0 14px 30px rgba(150,40,80,.22); overflow: hidden;
+  box-shadow: 0 8px 16px rgba(150,40,80,.2); overflow: hidden;
 }
 body.ep-mode .dock::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 15px; z-index: 2; pointer-events: none;
@@ -447,23 +446,82 @@ body.ep-mode .chips button[aria-pressed="true"]::before { content: '✓'; font-w
 body.ep-mode .stage::after { content: 'FIG. 1 — PREVIEW  ·  No. 1028'; margin-top: 10px; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .24em; color: rgba(214,37,95,.6); }
 body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: block; margin: 0 0 0 15px; padding: 12px 10px 14px; border-top: 3px dotted rgba(214,37,95,.5); text-align: center; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .3em; color: var(--accent); }
 @media (min-width: 1040px) {
-  body.ep-mode .app { max-width: 1200px; display: grid; grid-template-columns: minmax(0, 1fr) 450px; grid-template-areas: "top top" "tip tip" "stage dock"; column-gap: 28px; align-items: start; align-content: start; grid-template-rows: auto auto 1fr; padding: 0 24px; }
+  body.ep-mode .app { max-width: 1200px; display: grid; grid-template-columns: minmax(0, 1fr) 450px; grid-template-areas: "top top" "tip dock" "stage dock"; column-gap: 28px; align-items: start; align-content: start; grid-template-rows: auto auto 1fr; padding: 0 24px; }
   body.ep-mode .top { grid-area: top; }
-  body.ep-mode .tip { grid-area: tip; }
-  body.ep-mode .stage { grid-area: stage; position: sticky; top: 96px; padding-top: 24px; }
+    body.ep-mode .stage { grid-area: stage; position: sticky; top: 96px; padding-top: 24px; }
   body.ep-mode canvas { max-width: 640px; }
   body.ep-mode .dock { grid-area: dock; margin: 24px 0 32px; width: 100%; }
 }
+
+.chips.bgcats { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.bgcat { border: 1px solid #dcdcdc; border-radius: 8px; background: #fbfbfb; padding: 8px 10px 10px; }
+.bgcat .pgroup-title { margin-bottom: 8px; }
+.bgcat-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.r.bgrow { flex-direction: column; gap: 8px; }
+body.dark-mode .bgcat { background: #1d1d1d; border-color: #333; }
+body.ep-mode .bgcat { background: #fff; border: 1px dashed rgba(214,37,95,.45); border-radius: 4px; }
+body.ep-mode .bgcat .pgroup-title { color: var(--accent); font-style: italic; font-size: 14px; }
+body.ep-mode .bgcat .pgroup-title::before { width: 6px; height: 6px; border-radius: 50%; }
+/* 提示语：便签小票 */
+body.ep-mode .tip { display: flex; align-items: center; gap: 0; width: fit-content; max-width: calc(100% - 40px); margin: 18px 0 0 22px; padding: 0 14px 0 0; background: #fffdf9; border: 1.5px dashed rgba(214,37,95,.5); border-radius: 3px; color: #8a4a60; font-style: italic; font-size: 12px; transform: rotate(-.8deg); box-shadow: 0 3px 8px rgba(150,40,80,.14); }
+body.ep-mode .tip::before { content: 'TIP'; align-self: stretch; display: flex; align-items: center; margin-right: 10px; padding: 0 9px 0 10px; background: var(--accent); color: #fff; font: 700 9px "Playfair Display", Georgia, serif; font-style: normal; letter-spacing: .24em; border-radius: 1px; }
+body.ep-mode .tip svg { display: none; }
+body.ep-mode .tip span { padding: 8px 0; }
+@media (min-width: 1040px) { body.ep-mode .tip { margin-left: 4px; } body.ep-mode .dock { align-self: start; } }
+
+/* ===== 约会票根：剩余控件统一风格 ===== */
+body.ep-mode input[type=range] { height: 22px; background: transparent repeating-linear-gradient(90deg, rgba(214,37,95,.6) 0 5px, transparent 5px 9px) center / 100% 2px no-repeat; border: none; border-radius: 0; }
+body.ep-mode input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 20px; border: none; border-radius: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 21s-7.5-4.6-9.500-9.200C1.200 8.400 3.200 5 6.500 5c2 0 3.500 1.100 5.500 3 2-1.900 3.500-3 5.500-3 3.300 0 5.300 3.400 4 6.800C19.500 16.400 12 21 12 21z' fill='%23d6255f' stroke='white' stroke-width='1.600'/></svg>") center / contain no-repeat; box-shadow: none; }
+body.ep-mode input[type=range]::-moz-range-thumb { width: 22px; height: 20px; border: none; border-radius: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 21s-7.5-4.6-9.500-9.200C1.200 8.400 3.200 5 6.500 5c2 0 3.500 1.100 5.500 3 2-1.900 3.500-3 5.500-3 3.300 0 5.300 3.400 4 6.800C19.500 16.400 12 21 12 21z' fill='%23d6255f' stroke='white' stroke-width='1.600'/></svg>") center / contain no-repeat; }
+body.ep-mode input[type=range]::-moz-range-track { background: transparent; }
+body.ep-mode input[type=checkbox] { -webkit-appearance: none; appearance: none; width: 15px; height: 15px; margin: 0 6px 0 0; vertical-align: -3px; border: 1.5px solid rgba(214,37,95,.7); border-radius: 2px; background: #fff; }
+body.ep-mode input[type=checkbox]:checked { background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 6.500l2.800 2.800L10 3' fill='none' stroke='%23d6255f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 11px no-repeat; }
+body.ep-mode .transparent-check { color: #5a3a46; font-size: 12px; }
+body.ep-mode .color-cell .picker { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid rgba(214,37,95,.55); background: #fff; color: var(--accent); box-shadow: none; }
+body.ep-mode .color-cell .picker:hover { background: #fde7ee; border-color: var(--accent); color: var(--accent); }
+body.ep-mode .color-cell .picker.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 3px rgba(214,37,95,.2); }
+body.ep-mode #p4 span[style*="color:#888"] { display: flex !important; align-items: center; gap: 10px; color: var(--accent) !important; font: italic 600 15px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif !important; }
+body.ep-mode #p4 span[style*="color:#888"]::after { content: ''; flex: 1; border-top: 1px dotted rgba(214,37,95,.5); }
+body.ep-mode .add span { border: none; border-radius: 3px; padding: 6px 18px; color: var(--accent); font-style: italic; font-weight: 600; box-shadow: none; outline: 1.5px dashed rgba(214,37,95,.6); outline-offset: -4px;
+  background: radial-gradient(circle at 0 50%, var(--ep-paper) 0 5px, transparent 5.5px), radial-gradient(circle at 100% 50%, var(--ep-paper) 0 5px, transparent 5.5px), #fde7ee; }
+body.ep-mode .add span:hover { background: radial-gradient(circle at 0 50%, var(--ep-paper) 0 5px, transparent 5.5px), radial-gradient(circle at 100% 50%, var(--ep-paper) 0 5px, transparent 5.5px), #fbd3e0; }
+body.ep-mode .t button { border-radius: 999px; background: #fff; }
+body.ep-mode #bgOpacity, body.ep-mode #bgBlur { accent-color: var(--accent); }
+/* 「选1~6张截图」邮戳：双圈 + 波浪盖销线 + 爱心 */
+body.ep-mode .top span#status { position: relative; box-sizing: border-box; flex: none; display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; max-width: none; padding: 0 9px; text-align: center; opacity: .92;
+  font: 700 10px/1.3 "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; letter-spacing: .5px; color: #c8372d;
+  background: radial-gradient(circle, rgba(200,55,45,.07), transparent 72%); border: 1.5px solid rgba(200,55,45,.8); border-radius: 50%;
+  box-shadow: inset 0 0 0 4px #f1ebe4, inset 0 0 0 5px rgba(200,55,45,.6), 0 0 0 1px rgba(200,55,45,.16); transform: rotate(-9deg); }
+body.ep-mode .top span#status::before { content: ''; position: absolute; right: 88%; top: 50%; width: 44px; height: 26px; margin-top: -13px; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='26' viewBox='0 0 44 26' fill='none' stroke='%23c8372d' stroke-width='1.300' stroke-linecap='round' opacity='.6'><path d='M2 5q5-4 10 0t10 0 10 0 10 0'/><path d='M2 13q5-4 10 0t10 0 10 0 10 0'/><path d='M2 21q5-4 10 0t10 0 10 0 10 0'/></svg>") no-repeat center / contain; pointer-events: none; }
+body.ep-mode .top span#status::after { content: '♥'; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); padding: 0 3px; font-size: 11px; line-height: 1; color: #c8372d; background: #f1ebe4; }
 @media (max-width: 520px) {
-  body.ep-mode .top { padding-left: 20px; gap: 8px; }
-  body.ep-mode .top b::before { font-size: 25px; }
-  body.ep-mode .top b::after { font-size: 15px; }
-  body.ep-mode .top span#status { display: none; }
+  body.ep-mode .top { padding: 16px 14px 14px 18px; gap: 6px; }
+  body.ep-mode .top b::before { font-size: 22px; }
+  body.ep-mode .top b::after { font-size: 14px; }
+  body.ep-mode .top span#status { width: 60px; height: 60px; font-size: 9px; letter-spacing: .2px; padding: 0 7px; }
+  body.ep-mode .top span#status::before { display: none; }
 }
+
+#p2 .picker { width: 24px; height: 24px; min-height: 0; padding: 0; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d0d0d0; border-radius: 6px; background: #fff; color: #666; cursor: pointer; }
+#p2 .picker:hover { background: #eaf3ff; border-color: var(--accent); color: var(--accent); }
+#p2 .picker.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 2px rgba(0,122,255,.25); }
+#p2 .picker svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+body.dark-mode #p2 .picker { background: #333; border-color: #555; color: #ccc; }
+body.ep-mode #p2 .picker { border-radius: 50%; border: 1.5px solid rgba(214,37,95,.55); background: #fff; color: var(--accent); font-style: normal; }
+body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-shadow: 0 0 0 3px rgba(214,37,95,.2); }
+@media (max-width: 390px) {
+  body.ep-mode .top { padding-left: 14px; gap: 4px; }
+  body.ep-mode .top b::before { font-size: 18px; }
+  body.ep-mode .top b::after { font-size: 12px; }
+  body.ep-mode .top span#status { width: 52px; height: 52px; font-size: 8px; padding: 0 5px; }
+  body.ep-mode .top .go { padding: 0 12px; }
+}
+#bgImgControls { scroll-margin-top: 100px; margin-bottom: 12px; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@1,400&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Pinyon+Script&family=ZCOOL+XiaoWei&family=DM+Serif+Display:ital@0;1&family=IM+Fell+English:ital@1&family=Old+Standard+TT:ital,wght@1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@1,400&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Pinyon+Script&family=ZCOOL+XiaoWei&family=DM+Serif+Display:ital@0;1&family=IM+Fell+English:ital@1&family=Old+Standard+TT:ital,wght@1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@1,400&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Pinyon+Script&family=ZCOOL+XiaoWei&family=DM+Serif+Display:ital@0;1&family=IM+Fell+English:ital@1&family=Old+Standard+TT:ital,wght@1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet"></noscript>
 </head>
 <body>
 <div class="app">
@@ -626,70 +684,92 @@ body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: blo
     </div>
 
     <div class="panel" id="p6">
-      <div class="r" style="align-items:flex-start">
+      <div class="r bgrow" style="align-items:flex-start">
         <span style="padding-top:6px">背景样式</span>
-        <div class="chips" data-k="collageBase">
-          <button data-v="custom">+ 导入图片</button>
-          <button data-v="none">透明底</button>
-          <button data-v="parchment">羊皮纸</button>
-          <button data-v="poster">撕边海报</button>
-          <button data-v="webLight">网页</button>
-          <button data-v="appLight">应用窗口</button>
-          <button data-v="twinCoil">双线圈本</button>
-          <button data-v="rulerWin">标尺窗口</button>
-          <button data-v="sideWin">侧栏窗口</button>
-          <button data-v="paperMast">纸·大刊头</button>
-          <button data-v="paperBox">纸·信息框</button>
-          <button data-v="paperPost">纸·邮戳</button>
-          <button data-v="paperLedger">纸·信息栏</button>
-          <button data-v="paperCorner">纸·角标</button>
-          <button data-v="candyBlueStripe">可爱·蓝条纹</button>
-          <button data-v="candyBlueStar">可爱·蓝星星</button>
-          <button data-v="candyPinkStripe">可爱·粉条纹</button>
-          <button data-v="candyPinkStar">可爱·粉星星</button>
-          <button data-v="candyBowTape">可爱·蝴蝶结</button>
-          <button data-v="pstSwiss">海报·瑞士网格</button>
-          <button data-v="pstConstruct">海报·构成主义</button>
-          <button data-v="pstPop">海报·波普网点</button>
-          <button data-v="pstCinema">海报·电影</button>
-          <button data-v="tornClip">撕页·杂志剪报</button>
-          <button data-v="tornCollage">撕页·撕纸拼贴</button>
-          <button data-v="tornRip">撕页·翻角连页</button>
-          <button data-v="tornStripe">撕纸·条纹拼贴</button>
-          <button data-v="tornSide">撕纸·侧边拼贴</button>
-          <button data-v="tornFrame">撕纸·牛皮纸框</button>
-          <button data-v="tornCorner">撕纸·对角拼贴</button>
-          <button data-v="tornPatch">撕纸·补丁拼贴</button>
-          <button data-v="accordionBg">折页·暖米</button>
-          <button data-v="cloudDots">云朵波点</button>
-          <button data-v="gingham">格纹野餐</button>
-          <button data-v="magCover">杂志封面</button>
-          <button data-v="magGrid">编辑排版</button>
-          <button data-v="magColor">色块海报</button>
-          <button data-v="magMast" aria-pressed="true">大刊头</button>
-          <button data-v="magNews">报纸版面</button>
-          <button data-v="magLabel">展签留白</button>
-          <button data-v="magSpread">对开内页</button>
-          <button data-v="starChart">夜航星图</button>
-          <button data-v="emberDusk">余烬黄昏</button>
-          <button data-v="deepSea">深海潮汐</button>
-          <button data-v="neonRain">霓虹雨夜</button>
-          <button data-v="suspenseFog">暗夜迷雾</button>
-          <button data-v="crimeDna">犯罪现场</button>
-          <button data-v="classifiedDossier">绝密档案</button>
-          <button data-v="detectiveBoard">侦探线索板</button>
-          <button data-v="glitchArchive">故障档案</button>
-          <button data-v="dateInvite">约会邀请函</button>
-          <button data-v="dateTelegram">约会电报</button>
-          <button data-v="dateStubs">票根合集</button>
-          <button data-v="songPorcelain">宋韵青瓷</button>
-          <button data-v="songSilk">宋式绢本</button>
-          <button data-v="songWindow">宋式雕窗</button>
-          <button data-v="songTea">点茶暗香</button>
-          <button data-v="crackedGlaze">哥窑开片</button>
-          <button data-v="inkMountain">水墨山水</button>
-          <button data-v="bambooMoon">竹影月夜</button>
-          <button data-v="scroll">卷轴装裱</button>
+        <div class="chips bgcats" data-k="collageBase">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">基础</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
+            <button data-v="custom">+ 导入图片</button>
+            <button data-v="none">透明底</button>
+            <button data-v="parchment">羊皮纸</button>
+            <button data-v="poster">撕边海报</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">界面窗口</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
+            <button data-v="webLight">网页</button>
+            <button data-v="appLight">应用窗口</button>
+            <button data-v="twinCoil">双线圈本</button>
+            <button data-v="rulerWin">标尺窗口</button>
+            <button data-v="sideWin">侧栏窗口</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">纸张信息</span><span class="pg-line"></span><span class="pg-count">6</span></h4><div class="bgcat-grid">
+            <button data-v="paperMast">纸·大刊头</button>
+            <button data-v="paperBox">纸·信息框</button>
+            <button data-v="paperPost">纸·邮戳</button>
+            <button data-v="paperLedger">纸·信息栏</button>
+            <button data-v="paperCorner">纸·角标</button>
+            <button data-v="accordionBg">折页·暖米</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">撕纸拼贴</span><span class="pg-line"></span><span class="pg-count">8</span></h4><div class="bgcat-grid">
+            <button data-v="tornClip">撕页·杂志剪报</button>
+            <button data-v="tornCollage">撕页·撕纸拼贴</button>
+            <button data-v="tornRip">撕页·翻角连页</button>
+            <button data-v="tornStripe">撕纸·条纹拼贴</button>
+            <button data-v="tornSide">撕纸·侧边拼贴</button>
+            <button data-v="tornFrame">撕纸·牛皮纸框</button>
+            <button data-v="tornCorner">撕纸·对角拼贴</button>
+            <button data-v="tornPatch">撕纸·补丁拼贴</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">可爱手账</span><span class="pg-line"></span><span class="pg-count">7</span></h4><div class="bgcat-grid">
+            <button data-v="candyBlueStripe">可爱·蓝条纹</button>
+            <button data-v="candyBlueStar">可爱·蓝星星</button>
+            <button data-v="candyPinkStripe">可爱·粉条纹</button>
+            <button data-v="candyPinkStar">可爱·粉星星</button>
+            <button data-v="candyBowTape">可爱·蝴蝶结</button>
+            <button data-v="cloudDots">云朵波点</button>
+            <button data-v="gingham">格纹野餐</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">海报</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
+            <button data-v="pstSwiss">海报·瑞士网格</button>
+            <button data-v="pstConstruct">海报·构成主义</button>
+            <button data-v="pstPop">海报·波普网点</button>
+            <button data-v="pstCinema">海报·电影</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">杂志</span><span class="pg-line"></span><span class="pg-count">7</span></h4><div class="bgcat-grid">
+            <button data-v="magCover">杂志封面</button>
+            <button data-v="magGrid">编辑排版</button>
+            <button data-v="magColor">色块海报</button>
+            <button data-v="magMast" aria-pressed="true">大刊头</button>
+            <button data-v="magNews">报纸版面</button>
+            <button data-v="magLabel">展签留白</button>
+            <button data-v="magSpread">对开内页</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">夜景</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
+            <button data-v="starChart">夜航星图</button>
+            <button data-v="emberDusk">余烬黄昏</button>
+            <button data-v="deepSea">深海潮汐</button>
+            <button data-v="neonRain">霓虹雨夜</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">悬疑档案</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
+            <button data-v="suspenseFog">暗夜迷雾</button>
+            <button data-v="crimeDna">犯罪现场</button>
+            <button data-v="classifiedDossier">绝密档案</button>
+            <button data-v="detectiveBoard">侦探线索板</button>
+            <button data-v="glitchArchive">故障档案</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">约会票根</span><span class="pg-line"></span><span class="pg-count">3</span></h4><div class="bgcat-grid">
+            <button data-v="dateInvite">约会邀请函</button>
+            <button data-v="dateTelegram">约会电报</button>
+            <button data-v="dateStubs">票根合集</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">宋韵国风</span><span class="pg-line"></span><span class="pg-count">8</span></h4><div class="bgcat-grid">
+            <button data-v="songPorcelain">宋韵青瓷</button>
+            <button data-v="songSilk">宋式绢本</button>
+            <button data-v="songWindow">宋式雕窗</button>
+            <button data-v="songTea">点茶暗香</button>
+            <button data-v="crackedGlaze">哥窑开片</button>
+            <button data-v="inkMountain">水墨山水</button>
+            <button data-v="bambooMoon">竹影月夜</button>
+            <button data-v="scroll">卷轴装裱</button>
+          </div></section>
         </div>
       </div>
       <div class="r" id="bgImgControls" style="display:none;flex-direction:column;gap:8px;margin-bottom:12px;padding:10px;background:#f9f9f9;border-radius:4px;border:1px solid #e0e0e0">
@@ -819,6 +899,7 @@ body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: blo
 </div>
 
 <script>
+(function(){ try { var gc = document.createElement('canvas'); gc.width = gc.height = 96; var gx = gc.getContext('2d'), gd = gx.createImageData(96, 96); for (var i = 0; i < gd.data.length; i += 4) { gd.data[i] = 115; gd.data[i + 1] = 82; gd.data[i + 2] = 76; gd.data[i + 3] = (Math.random() * 26) | 0; } gx.putImageData(gd, 0, 0); document.documentElement.style.setProperty('--ep-grain', 'url(' + gc.toDataURL() + ')'); } catch (e) {} })();
 (function(){ var t = null; try { t = localStorage.getItem('q_theme'); } catch (e) {} if (t === null) t = 'ep-mode'; if (t) document.body.classList.add(t); })();
 'use strict';
 
@@ -893,6 +974,19 @@ const tcfg = {
 };
 const textCardRefs = [];   // 文字卡片引用 { cfg, kind, el, sync() }
 const T_BASE = { title: 42, author: 20, custom: 20 };
+function styleFill(style) {
+  switch (style) {
+    case 'label': return $('cChip').value;
+    case 'seal': return '#f6efe3';
+    case 'tape': return '#111111';
+    case 'drip': return '#b3121b';
+    case 'stamp': return '#b3261e';
+    case 'invite': return $('cTape').value;
+    case 'ticketLabel': return '#ffffff';
+    case 'ribbon': { const r = rgb($('cTape').value); return (0.299 * r[0] + 0.587 * r[1] + 0.114 * r[2]) > 150 ? '#2a2a2a' : '#ffffff'; }
+    default: return null;
+  }
+}
 function effText(cfg, kind) {
   const gScale = (+$('textSize').value || 100) / 100;
   return {
@@ -958,6 +1052,7 @@ function setOpt(k, v) {
   if (k === 'frame') $('olCtl').style.display = (v === 'outline') ? 'block' : 'none';
   if (k === 'collageBase') {
     $('bgImgControls').style.display = (v === 'custom') ? 'flex' : 'none';
+    if (v === 'custom') setTimeout(() => { try { $('bgImgControls').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} }, 50);
   }
   schedule(true, true, true);
 }
@@ -2238,11 +2333,16 @@ function premiumBackground(c, w, h, cb, o) {
 }
 
 const _fontChars = new Set();
+let _fcTimer = null, _fcPending = [];
 function ensureFontChars(str) {
   const fresh = Array.from(new Set(Array.from(str))).filter(ch => /[\u3000-\u9fff\uff00-\uffef]/.test(ch) && !_fontChars.has(ch));
   if (!fresh.length) return;
-  fresh.forEach(ch => _fontChars.add(ch));
-  try { document.fonts.load('400 20px "ZCOOL XiaoWei"', fresh.join('')).then(() => schedule(true, true, true)).catch(() => {}); } catch (e) {}
+  fresh.forEach(ch => { _fontChars.add(ch); _fcPending.push(ch); });
+  clearTimeout(_fcTimer);
+  _fcTimer = setTimeout(() => {
+    const chars = _fcPending.join(''); _fcPending = [];
+    try { document.fonts.load('400 20px "ZCOOL XiaoWei"', chars).then(() => schedule(true, true, true)).catch(() => {}); } catch (e) {}
+  }, 400);
 }
 
 function creditLine(c, w, h, cb, o) {
@@ -3285,13 +3385,7 @@ function renderAccordion(c, w, h, g, useCache) {
   const fw = g.sw + 2 * g.sidePad, m = g.n;
   const x0 = (w - m * fw) / 2;
   
-  let maxImgDpr = window.currentDPR || 3;
-  for (let i = 0; i < m; i++) {
-      if (state.images[i] && state.images[i].img) {
-          const ratio = state.images[i].img.width / g.sw;
-          if (ratio > maxImgDpr) maxImgDpr = Math.min(ratio, 8);
-      }
-  }
+  const maxImgDpr = window.currentDPR || 1.5;
   const ts = useCache ? maxImgDpr : 4;
   
   const scaleAt = j => (j % 2 === 1 ? 0.95 : 1.035);
@@ -3399,13 +3493,7 @@ function renderCards(c, w, h, g, useCache = false) {
       let cc = cardCache[i];
       
       // 动态计算超采样率：如果原图很大，让缓存画布的尺寸迎合原图，保留极致的细节
-      let imgDpr = window.currentDPR || 3;
-      if (state.images[i] && state.images[i].img) {
-         const ratio = state.images[i].img.width / g.sw;
-         if (ratio > imgDpr) {
-            imgDpr = Math.min(ratio, 8); // 最高允许 8 倍超采样
-         }
-      }
+      const imgDpr = window.currentDPR || 1.5;
       
       const cw = Math.ceil((fw + pad * 2) * imgDpr), ch = Math.ceil((g.fh + pad * 2) * imgDpr);
       
@@ -3447,14 +3535,14 @@ function renderText(c, w, h, g) {
   // 主标题
   const titleActualY = baseTitleY + offsets.title.y;
   const titleActualX = offsets.title.x + g.paddingLeft;
-  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, L.t.size, fontFam, chipCol, L.t.color, R, titleActualX, L.t.style, L.t.sp);
+  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, L.t.size, fontFam, chipCol, L.t.color, R, titleActualX, L.t.style, L.t.sp, !!tcfg.title.color);
 
   // 副标题
   const aInfo = { totalW: 0, height: 0, actualY: 0, actualX: 0 };
   const defaultAuthorY = baseTitleY + L.lt * 1.35 + 10;
   aInfo.actualY = defaultAuthorY + offsets.author.y;
   aInfo.actualX = offsets.author.x + g.paddingLeft;
-  const aDraw = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, L.a.size, fontFam, chipCol, L.a.color, R, aInfo.actualX, L.a.style, L.a.sp);
+  const aDraw = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, L.a.size, fontFam, chipCol, L.a.color, R, aInfo.actualX, L.a.style, L.a.sp, !!tcfg.author.color);
   aInfo.totalW = aDraw.totalW;
   aInfo.height = aDraw.height;
 
@@ -3466,7 +3554,7 @@ function renderText(c, w, h, g) {
     const off = offsets.customTexts[ct.id] || { x: 0, y: 0 };
     const ctY = flowY + off.y;
     const ctX = off.x + g.paddingLeft;
-    const info = drawCollageTextGroup(c, ct.text || '', ctY, E.size, fontFam, chipCol, E.color, R, ctX, E.style, E.sp);
+    const info = drawCollageTextGroup(c, ct.text || '', ctY, E.size, fontFam, chipCol, E.color, R, ctX, E.style, E.sp, !!ct.color);
     ctInfos.push({ id: ct.id, info, actualX: ctX, actualY: ctY });
     flowY += E.size * 1.35 + 14;
   });
@@ -3474,7 +3562,7 @@ function renderText(c, w, h, g) {
   return { tInfo, aInfo, ctInfos, titleActualX, titleActualY, titleBlockH };
 }
 
-function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg, chipText, R, xOffset, style, spacing) {
+function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg, chipText, R, xOffset, style, spacing, explicit) {
   const chars = Array.from(style === 'kicker' ? textStr.toUpperCase() : textStr);
   if (!chars.length) return { totalW: 0, height: 0 };
   const isFlat = opt.layout === 'flat' || opt.layout === 'accordion' || !!LAYOUT_NEW[opt.layout];
@@ -3646,7 +3734,8 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
       c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 4; c.shadowOffsetX = 2; c.shadowOffsetY = 3;
     }
 
-    if (style === 'label') fillC = chipBg;
+    if (explicit) { /* 用户手动选了颜色：以用户颜色为准 */ }
+    else if (style === 'label') fillC = chipBg;
     else if (style === 'seal') fillC = '#f6efe3';
     else if (style === 'tape') fillC = '#111111';
     else if (style === 'drip') fillC = '#b3121b';
@@ -3781,7 +3870,9 @@ function draw(cv, W, isExport) {
 
 let currentDPR = 1;
 function render() {
-  currentDPR = Math.min(4, Math.max(3, window.devicePixelRatio || 1));
+  const cssW = $('preview').clientWidth || 360;
+  const need = cssW * Math.min(3, window.devicePixelRatio || 1) / 1200;
+  currentDPR = Math.min(2.5, Math.max(1.25, need * 1.15));
   draw($('preview'), Math.round(1200 * currentDPR), false);
   
   const g = geometry();
@@ -3825,7 +3916,8 @@ function startCanvasPick(targetId) {
     b.classList.toggle('active', b.dataset.target === targetId);
   });
   const cell = $(targetId) && $(targetId).closest('.color-cell');
-  const label = cell && cell.querySelector('span') ? cell.querySelector('span').childNodes[0].textContent.trim() : '颜色';
+  const pb = document.querySelector('.picker[data-target="' + targetId + '"]');
+  const label = cell && cell.querySelector('span') ? cell.querySelector('span').childNodes[0].textContent.trim() : ((pb && pb.dataset.label) || '颜色');
   $('pickTitle').textContent = '取色中 · ' + label;
   $('pickHint').textContent = (window.matchMedia && matchMedia('(pointer: coarse)').matches)
     ? '在预览图上按住并拖动，松开手指取色'
@@ -3878,6 +3970,29 @@ $('pickCancel').addEventListener('click', () => { stopCanvasPick(); toast('已�
 previewCanvas.addEventListener('mousemove', e => { if (pickingTarget) updatePickPreview(e.clientX, e.clientY); });
 previewCanvas.addEventListener('mouseleave', () => { if (pickingTarget) updatePickPreview(-1, -1); });
 
+const PICKER_SVG = '<svg viewBox="0 0 24 24"><path d="M14 6l4 4M17 3l4 4-9 9H8v-4z"/><path d="M3 21l3-3"/></svg>';
+async function onPickerClick(e, btn) {
+  e.preventDefault();
+  e.stopPropagation();
+  const target = btn.dataset.target;
+  if (!target) return;
+  if (pickingTarget === target) { stopCanvasPick(); toast('已取消取色'); return; }
+  if (window.EyeDropper) {
+    try {
+      stopCanvasPick();
+      const res = await new EyeDropper().open();
+      if (res && res.sRGBHex) {
+        applyPick(target, res.sRGBHex);
+        toast('已取色 ' + res.sRGBHex.toUpperCase());
+      }
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+  startCanvasPick(target);
+}
+
 function bindColorPickers() {
   document.querySelectorAll('.color-cell').forEach(cell => {
     const input = cell.querySelector('input[type=color]');
@@ -3927,29 +4042,8 @@ function bindColorPickers() {
     btn.dataset.target = input.id;
     btn.title = '取色器';
     btn.setAttribute('aria-label', '从画布或屏幕取色');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M14 6l4 4M17 3l4 4-9 9H8v-4z"/><path d="M3 21l3-3"/></svg>';
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const target = btn.dataset.target;
-      if (!target) return;
-      if (pickingTarget === target) { stopCanvasPick(); toast('已取消取色'); return; }
-
-      if (window.EyeDropper) {
-        try {
-          stopCanvasPick();
-          const res = await new EyeDropper().open();
-          if (res && res.sRGBHex) {
-            applyPick(target, res.sRGBHex);
-            toast('已取色 ' + res.sRGBHex.toUpperCase());
-          }
-          return;
-        } catch (err) {
-          if (err && err.name === 'AbortError') return;
-        }
-      }
-      startCanvasPick(target);
-    });
+    btn.innerHTML = PICKER_SVG;
+    btn.addEventListener('click', e => onPickerClick(e, btn));
     span.appendChild(btn);
   });
 }
@@ -4387,10 +4481,15 @@ function makeTextCard(cfg, kind, label, onDelete) {
   // 颜色
   const rc = mkRow('颜色');
   const col = document.createElement('input'); col.type = 'color';
+  col.id = 'tcCol' + (window.__tcN = (window.__tcN || 0) + 1);
+  const pk = document.createElement('button'); pk.type = 'button'; pk.className = 'picker';
+  pk.dataset.target = col.id; pk.dataset.label = ({ title: '主标题', author: '副标题' })[kind] || '附加文字';
+  pk.title = '取色器'; pk.setAttribute('aria-label', '从画布或屏幕取色'); pk.innerHTML = PICKER_SVG;
+  pk.addEventListener('click', e => onPickerClick(e, pk));
   const hexv = document.createElement('span'); hexv.className = 'tc-hexv';
   col.addEventListener('input', () => { cfg.color = col.value; hexv.textContent = col.value; schedule(false, false, true); rc.undo.classList.add('on'); });
   rc.undo.onclick = () => { cfg.color = null; schedule(false, false, true); sync(); };
-  rc.row.append(col, hexv, rc.undo);
+  rc.row.append(col, pk, hexv, rc.undo);
 
   // 大小
   const rz = mkRow('大小');
@@ -4423,8 +4522,10 @@ function makeTextCard(cfg, kind, label, onDelete) {
     const sv = cfg.style || '';
     if (sel.value !== sv) sel.value = sv;
     rs.undo.classList.toggle('on', !!cfg.style);
-    if (col.value.toLowerCase() !== String(E.color).toLowerCase()) col.value = E.color;
-    hexv.textContent = String(E.color).toUpperCase() + (cfg.color ? '' : '  · 跟随全局');
+    const locked = cfg.color ? null : styleFill(E.style);
+    const shown = locked || E.color;
+    if (col.value.toLowerCase() !== String(shown).toLowerCase()) col.value = shown;
+    hexv.textContent = String(shown).toUpperCase() + (cfg.color ? '' : locked ? '  · 样式配色' : '  · 跟随全局');
     rc.undo.classList.toggle('on', !!cfg.color);
     const szVal = String(Math.round(E.size));
     if (document.activeElement !== sz && sz.value !== szVal) sz.value = szVal;
@@ -4615,6 +4716,10 @@ function initThemeToggle() {
   apply();
   btn.addEventListener('click', () => { idx = (idx + 1) % THEMES.length; apply(); });
 }
+(function moveBgImgControls() {
+  const box = $('bgImgControls'), row = document.querySelector('#p6 .bgrow');
+  if (box && row && row.parentNode) row.parentNode.insertBefore(box, row);
+})();
 setTimeout(initThemeToggle, 100);
 
 </script>
