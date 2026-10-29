@@ -286,7 +286,8 @@ body.dark-mode .t img { border-color: #444; background: #111; }
 body.dark-mode .t button { background: #333; border-color: #444; color: #ccc; }
 body.dark-mode .t button:hover { background: #444; }
 
-body.dark-mode #olCtl, body.dark-mode #bgImgControls { background: #1a1a1a; border-color: #333; }
+body.dark-mode #olCtl, body.dark-mode #bgImgControls { background: #1a1a1a !important; border-color: #333 !important; }
+body.dark-mode #olCtl .hint, body.dark-mode #olCtl output, body.dark-mode #bgImgControls output { color: #888; }
 body.dark-mode input[type=range] { background: #444; border-color: #555; }
 body.dark-mode input[type=range]::-webkit-slider-thumb { background: #888; border-color: #666; }
 
@@ -346,10 +347,123 @@ body.dark-mode .tglobal { background:#1a1a1a; border-color:#333; }
 body.dark-mode .tglobal > summary { color:#aaa; }
 body.dark-mode .tc-head .tc-del { color:#ff5f56; }
 
+
+/* ===== 约会票根主题 (Ephemera) ===== */
+body.ep-mode {
+  --bg-body: #f1ebe4; --border-color: #e0a9bb; --text-main: #3a2a30; --text-muted: #c21f59; --accent: #d6255f;
+  --ep-pink: #f8bfd1; --ep-paper: #fbf7f1; --ep-blue: #3e8fbe; --ep-gold: #c9a35a;
+  --font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  background-color: var(--bg-body) !important; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .3 0 0 0 .22 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>") !important;
+}
+body.ep-mode .app { background: transparent; border: none; box-shadow: none; position: relative; }
+body.ep-mode .top {
+  height: auto; min-height: 76px; padding: 12px 18px 10px 30px; background: transparent; border-bottom: 1px solid rgba(214,37,95,.45); backdrop-filter: blur(6px);
+}
+body.ep-mode .top::before { content: none; }
+body.ep-mode .top b { font-size: 0; line-height: 0; }
+body.ep-mode .top b::before { content: "Q. Theme Studio"; display: block; font: 400 31px/1.05 "DM Serif Display", "Playfair Display", Georgia, serif; color: var(--accent); letter-spacing: -.2px; }
+body.ep-mode .top b::after { content: 'Good dates, better people'; display: block; margin-top: 4px; font: 400 17px/1 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); opacity: .85; letter-spacing: .3px; }
+body.ep-mode .top span#status {
+  background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 3px rgba(214,37,95,.12) inset;
+  transform: rotate(-8deg); font-size: 10px; letter-spacing: 1px; padding: 6px 7px; max-width: 74px; text-align: center; line-height: 1.15; opacity: .8;
+}
+body.ep-mode button {
+  background: var(--ep-paper); color: var(--accent); border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; box-shadow: none;
+  font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; font-style: italic; font-weight: 600; transition: all .15s;
+}
+body.ep-mode button:hover { background: #fde7ee; }
+body.ep-mode button:active, body.ep-mode button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: none; font-style: normal; }
+body.ep-mode button:disabled { opacity: .45; }
+body.ep-mode .go { background: var(--accent); color: #fff; border-color: #a8154a; padding: 0 18px; box-shadow: 0 5px 12px rgba(214,37,95,.35), inset 0 0 0 2px rgba(255,255,255,.18); }
+body.ep-mode .go::after { content: ' →'; }
+body.ep-mode .go:hover { background: #e23872; }
+body.ep-mode .tip { background: transparent; border-bottom: 1px dashed rgba(214,37,95,.35); color: #9a5a70; font-style: italic; }
+body.ep-mode .stage { background: transparent; border-bottom: none; padding-bottom: 6px; }
+body.ep-mode canvas { border: 1px solid rgba(214,37,95,.35); border-radius: 2px; box-shadow: 0 12px 28px rgba(150,40,80,.2); }
+/* 主面板：粉色票券 + 左侧锯齿条 + 金色内框 */
+body.ep-mode .dock {
+  position: relative; background: var(--ep-pink); border: none; border-radius: 6px 14px 14px 6px; margin-left: 12px; width: calc(100% - 30px);
+  box-shadow: 0 14px 30px rgba(150,40,80,.22); overflow: hidden;
+}
+body.ep-mode .dock::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 15px; z-index: 2; pointer-events: none;
+  background: radial-gradient(circle at 0 50%, var(--ep-pink) 0 5px, var(--accent) 5.5px) 0 0 / 15px 17px repeat-y;
+}
+body.ep-mode .tabs { background: transparent; border-bottom: 1px dashed rgba(214,37,95,.5); padding: 10px 14px 0 28px; gap: 6px; }
+body.ep-mode .tabs button { border: none; background: transparent; color: #a33058; border-radius: 999px 999px 0 0; font-style: normal; letter-spacing: .08em; }
+body.ep-mode .tabs button:hover { background: rgba(255,255,255,.4); }
+body.ep-mode .tabs button[aria-selected="true"] { background: var(--ep-paper); color: var(--accent); border: none; box-shadow: none; }
+body.ep-mode .tabs button[aria-selected="true"]::after { background: var(--ep-paper); }
+body.ep-mode .panel { background: var(--ep-paper); margin: 0 12px 12px 28px; border-radius: 4px; box-shadow: inset 0 0 0 5px var(--ep-paper), inset 0 0 0 6px rgba(201,163,90,.8); padding: 22px 20px; }
+body.ep-mode .r > span, body.ep-mode .color-cell > span { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+body.ep-mode .chips button { border-radius: 3px; border: 1px solid rgba(214,37,95,.4); background: #fff; font-style: normal; font-weight: 600; font-size: 12px; letter-spacing: .04em; }
+body.ep-mode .chips button:hover { background: #fde7ee; }
+body.ep-mode .chips button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+body.ep-mode .line, body.ep-mode .color-hex, body.ep-mode input[type=text], body.ep-mode select {
+  background: transparent; border: none; border-bottom: 1.5px solid rgba(62,143,190,.6); border-radius: 0; color: var(--text-main); font-family: inherit;
+}
+body.ep-mode .line:focus, body.ep-mode .color-hex:focus { border-bottom-color: var(--accent); box-shadow: none; outline: none; }
+body.ep-mode input[type=range] { accent-color: var(--accent); }
+body.ep-mode input[type=color] { border: 1.5px solid var(--ep-gold); border-radius: 3px; background: #fff; }
+body.ep-mode .pgroup { background: #fff; border: 1px dashed rgba(214,37,95,.45); border-radius: 4px; box-shadow: none; }
+body.ep-mode .pgroup-title { color: var(--accent); font-style: italic; font-size: 14px; }
+body.ep-mode .pgroup-title::before { width: 6px; height: 6px; border-radius: 50%; }
+body.ep-mode .pg-line { background: repeating-linear-gradient(90deg, rgba(214,37,95,.5) 0 4px, transparent 4px 8px); }
+body.ep-mode .pg-count { color: var(--ep-blue); letter-spacing: .1em; }
+body.ep-mode .pre { background: var(--ep-paper); border: 1.5px dotted rgba(214,37,95,.5); border-radius: 3px; color: #5a3a46; }
+body.ep-mode .pre:hover { background: #fde7ee; }
+body.ep-mode .pre.on { background: #fff; border: 1.5px solid var(--ep-blue); color: var(--ep-blue); box-shadow: 0 0 0 3px rgba(62,143,190,.2); }
+body.ep-mode .add span { border-radius: 999px; }
+body.ep-mode .t img { border: 3px solid #fff; border-radius: 2px; box-shadow: 0 2px 6px rgba(150,40,80,.25); }
+body.ep-mode .tcard, body.ep-mode .tglobal { background: #fff; border-color: rgba(214,37,95,.35); }
+body.ep-mode .hint { color: #9a5a70; }
+body.ep-mode #olCtl, body.ep-mode #bgImgControls { background: #fff !important; border: 1px dashed rgba(214,37,95,.45) !important; }
+body.ep-mode #pickBar { background: var(--ep-paper); border: 1.5px solid var(--accent); border-radius: 12px; }
+body.ep-mode #savePanel { background: var(--ep-paper); border-color: var(--accent); color: var(--text-main); }
+body.ep-mode #toast { background: var(--accent); color: #fff; }
+
+/* ===== 约会票根主题：专属布局与排版 ===== */
+body.ep-mode .tabs { counter-reset: ept; }
+body.ep-mode .tabs button { counter-increment: ept; position: relative; padding-top: 12px; flex-direction: column; gap: 2px; min-height: 46px; }
+body.ep-mode .tabs button::before { content: "No." counter(ept, decimal-leading-zero); position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; letter-spacing: .16em; color: rgba(214,37,95,.55); }
+body.ep-mode .tabs button svg { display: none; }
+body.ep-mode .panel.on::before { display: block; font: 400 30px/1.1 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1px solid rgba(214,37,95,.4); }
+body.ep-mode #p1.on::before { content: "Shots · 截图"; }
+body.ep-mode #p3.on::before { content: "Layout · 构图"; }
+body.ep-mode #p2.on::before { content: "Words · 文字"; }
+body.ep-mode #p7.on::before { content: "Presets · 预设"; }
+body.ep-mode #p4.on::before { content: "Palette · 色彩"; }
+body.ep-mode #p6.on::before { content: "Assets · 素材"; }
+body.ep-mode .panel .r { padding-bottom: 12px; border-bottom: 1px solid rgba(214,37,95,.16); }
+body.ep-mode .panel .r:has(.chips) { align-items: flex-start; }
+body.ep-mode .panel .r:has(.chips) > span { padding-top: 5px; }
+/* 选项变成「待办勾选」 */
+body.ep-mode .chips { gap: 4px 6px; }
+body.ep-mode .chips button { display: inline-flex; align-items: center; gap: 6px; background: transparent !important; border: none !important; border-radius: 3px; padding: 0 8px 0 4px; color: #5a3a46; font-weight: 500; box-shadow: none; }
+body.ep-mode .chips button::before { content: ''; flex: none; width: 12px; height: 12px; border: 1.5px solid rgba(214,37,95,.7); border-radius: 2px; font-size: 12px; line-height: 10px; text-align: center; color: var(--accent); background: #fff; }
+body.ep-mode .chips button:hover { background: #fde7ee !important; }
+body.ep-mode .chips button[aria-pressed="true"] { color: var(--accent) !important; font-weight: 700; }
+body.ep-mode .chips button[aria-pressed="true"]::before { content: '✓'; font-weight: 900; }
+body.ep-mode .stage::after { content: 'FIG. 1 — PREVIEW  ·  No. 1028'; margin-top: 10px; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .24em; color: rgba(214,37,95,.6); }
+body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: block; margin: 0 0 0 15px; padding: 12px 10px 14px; border-top: 3px dotted rgba(214,37,95,.5); text-align: center; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .3em; color: var(--accent); }
+@media (min-width: 1040px) {
+  body.ep-mode .app { max-width: 1200px; display: grid; grid-template-columns: minmax(0, 1fr) 450px; grid-template-areas: "top top" "tip tip" "stage dock"; column-gap: 28px; align-items: start; align-content: start; grid-template-rows: auto auto 1fr; padding: 0 24px; }
+  body.ep-mode .top { grid-area: top; }
+  body.ep-mode .tip { grid-area: tip; }
+  body.ep-mode .stage { grid-area: stage; position: sticky; top: 96px; padding-top: 24px; }
+  body.ep-mode canvas { max-width: 640px; }
+  body.ep-mode .dock { grid-area: dock; margin: 24px 0 32px; width: 100%; }
+}
+@media (max-width: 520px) {
+  body.ep-mode .top { padding-left: 20px; gap: 8px; }
+  body.ep-mode .top b::before { font-size: 25px; }
+  body.ep-mode .top b::after { font-size: 15px; }
+  body.ep-mode .top span#status { display: none; }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@1,400&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@1,600;1,700&family=IM+Fell+English:ital@1&family=Old+Standard+TT:ital,wght@1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@1,400&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Pinyon+Script&family=ZCOOL+XiaoWei&family=DM+Serif+Display:ital@0;1&family=IM+Fell+English:ital@1&family=Old+Standard+TT:ital,wght@1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@200..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="app">
@@ -458,6 +572,8 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <button data-v="wave">波浪</button>
           <button data-v="fan">扇形</button>
           <button data-v="accordion">折页</button>
+          <button data-v="dateTilt">信笺轻斜</button>
+          <button data-v="dateLadder">票根阶梯</button>
         </div>
       </div>
       <div class="r" style="align-items:flex-start">
@@ -474,6 +590,8 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <button data-v="index">索引卡</button>
           <button data-v="pill">悬浮胶囊</button>
           <button data-v="stamp">邮票</button>
+          <button data-v="ticket">票根</button>
+          <button data-v="telegram">电报信笺</button>
         </div>
       </div>
       <div id="olCtl" style="display:none;padding:10px;margin-bottom:12px;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px">
@@ -561,6 +679,9 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <button data-v="classifiedDossier">绝密档案</button>
           <button data-v="detectiveBoard">侦探线索板</button>
           <button data-v="glitchArchive">故障档案</button>
+          <button data-v="dateInvite">约会邀请函</button>
+          <button data-v="dateTelegram">约会电报</button>
+          <button data-v="dateStubs">票根合集</button>
           <button data-v="songPorcelain">宋韵青瓷</button>
           <button data-v="songSilk">宋式绢本</button>
           <button data-v="songWindow">宋式雕窗</button>
@@ -585,6 +706,16 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <span style="width:60px">模糊度</span>
           <input id="bgBlur" type="range" min="0" max="20" value="0">
           <output id="bgBlurV" style="width:36px;text-align:right;font-size:11px">0px</output>
+        </div>
+        <div class="r" style="width:100%;margin:0">
+          <span style="width:60px">磨砂度</span>
+          <input id="bgFrost" type="range" min="0" max="100" value="0">
+          <output id="bgFrostV" style="width:36px;text-align:right;font-size:11px">0%</output>
+        </div>
+        <div class="r" style="width:100%;margin:0">
+          <span style="width:60px">颗粒度</span>
+          <input id="bgGrain" type="range" min="0" max="100" value="0">
+          <output id="bgGrainV" style="width:36px;text-align:right;font-size:11px">0%</output>
         </div>
         <div class="r" style="width:100%;margin:0">
           <span style="width:60px">缩放</span>
@@ -631,6 +762,9 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <button data-v="kicker">栏目小标</button>
           <button data-v="italicMag">杂志斜体</button>
           <button data-v="issue" aria-pressed="true">期号角标</button>
+          <button data-v="invite">邀请函标题</button>
+          <button data-v="postmark">邮戳</button>
+          <button data-v="ticketLabel">票签</button>
           <button data-v="boxed">方框刊名</button>
         </div>
       </div>
@@ -652,7 +786,7 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
           <input id="font" type="file" accept=".ttf,.otf,.woff,.woff2">
         </label>
         <button id="resetFont">恢复默认</button>
-        <span id="fontStatus" style="font-size:11px;color:#888;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">思源宋体（默认）</span>
+        <span id="fontStatus" style="font-size:11px;color:#888;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">小薇体（默认）</span>
       </div>
     </div>
 
@@ -685,6 +819,7 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
 </div>
 
 <script>
+(function(){ var t = null; try { t = localStorage.getItem('q_theme'); } catch (e) {} if (t === null) t = 'ep-mode'; if (t) document.body.classList.add(t); })();
 'use strict';
 
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
@@ -745,15 +880,16 @@ const SUPPORTS_CANVAS_FILTER = (function () {
 })();
 
 const $ = id => document.getElementById(id);
-const SANS = '"Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
+const SANS = '"ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
 
 const state = { images: [], bgImage: null, font: null, face: null, busy: false, customTexts: [] };
 
 /* ===== 文字独立设置：每段文字都有自己的 文本 / 样式 / 颜色 / 大小 / 间距 ===== */
 /* style/color/size/sp 为 null 时表示“跟随全局默认” */
+const DEFAULT_TEXTS = { base: ['主题名称', '作者名称'], ep: ['Before the date', 'A private date invitation'] };
 const tcfg = {
-  title:  { text: '主题名称', style: null, color: null, size: null, sp: null, open: true },
-  author: { text: '作者名称', style: null, color: null, size: null, sp: null, open: false }
+  title:  { text: document.body.classList.contains('ep-mode') ? DEFAULT_TEXTS.ep[0] : '主题名称', style: null, color: null, size: null, sp: null, open: true },
+  author: { text: document.body.classList.contains('ep-mode') ? DEFAULT_TEXTS.ep[1] : '作者名称', style: null, color: null, size: null, sp: null, open: false }
 };
 const textCardRefs = [];   // 文字卡片引用 { cfg, kind, el, sync() }
 const T_BASE = { title: 42, author: 20, custom: 20 };
@@ -883,14 +1019,20 @@ const PRESETS = [
   { name:'夜航星图', grp:'夜景', title:'sparkle', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], bg:'starChart', frame:'fold', tape:'none' },
   { name:'余烬黄昏', grp:'夜景', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], bg:'emberDusk',  frame:'fold', tape:'none' },
   { name:'深海潮汐', grp:'夜景', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], bg:'deepSea',    frame:'fold', tape:'none' },
-  { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' }
+  { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' },
+  { name:'玫瑰邀请函', grp:'约会票根', title:'invite', colors:['#f3e9df','#fbf7f1','#d6255f','#f8bfd1','#4a2a35'], bg:'dateInvite', frame:'ticket', tape:'none', layout:'flat' },
+  { name:'邮票蓝调', grp:'约会票根', title:'ticketLabel', colors:['#eaf0f3','#fbf9f4','#3e8fbe','#d7e8f2','#2f4252'], bg:'dateStubs', frame:'ticket', tape:'none', layout:'dateTilt' },
+  { name:'电报信笺', grp:'约会票根', title:'postmark', colors:['#ece6dd','#fffdf8','#2f7ea8','#e2eef4','#34414d'], bg:'dateTelegram', frame:'telegram', tape:'none', layout:'dateTilt' },
+  { name:'准备清单', grp:'约会票根', title:'invite', colors:['#f2e8de','#fffbf5','#c21f59','#fbe4ec','#4a2a35'], bg:'dateTelegram', frame:'telegram', tape:'none', layout:'dateTilt' },
+  { name:'剧场小票', grp:'约会票根', title:'ticketLabel', colors:['#e9e4f0','#fbf8f3','#6b78d6','#e1e4f7','#2e3350'], bg:'dateInvite', frame:'ticket', tape:'none', layout:'dateLadder' },
+  { name:'莓红合集', grp:'约会票根', title:'postmark', colors:['#f9dbe5','#fff5f8','#e0245e','#fbc6d6','#5a1f35'], bg:'dateStubs', frame:'ticket', tape:'none', layout:'flat' }
 ]
 
 function clearPresetHighlight() {
   document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
 }
 
-function applyPreset(p) {
+function applyPreset(p, silent) {
   applyingPreset = true;
   const [base, frame, tape, chip, text] = p.colors;
 
@@ -915,7 +1057,7 @@ function applyPreset(p) {
 
   document.body.style.background = base;
 
-  if (p.title) setOpt('titleStyle', p.title);
+  setOpt('titleStyle', p.title || 'issue');
   [tcfg.title, tcfg.author, ...state.customTexts].forEach(t => { t.style = null; t.color = null; });
   if (typeof refreshTextCards === 'function') refreshTextCards();
   if (p.layout) {
@@ -932,7 +1074,7 @@ function applyPreset(p) {
   });
   schedule(true, true, true);
   applyingPreset = false;
-  toast('已套用 · ' + p.name);
+  if (!silent) toast('已套用 · ' + p.name);
 }
 
 function initColors() {
@@ -1046,6 +1188,23 @@ async function importImages(files) {
   }
 }
 
+let _grainTile = null;
+function getGrainTile() {
+  if (_grainTile) return _grainTile;
+  const t = document.createElement('canvas');
+  t.width = t.height = 256;
+  const g = t.getContext('2d');
+  const d = g.createImageData(256, 256);
+  const R = rng(7);
+  for (let i = 0; i < d.data.length; i += 4) {
+    const v = R() < 0.5 ? 0 : 255;
+    d.data[i] = d.data[i + 1] = d.data[i + 2] = v;
+    d.data[i + 3] = 20 + R() * 70;
+  }
+  g.putImageData(d, 0, 0);
+  return (_grainTile = t);
+}
+
 async function importBgImage(file) {
   if (!file) return false;
   if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { toast('背景仅支持 PNG / JPG / WebP'); return false; }
@@ -1096,7 +1255,7 @@ const rng = s => () => {
 
 const LAYOUT_NEW = {
   rows2: { rows: 2 }, rows2brick: { rows: 2, brick: true }, rows2tilt: { rows: 2 },
-  stairs: { rows: 1 }, wave: { rows: 1 }, fan: { rows: 1 }
+  stairs: { rows: 1 }, wave: { rows: 1 }, fan: { rows: 1 }, dateTilt: { rows: 1 }, dateLadder: { rows: 1 }
 };
 
 function slotPositions(g, w, cardsStartY) {
@@ -1134,6 +1293,8 @@ function slotPositions(g, w, cardsStartY) {
     let py = 0, angle = 0;
     if (lay === 'wave') py = (i % 2) * 60;
     else if (lay === 'stairs') py = i * 44;
+    else if (lay === 'dateTilt') { py = (i % 2) * 22; angle = i % 2 ? 0.03 : -0.03; }
+    else if (lay === 'dateLadder') { py = i * 32; angle = (i - c0) * 0.025; }
     else if (lay === 'fan') { py = 20 * (i - c0) * (i - c0); angle = (i - c0) * 0.07; }
     out.push({ px: x0 + i * (fw + g.gap), py: cardsStartY + py, angle });
   }
@@ -1156,7 +1317,7 @@ function geometry() {
   const rowGap = 28;
   const c0 = (n - 1) / 2;
   let stagFixed = 0;
-  if (NEWLAY) stagFixed = lay === 'wave' ? 60 : lay === 'stairs' ? (n - 1) * 44 : lay === 'fan' ? 20 * c0 * c0 + 24 : lay === 'rows2tilt' ? 26 : 0;
+  if (NEWLAY) stagFixed = lay === 'wave' ? 60 : lay === 'stairs' ? (n - 1) * 44 : lay === 'fan' ? 20 * c0 * c0 + 24 : lay === 'rows2tilt' ? 26 : lay === 'dateTilt' ? 22 : lay === 'dateLadder' ? (n - 1) * 32 : 0;
 
   const fw0 = NEWLAY
     ? (lay === 'fan' ? 1040 / (n - (n - 1) * 0.14) : (1040 - 24 * (cols - 1)) / (cols + brickX))
@@ -1180,6 +1341,8 @@ function geometry() {
     case 'fold':     sidePad = 14 * scale; topPad = 14 * scale; botPad = 14 * scale; break;
     case 'pill':     sidePad = 14 * scale; topPad = 14 * scale; botPad = 62 * scale; break;
     case 'stamp':    sidePad = 20 * scale; topPad = 20 * scale; botPad = 20 * scale; break;
+    case 'ticket':   sidePad = 22 * scale; topPad = 22 * scale; botPad = 66 * scale; break;
+    case 'telegram': sidePad = 26 * scale; topPad = 26 * scale; botPad = 46 * scale; break;
   }
 
   const gap = NEWLAY
@@ -1190,7 +1353,7 @@ function geometry() {
   let h, sw;
 
   const candyExtra0 = opt.layout === 'accordion' ? 40 : 0;
-  const candyExtra = candyExtra0 + /^candy/.test(opt.collageBase) ? 90 : (/^paper/.test(opt.collageBase) ? 110 : (/^pst/.test(opt.collageBase) ? 100 : (/^(torn|doo)/.test(opt.collageBase) ? 110 : (opt.collageBase === 'accordionBg' ? 100 : 0))));
+  const candyExtra = candyExtra0 + /^candy/.test(opt.collageBase) ? 90 : (/^paper/.test(opt.collageBase) ? 110 : /^date/.test(opt.collageBase) ? 120 : (/^pst/.test(opt.collageBase) ? 100 : (/^(torn|doo)/.test(opt.collageBase) ? 110 : (opt.collageBase === 'accordionBg' ? 100 : 0))));
   const titleBlockH = textLayout().titleBlockH;
 
   // 拍立得留白基于图片高度的 15%
@@ -1363,6 +1526,63 @@ function edgePoints(R, w, h, n, band, minD) {
     pts.push([x, y]);
   }
   return pts;
+}
+
+function dateBackground(c, w, h, cb, o) {
+  const { transparent, R } = o;
+  const acc = $('cTape').value, paper = $('cFrame').value, SER = BGF.parch, RED = '#c8372d';
+  const ar = rgb(acc), aA = a => `rgba(${ar[0]},${ar[1]},${ar[2]},${a})`;
+  const lt = (str, x, y, size, col, sp, al = 'center', fam = SER, it = false) => {
+    c.save(); c.font = `${it ? 'italic ' : ''}700 ${size}px ${fam}`; c.fillStyle = col; c.textAlign = al; c.textBaseline = 'middle';
+    try { c.letterSpacing = sp + 'px'; } catch (e) {}
+    c.fillText(str, x, y); c.restore();
+  };
+  if (!transparent) {
+    c.fillStyle = 'rgba(90,60,40,0.05)';
+    for (let i = 0; i < 1100; i++) c.fillRect(R() * w, R() * h, 1 + R() * 1.4, 1);
+    const g = c.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.8);
+    g.addColorStop(0, 'rgba(255,255,255,0.18)'); g.addColorStop(1, 'rgba(120,70,60,0.12)');
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+  }
+  if (cb === 'dateInvite') {
+    const sx = 18, y0 = 30, y1 = h - 30;
+    c.fillStyle = aA(0.95); c.beginPath(); c.moveTo(sx + 24, y0); c.lineTo(sx + 24, y1); c.lineTo(sx, y1);
+    for (let y = y1; y > y0 + 14; y -= 18) c.arc(sx, y - 9, 9, Math.PI / 2, -Math.PI / 2, true);
+    c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(201,163,90,0.85)'; c.lineWidth = 1.5; c.strokeRect(58, 26, w - 82, h - 52);
+    c.lineWidth = 1; c.strokeRect(64, 32, w - 94, h - 64);
+    lt('A SPECIAL EVENING · JUST FOR US', 84, 48, 11, aA(0.9), 4, 'left');
+    lt('No. 1028', w - 84, 48, 11, aA(0.9), 3, 'right');
+    for (let x = 90; x < w - 80; x += 42) { c.fillStyle = aA(0.28); c.beginPath(); c.arc(x, h - 76, 9, 0, Math.PI * 2); c.fill(); c.fillStyle = aA(0.5); c.beginPath(); c.arc(x, h - 76, 3, 0, Math.PI * 2); c.fill(); }
+    lt('ADMIT TWO · KEEP THIS HALF', 84, h - 44, 11, aA(0.95), 4, 'left');
+    lt('Created by Q.', w - 84, h - 44, 18, aA(0.95), 0.5, 'right', '"Pinyon Script", "Playfair Display", Georgia, serif', true);
+    lt('♥', w - 84 - 124, h - 43, 11, RED, 0, 'center', BGF.web);
+  } else if (cb === 'dateTelegram') {
+    c.strokeStyle = acc; c.lineWidth = 3; c.strokeRect(22, 22, w - 44, h - 44);
+    c.globalAlpha = 0.55; c.lineWidth = 1; c.strokeRect(30, 30, w - 60, h - 60); c.globalAlpha = 1;
+    lt('NO. 1028', 62, 54, 11, aA(0.9), 3, 'left');
+    c.fillStyle = aA(0.55); c.fillRect(60, h - 96, w - 120, 1.2);
+    lt('T E L E G R A M', w / 2, h - 70, 20, acc, 8);
+    lt('FROM  Q.      TO  晚晚      SENT  10/21 22:15', w / 2, h - 42, 11, aA(0.85), 2);
+    lt('Created by Q.', 64, h - 70, 18, aA(0.95), 0.5, 'left', '"Pinyon Script", "Playfair Display", Georgia, serif', true);
+    c.save(); c.translate(w - 110, h - 68); c.rotate(-0.2); c.strokeStyle = RED; c.globalAlpha = 0.55; c.lineWidth = 1.6;
+    c.beginPath(); c.arc(0, 0, 30, 0, Math.PI * 2); c.stroke(); c.beginPath(); c.arc(0, 0, 24, 0, Math.PI * 2); c.stroke();
+    c.fillStyle = RED; c.font = `22px ${BGF.web}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('♥', 0, 1); c.restore();
+  } else {
+    lt('Past Collections', 70, 38, 20, acc, 0, 'left', SER, true);
+    lt('Created by Q.', w - 70, 38, 17, aA(0.95), 0.5, 'right', '"Pinyon Script", "Playfair Display", Georgia, serif', true);
+    c.fillStyle = aA(0.45); c.fillRect(250, 38, w - 480, 1.2);
+    const cols = [acc, paper, '#4a95c2', paper, '#d6255f', '#4a95c2'], tw = 112, th = 150, gap = (w - 140 - 6 * tw) / 5;
+    cols.forEach((col, i) => {
+      const x = 70 + i * (tw + gap), y = h - 100;
+      c.save(); c.shadowColor = 'rgba(0,0,0,0.18)'; c.shadowBlur = 8; c.shadowOffsetY = 3;
+      c.fillStyle = col; drawStampEdge(c, x, y, tw, th, 12); c.fill(); c.restore();
+      const onPaper = col === paper, fg = onPaper ? acc : '#ffffff';
+      c.strokeStyle = fg; c.globalAlpha = 0.7; c.lineWidth = 1.2; c.strokeRect(x + 9, y + 9, tw - 18, th - 18); c.globalAlpha = 1;
+      lt(`No. 0${900 + i * 7}`, x + tw / 2, y + 24, 9, fg, 1.5);
+      lt(['Moonlit', 'Café', 'Museum', 'Matinee', 'Late', 'Stroll'][i], x + tw / 2, y + 44, 15, fg, 0, 'center', SER, true);
+    });
+  }
 }
 
 function cuteBackground(c, w, h, cb, o) {
@@ -2017,6 +2237,14 @@ function premiumBackground(c, w, h, cb, o) {
   }
 }
 
+const _fontChars = new Set();
+function ensureFontChars(str) {
+  const fresh = Array.from(new Set(Array.from(str))).filter(ch => /[\u3000-\u9fff\uff00-\uffef]/.test(ch) && !_fontChars.has(ch));
+  if (!fresh.length) return;
+  fresh.forEach(ch => _fontChars.add(ch));
+  try { document.fonts.load('400 20px "ZCOOL XiaoWei"', fresh.join('')).then(() => schedule(true, true, true)).catch(() => {}); } catch (e) {}
+}
+
 function creditLine(c, w, h, cb, o) {
   const { tcol } = o;
   const T = (str, x, y, op) => bgText(c, str, x, y, op);
@@ -2540,9 +2768,12 @@ function renderBookPageBackground(c, w, h) {
     const opacity = +$('bgOpacity').value / 100;
     const blurPx = +$('bgBlur').value * (w / 1200);
     const bgScaleVal = +$('bgScale').value / 100;
+    const frost = +$('bgFrost').value / 100;
+    const grain = +$('bgGrain').value / 100;
+    const totalBlur = blurPx + frost * 10 * (w / 1200);
     c.save();
     c.globalAlpha = opacity;
-    if (blurPx > 0 && SUPPORTS_CANVAS_FILTER) c.filter = `blur(${blurPx}px)`;
+    if (totalBlur > 0 && SUPPORTS_CANVAS_FILTER) c.filter = `blur(${totalBlur}px)`;
     let topOffset = 0;
     if (!isTransparentBg && cb !== 'custom') {
       if (cb === 'webLight') topOffset = 60;
@@ -2560,6 +2791,23 @@ function renderBookPageBackground(c, w, h) {
     const dx = (w - dw) / 2 + bgOffset.x;
     const dy = (h - dh) / 2 + bgOffset.y;
     c.drawImage(img, dx, dy, dw, dh);
+    c.filter = 'none';
+    // 磨砂：乳白/暗色雾面层，叠在模糊后的图片上
+    if (frost > 0) {
+      c.globalAlpha = opacity * frost * 0.45;
+      c.fillStyle = isDark ? 'rgb(40,44,56)' : 'rgb(255,255,255)';
+      c.fillRect(dx, dy, dw, dh);
+    }
+    // 颗粒：噪点贴图
+    if (grain > 0) {
+      const pat = c.createPattern(getGrainTile(), 'repeat');
+      if (pat) {
+        if (pat.setTransform && typeof DOMMatrix !== 'undefined') pat.setTransform(new DOMMatrix().scale(w / 1200));
+        c.globalAlpha = Math.min(1, opacity * grain * 0.9);
+        c.fillStyle = pat;
+        c.fillRect(dx, dy, dw, dh);
+      }
+    }
     c.restore();
   }
   if (cb === 'custom') return;
@@ -2737,6 +2985,8 @@ function renderBookPageBackground(c, w, h) {
     sketchBackground(c, w, h, cb, { baseCol, isDark, transparent: isTransparentBg, R, tcol });
   } else if (['cloudDots', 'gingham'].includes(cb)) {
     cuteBackground(c, w, h, cb, { baseCol, isDark, transparent: isTransparentBg, R, tcol });
+  } else if (['dateInvite', 'dateTelegram', 'dateStubs'].includes(cb)) {
+    dateBackground(c, w, h, cb, { transparent: isTransparentBg, R, tcol });
   } else if (cb === 'accordionBg') {
     if (!isTransparentBg) {
       c.fillStyle = baseCol || '#f2f2ef';
@@ -2879,6 +3129,25 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.setLineDash([3 * scale, 3 * scale]);
     c.beginPath(); c.rect(14 * scale, 14 * scale, fw - 28 * scale, g.fh - 28 * scale); c.stroke();
     c.setLineDash([]); c.restore();
+  } else if (frameType === 'ticket') {
+    imgR = 3 * scale;
+    const ny = g.fh - g.botPad + 20 * scale, nr = 9 * scale;
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(fw, 0); c.lineTo(fw, ny - nr);
+    c.arc(fw, ny, nr, -Math.PI / 2, Math.PI / 2, true);
+    c.lineTo(fw, g.fh); c.lineTo(0, g.fh); c.lineTo(0, ny + nr);
+    c.arc(0, ny, nr, Math.PI / 2, -Math.PI / 2, true);
+    c.closePath(); c.fill();
+    c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.globalAlpha = 0.75; c.lineWidth = 1.2 * scale;
+    c.strokeRect(9 * scale, 9 * scale, fw - 18 * scale, ny - 19 * scale); c.restore();
+  } else if (frameType === 'telegram') {
+    imgR = 2 * scale;
+    drawTornEdge(c, 0, 0, fw, g.fh, 1.8 * scale, 9 * scale, R); c.fill();
+    c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.lineWidth = 2.2 * scale;
+    c.strokeRect(11 * scale, 11 * scale, fw - 22 * scale, g.fh - 22 * scale);
+    c.globalAlpha = 0.5; c.lineWidth = 1 * scale;
+    c.strokeRect(16 * scale, 16 * scale, fw - 32 * scale, g.fh - 32 * scale); c.restore();
   } else {
     drawTornEdge(c, 0, 0, fw, g.fh, 2.5 * scale, 12 * scale, R); c.fill();
   }
@@ -2924,6 +3193,25 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   }
   c.restore();
 
+  if (frameType === 'ticket') {
+    const ny = g.fh - g.botPad + 20 * scale;
+    c.save(); c.strokeStyle = tA(0.4); c.lineWidth = 1.2 * scale; c.setLineDash([4 * scale, 4 * scale]);
+    c.beginPath(); c.moveTo(14 * scale, ny); c.lineTo(fw - 14 * scale, ny); c.stroke(); c.setLineDash([]);
+    c.fillStyle = tapeCol; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `700 ${10 * scale}px ${BGF.parch}`;
+    try { c.letterSpacing = `${2.5 * scale}px`; } catch (e) {}
+    c.fillText(`ADMIT TWO · No. 0${i + 1}`, fw / 2, ny + (g.fh - ny) / 2); c.restore();
+  } else if (frameType === 'telegram') {
+    c.save(); c.fillStyle = tA(0.7); c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `700 ${9.5 * scale}px ${BGF.parch}`;
+    try { c.letterSpacing = `${2 * scale}px`; } catch (e) {}
+    c.fillText(`NO. 100${i + 1} · DELIVER BY HAND`, fw / 2 - 14 * scale, g.fh - 30 * scale);
+    c.strokeStyle = '#c8372d'; c.globalAlpha = 0.6; c.lineWidth = 1.3 * scale;
+    const px = fw - 40 * scale, py = g.fh - 34 * scale;
+    c.beginPath(); c.arc(px, py, 15 * scale, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.arc(px, py, 11.5 * scale, 0, Math.PI * 2); c.stroke();
+    c.fillStyle = '#c8372d'; c.font = `${13 * scale}px ${BGF.web}`; c.fillText('♥', px, py + 1 * scale); c.restore();
+  }
   if (frameType === 'polaroid') {
     c.font = `600 ${12 * scale}px ${SANS}`; c.fillStyle = 'rgba(0,0,0,0.4)';
     c.textAlign = 'center'; c.fillText(`SHOT 0${i + 1}`, fw / 2, g.fh - 14 * scale);
@@ -3153,6 +3441,7 @@ function renderText(c, w, h, g) {
 
   const rawTitle = (tcfg.title.text || '').trim() || '主题名称';
   const rawAuthor = (tcfg.author.text || '').trim() || '作者名称';
+  ensureFontChars(rawTitle + rawAuthor + state.customTexts.map(t => t.text || '').join('') + '等待导入截图晚晚');
   const fontFam = state.font || SANS;
 
   // 主标题
@@ -3190,13 +3479,14 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
   if (!chars.length) return { totalW: 0, height: 0 };
   const isFlat = opt.layout === 'flat' || opt.layout === 'accordion' || !!LAYOUT_NEW[opt.layout];
   const fontSize = baseFontSize;
-  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed'];
+  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed', 'invite', 'postmark', 'ticketLabel'];
   const isNew = ALIGNED.includes(style);
-  const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700 }[style] || 800;
-  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18 }[style] ?? 0.5;
+  const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700, invite: 900, postmark: 400, ticketLabel: 700 }[style] || 800;
+  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22 }[style] ?? 0.5;
   let famBase = fontFam;
-  if (!state.font && style === 'italicMag') famBase = BGF.parch;
-  const ital = style === 'italicMag' ? 'italic ' : '';
+  if (!state.font && (style === 'italicMag' || style === 'postmark')) famBase = BGF.parch;
+  if (!state.font && style === 'invite') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
+  const ital = (style === 'italicMag' || style === 'postmark') ? 'italic ' : '';
   const accent = $('cTape').value;
   c.font = `${ital}${weight} ${fontSize}px ${famBase}`;
   const charWidths = chars.map(ch => ch === ' ' ? fontSize * 0.4 + spacing : c.measureText(ch).width + fontSize * gapK + spacing);
@@ -3261,6 +3551,33 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
     c.strokeStyle = chipText; c.globalAlpha = 0.85;
     c.lineWidth = Math.max(1.5, fontSize * 0.04); c.strokeRect(bx, startY - fontSize * 0.02, bw, cH + fontSize * 0.04);
     c.lineWidth = 1; c.strokeRect(bx + 4, startY - fontSize * 0.02 + 4, bw - 8, cH + fontSize * 0.04 - 8);
+  } else if (style === 'invite') {
+    if (big) {
+      const ry = startY + cH + 6, mid = (x0 + x1) / 2;
+      c.fillStyle = accent; c.globalAlpha = 0.85;
+      c.fillRect(x0 - 10, ry, mid - x0 - 14, 1.5); c.fillRect(mid + 14, ry, x1 - mid - 4, 1.5);
+      bgText(c, '♥', mid, ry + 1, { size: fontSize * 0.3, family: BGF.web, col: accent });
+    }
+  } else if (style === 'postmark') {
+    if (big) {
+      const cx = x1 + fontSize * 0.95, cy = startY + cH * 0.5, r = cH * 0.6;
+      c.save(); c.translate(cx, cy); c.rotate(-0.2);
+      c.strokeStyle = '#c8372d'; c.globalAlpha = 0.6; c.lineWidth = Math.max(1.5, fontSize * 0.04);
+      c.beginPath(); c.arc(0, 0, r, 0, Math.PI * 2); c.stroke();
+      c.beginPath(); c.arc(0, 0, r * 0.82, 0, Math.PI * 2); c.stroke();
+      c.fillStyle = '#c8372d'; c.font = `700 ${r * 0.8}px ${BGF.web}`; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('♥', 0, 1); c.restore();
+    }
+  } else if (style === 'ticketLabel') {
+    const bx = x0 - fontSize * 0.7, bw = x1 - x0 + fontSize * 1.4, by = startY, nr = cH * 0.2;
+    c.fillStyle = accent;
+    c.beginPath(); c.moveTo(bx, by); c.lineTo(bx + bw, by); c.lineTo(bx + bw, by + cH / 2 - nr);
+    c.arc(bx + bw, by + cH / 2, nr, -Math.PI / 2, Math.PI / 2, true);
+    c.lineTo(bx + bw, by + cH); c.lineTo(bx, by + cH); c.lineTo(bx, by + cH / 2 + nr);
+    c.arc(bx, by + cH / 2, nr, Math.PI / 2, -Math.PI / 2, true); c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(255,255,255,0.7)'; c.lineWidth = Math.max(1, fontSize * 0.02);
+    c.setLineDash([fontSize * 0.1, fontSize * 0.08]);
+    c.strokeRect(bx + fontSize * 0.16, by + cH * 0.12, bw - fontSize * 0.32, cH * 0.76); c.setLineDash([]);
   } else if (style === 'sparkle') {
     const col = chipText, yc = startY + cH / 2;
     c.globalAlpha = 0.85;
@@ -3335,6 +3652,8 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
     else if (style === 'drip') fillC = '#b3121b';
     else if (style === 'stamp') fillC = '#b3261e';
     else if (style === 'ribbon') fillC = ribText;
+    else if (style === 'invite') fillC = accent;
+    else if (style === 'ticketLabel') fillC = '#ffffff';
 
     c.font = `${ital}${style === 'ransom' ? 800 : weight} ${fontSize}px ${fam}`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
@@ -3470,6 +3789,8 @@ function render() {
   $('scaleV').textContent = $('scale').value + '%';
   $('bgOpacityV').textContent = $('bgOpacity').value + '%';
   $('bgBlurV').textContent = $('bgBlur').value + 'px';
+  $('bgFrostV').textContent = $('bgFrost').value + '%';
+  $('bgGrainV').textContent = $('bgGrain').value + '%';
   $('bgScaleV').textContent = $('bgScale').value + '%';
   $('textSizeV').textContent = $('textSize').value + '%';
   $('textSpacingV').textContent = $('textSpacing').value + 'px';
@@ -3846,7 +4167,7 @@ document.querySelectorAll('.tabs button').forEach(b => {
 });
 
 ['scale', 'olGap', 'olW', 'olR'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
-['bgOpacity', 'bgBlur', 'bgScale'].forEach(id => $(id).addEventListener('input', () => schedule(true, false, false)));
+['bgOpacity', 'bgBlur', 'bgFrost', 'bgGrain', 'bgScale'].forEach(id => $(id).addEventListener('input', () => schedule(true, false, false)));
 ['textSize', 'textSpacing'].forEach(id => $(id).addEventListener('input', () => schedule(true, true, true)));
 $('isTransparent').addEventListener('change', () => schedule(true, false, false));
 
@@ -3907,6 +4228,8 @@ $('clearBgImg').onclick = () => {
   if (state.bgImage) { URL.revokeObjectURL(state.bgImage.url); state.bgImage = null; }
   $('bgImgName').textContent = '未选择图片';
   $('bgScale').value = 100;
+  $('bgFrost').value = 0;
+  $('bgGrain').value = 0;
   bgOffset = { x: 0, y: 0 };
   setOpt('collageBase', 'appLight');
   clearPresetHighlight();
@@ -3943,13 +4266,14 @@ $('resetFont').onclick = () => {
   if (state.face) document.fonts.delete(state.face);
   state.face = null;
   state.font = null;
-  $('fontStatus').textContent = '思源宋体（默认）';
+  $('fontStatus').textContent = '小薇体（默认）';
   schedule(false, false, true);
 };
 
 Object.entries(opt).forEach(([k, v]) => setOpt(k, v));
 document.body.style.background = $('cBase').value;
 render();
+applyPreset(PRESETS.find(x => x.name === '准备清单'), true);
 
 function initPickBarDrag() {
   const bar = document.getElementById('pickBar');
@@ -4258,35 +4582,38 @@ setTimeout(initTabsDrag, 100);
 function initThemeToggle() {
   const header = document.querySelector('.top');
   if (!header || document.getElementById('themeToggle')) return;
-  
+  const THEMES = [
+    { cls: '', icon: '🌙', tip: '当前：日间 · 点击切换夜间' },
+    { cls: 'dark-mode', icon: '🎟️', tip: '当前：夜间 · 点击切换约会票根' },
+    { cls: 'ep-mode', icon: '☀️', tip: '当前：约会票根 · 点击切换日间' }
+  ];
   const btn = document.createElement('button');
   btn.id = 'themeToggle';
   btn.className = 'theme-toggle-btn';
-  btn.title = '切换日间/夜间模式';
-  btn.setAttribute('aria-label', '切换模式');
-  
-  // 插入到“导出”按钮之前
+  btn.setAttribute('aria-label', '切换主题');
   const exportTop = document.getElementById('exportTop');
-  if (exportTop) {
-    header.insertBefore(btn, exportTop);
-  } else {
-    header.appendChild(btn);
-  }
+  if (exportTop) header.insertBefore(btn, exportTop); else header.appendChild(btn);
 
-  const isDark = localStorage.getItem('q_dark_mode') === '1';
-  if (isDark) {
-    document.body.classList.add('dark-mode');
-    btn.textContent = '☀️';
-  } else {
-    btn.textContent = '🌙';
-  }
-
-  btn.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const nowDark = document.body.classList.contains('dark-mode');
-    btn.textContent = nowDark ? '☀️' : '🌙';
-    try { localStorage.setItem('q_dark_mode', nowDark ? '1' : '0'); } catch(e){}
-  });
+  let idx = 2;
+  try {
+    const saved = localStorage.getItem('q_theme');
+    if (saved !== null) idx = Math.max(0, THEMES.findIndex(t => t.cls === saved));
+  } catch (e) {}
+  const apply = () => {
+    document.body.classList.remove('dark-mode', 'ep-mode');
+    const t = THEMES[idx];
+    if (t.cls) document.body.classList.add(t.cls);
+    btn.textContent = t.icon; btn.title = t.tip;
+    const dt = DEFAULT_TEXTS[t.cls === 'ep-mode' ? 'ep' : 'base'];
+    [tcfg.title, tcfg.author].forEach((cfg, k) => {
+      if (cfg.text === DEFAULT_TEXTS.base[k] || cfg.text === DEFAULT_TEXTS.ep[k]) cfg.text = dt[k];
+    });
+    if (typeof refreshTextCards === 'function') refreshTextCards();
+    schedule(false, false, true);
+    try { localStorage.setItem('q_theme', t.cls); localStorage.setItem('q_dark_mode', t.cls === 'dark-mode' ? '1' : '0'); } catch (e) {}
+  };
+  apply();
+  btn.addEventListener('click', () => { idx = (idx + 1) % THEMES.length; apply(); });
 }
 setTimeout(initThemeToggle, 100);
 
