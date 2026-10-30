@@ -67,7 +67,7 @@ canvas:active { cursor: grabbing; }
 .pgrp:first-child { margin-top: 0; }
 #preview { scroll-margin-top: 56px; }
 #pickBar {
-  display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(68px + env(safe-area-inset-bottom, 0px)); z-index: 30;
+  display: none; position: fixed; left: 50%; transform: translateX(-50%); top: 92px; z-index: 30;
   width: calc(100% - 24px); max-width: 736px; align-items: center; gap: 10px;
   background: #fff; border: 1px solid var(--accent); border-radius: 8px; padding: 8px 10px;
   box-shadow: 0 6px 18px rgba(0,0,0,.22);
@@ -453,10 +453,10 @@ body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: blo
   body.ep-mode .dock { grid-area: dock; margin: 24px 0 32px; width: 100%; }
 }
 
-.chips.bgcats { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.bgcat { border: 1px solid #dcdcdc; border-radius: 8px; background: #fbfbfb; padding: 8px 10px 10px; }
-.bgcat .pgroup-title { margin-bottom: 8px; }
-.bgcat-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips.bgcats { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.bgcat { border: 1px solid #dcdcdc; border-radius: 8px; background: #fbfbfb; padding: 6px 10px 8px; }
+.bgcat .pgroup-title { margin: 0 0 4px; }
+.bgcat-grid { display: flex; flex-wrap: wrap; gap: 4px 6px; }
 .r.bgrow { flex-direction: column; gap: 8px; }
 body.dark-mode .bgcat { background: #1d1d1d; border-color: #333; }
 body.ep-mode .bgcat { background: #fff; border: 1px dashed rgba(214,37,95,.45); border-radius: 4px; }
@@ -517,6 +517,37 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
   body.ep-mode .top .go { padding: 0 12px; }
 }
 #bgImgControls { scroll-margin-top: 100px; margin-bottom: 12px; }
+.tc-fontbtn { flex: none; font-size: 12px; padding: 3px 10px; white-space: nowrap; }
+.tc-fname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #888; }
+body.ep-mode .tc-fname { color: #9a5a70; font-style: italic; }
+
+/* ===== 约会票根：对齐与残留系统样式清理 ===== */
+body.ep-mode .tc-text input, body.ep-mode input.line { background: transparent !important; border: none !important; border-bottom: 1.5px solid rgba(62,143,190,.6) !important; border-radius: 0 !important; box-shadow: none !important; font-family: var(--font-family); }
+body.ep-mode .tc-text input:focus, body.ep-mode input.line:focus { border-bottom-color: var(--accent) !important; outline: none; }
+body.ep-mode .tc-row select { -webkit-appearance: none; appearance: none; border: none; border-bottom: 1.5px solid rgba(62,143,190,.6); border-radius: 0; background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23d6255f' stroke-width='1.600' stroke-linecap='round' stroke-linejoin='round'/></svg>") right 4px center / 10px no-repeat; padding: 0 22px 0 4px; box-shadow: none; }
+body.ep-mode .tc-row input[type=color], body.ep-mode .color-cell input[type=color] { padding: 3px; background: #fff; border: 1.5px solid var(--ep-gold); border-radius: 3px; box-shadow: none; }
+body.ep-mode input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+body.ep-mode input[type=color]::-webkit-color-swatch { border: none; border-radius: 2px; }
+body.ep-mode input[type=color]::-moz-color-swatch { border: none; border-radius: 2px; }
+body.ep-mode .tc-row .tc-hexv, body.ep-mode .color-hex, body.ep-mode code, body.ep-mode output { font-family: var(--font-family); letter-spacing: .02em; }
+body.ep-mode .tc-row .tc-hexv { text-transform: uppercase; font-size: 12px; color: #7a4a5c; }
+body.ep-mode .tc-row > label { color: var(--accent); font-weight: 700; letter-spacing: .08em; }
+body.ep-mode .tc-row .tc-undo { border-radius: 50%; width: 24px; height: 24px; background: #fff; }
+body.ep-mode .tc-fontbtn { height: 26px; padding: 0 16px; border: none; border-radius: 3px; font-style: italic; font-weight: 600; box-shadow: none; outline: 1.5px dashed rgba(214,37,95,.6); outline-offset: -4px; background: radial-gradient(circle at 0 50%, var(--ep-paper) 0 5px, transparent 5.5px), radial-gradient(circle at 100% 50%, var(--ep-paper) 0 5px, transparent 5.5px), #fde7ee; }
+body.ep-mode .tc-row input[type=file], body.ep-mode .add input[type=file] { display: none !important; }
+/* 选项网格：列对齐 */
+body.ep-mode .panel .chips:not(.bgcats) { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 6px 8px; align-items: center; flex: 1; min-width: 0; }
+body.ep-mode .bgcat-grid { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+body.ep-mode .chips button { justify-content: flex-start; min-width: 0; width: 100%; padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.ep-mode .panel .r:not(.bgrow) > span:first-child { flex: 0 0 64px; text-align: left; }
+body.ep-mode .panel .r:has(.chips) { gap: 10px; }
+/* 文字面板底部的全局字体行 */
+body.ep-mode #p2 > .r:last-child { flex-wrap: nowrap; gap: 8px; align-items: center; justify-content: flex-start; padding: 2px 0; }
+body.ep-mode #p2 > .r:last-child .add { flex: none; display: inline-flex; margin: 0; }
+body.ep-mode #p2 > .r:last-child .add span, body.ep-mode #p2 > .r:last-child button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; flex: none; height: 28px; margin: 0; padding: 0 14px; white-space: nowrap; border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; outline: none; box-shadow: none; background: var(--ep-paper); color: var(--accent); font-style: italic; font-weight: 600; font-size: 13px; line-height: 1; }
+body.ep-mode #p2 > .r:last-child .add span:hover, body.ep-mode #p2 > .r:last-child button:hover { background: #fde7ee; }
+body.ep-mode #fontStatus { flex: 1 1 0 !important; min-width: 0; margin-left: 4px; text-align: left; color: #9a5a70 !important; font-style: italic; font-size: 12px !important; }
+body.ep-mode .bgcat-grid button { width: auto; flex: none; padding: 0 2px; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -533,7 +564,7 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
 
   <div class="tip">
     <svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-    <span>长按文字、截图、标签栏或取色条可拖动</span>
+    <span>长按文字、截图、标签栏或取色提示条可拖动</span>
   </div>
 
   <main class="stage">
@@ -650,6 +681,15 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
           <button data-v="stamp">邮票</button>
           <button data-v="ticket">票根</button>
           <button data-v="telegram">电报信笺</button>
+          <button data-v="dossier">档案袋</button>
+          <button data-v="neon">霓虹描边</button>
+          <button data-v="scroll">卷轴装裱</button>
+          <button data-v="lattice">回纹窗格</button>
+          <button data-v="magpage">杂志内页</button>
+          <button data-v="ledger">信笺</button>
+          <button data-v="parchment">羊皮卷边</button>
+          <button data-v="popblock">波普硬框</button>
+          <button data-v="scallop">云朵花边</button>
         </div>
       </div>
       <div id="olCtl" style="display:none;padding:10px;margin-bottom:12px;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px">
@@ -677,9 +717,8 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
         <input id="scale" type="range" min="80" max="250" value="80">
         <output id="scaleV" style="width:36px;text-align:right;font-size:11px">80%</output>
       </div>
-      <div class="r" style="margin-top:8px">
-        <span></span>
-        <button id="resetPos" style="flex:1;font-weight:500">重置所有拖拽位置</button>
+      <div class="r" style="margin-top:8px;justify-content:center">
+        <button id="resetPos" style="font-weight:500;padding:0 28px">重置所有拖拽位置</button>
       </div>
     </div>
 
@@ -687,11 +726,10 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
       <div class="r bgrow" style="align-items:flex-start">
         <span style="padding-top:6px">背景样式</span>
         <div class="chips bgcats" data-k="collageBase">
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">基础</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">基础</span><span class="pg-line"></span><span class="pg-count">3</span></h4><div class="bgcat-grid">
             <button data-v="custom">+ 导入图片</button>
             <button data-v="none">透明底</button>
             <button data-v="parchment">羊皮纸</button>
-            <button data-v="poster">撕边海报</button>
           </div></section>
           <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">界面窗口</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
             <button data-v="webLight">网页</button>
@@ -708,7 +746,8 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
             <button data-v="paperCorner">纸·角标</button>
             <button data-v="accordionBg">折页·暖米</button>
           </div></section>
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">撕纸拼贴</span><span class="pg-line"></span><span class="pg-count">8</span></h4><div class="bgcat-grid">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">撕纸拼贴</span><span class="pg-line"></span><span class="pg-count">9</span></h4><div class="bgcat-grid">
+            <button data-v="poster">撕边海报</button>
             <button data-v="tornClip">撕页·杂志剪报</button>
             <button data-v="tornCollage">撕页·撕纸拼贴</button>
             <button data-v="tornRip">撕页·翻角连页</button>
@@ -718,12 +757,7 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
             <button data-v="tornCorner">撕纸·对角拼贴</button>
             <button data-v="tornPatch">撕纸·补丁拼贴</button>
           </div></section>
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">可爱手账</span><span class="pg-line"></span><span class="pg-count">7</span></h4><div class="bgcat-grid">
-            <button data-v="candyBlueStripe">可爱·蓝条纹</button>
-            <button data-v="candyBlueStar">可爱·蓝星星</button>
-            <button data-v="candyPinkStripe">可爱·粉条纹</button>
-            <button data-v="candyPinkStar">可爱·粉星星</button>
-            <button data-v="candyBowTape">可爱·蝴蝶结</button>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">可爱手账</span><span class="pg-line"></span><span class="pg-count">2</span></h4><div class="bgcat-grid">
             <button data-v="cloudDots">云朵波点</button>
             <button data-v="gingham">格纹野餐</button>
           </div></section>
@@ -806,7 +840,16 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
       <div class="r">
         <span>装饰</span>
         <div class="chips" data-k="tapeStyle">
-          <button data-v="washi">胶带</button>
+          <button data-v="washi" title="手账 · 纸张">胶带</button>
+          <button data-v="clip" title="档案 · 文件">回形针</button>
+          <button data-v="pin" title="线索板 · 剧场">图钉</button>
+          <button data-v="clothespin" title="拍立得 · 清单">木夹</button>
+          <button data-v="staple" title="杂志 · 办公">订书钉</button>
+          <button data-v="bow" title="可爱 · 手账">蝴蝶结</button>
+          <button data-v="heart" title="约会 · 情书">爱心贴</button>
+          <button data-v="seal" title="复古 · 邀请函">火漆印</button>
+          <button data-v="sparkle" title="夜景 · 星空">星光</button>
+          <button data-v="chop" title="宋韵 · 国风">朱印</button>
           <button data-v="none" aria-pressed="true">无</button>
         </div>
       </div>
@@ -860,7 +903,6 @@ body.ep-mode #p2 .picker.active { background: var(--accent); color: #fff; box-sh
       </div>
       </details>
       <div class="r" style="margin-top:12px">
-        <span>字体</span>
         <label class="add">
           <span>导入字体</span>
           <input id="font" type="file" accept=".ttf,.otf,.woff,.woff2">
@@ -967,10 +1009,19 @@ const state = { images: [], bgImage: null, font: null, face: null, busy: false, 
 
 /* ===== 文字独立设置：每段文字都有自己的 文本 / 样式 / 颜色 / 大小 / 间距 ===== */
 /* style/color/size/sp 为 null 时表示“跟随全局默认” */
+const EXPORT_LABELS = {
+  '':          { top: '存储',   panel: '存储为图片…',   busy: '正在存储…' },
+  'dark-mode': { top: '显影',   panel: '☾ 显影成图',    busy: '显影中…' },
+  'ep-mode':   { top: '寄出',   panel: '盖章寄出拼贴画',    busy: '正在盖章…' }
+};
+const exportLabel = k => (EXPORT_LABELS[themeCls()] || EXPORT_LABELS[''])[k];
+function setExportLabels() { if (!state.busy) { $('export').textContent = exportLabel('panel'); } $('exportTop').textContent = exportLabel('top'); }
+const THEME_PRESET = { '': '浅色系统', 'dark-mode': '夜航星图', 'ep-mode': '莓红合集' };
+const themeCls = () => document.body.classList.contains('ep-mode') ? 'ep-mode' : document.body.classList.contains('dark-mode') ? 'dark-mode' : '';
 const DEFAULT_TEXTS = { base: ['主题名称', '作者名称'], ep: ['Before the date', 'A private date invitation'] };
 const tcfg = {
   title:  { text: document.body.classList.contains('ep-mode') ? DEFAULT_TEXTS.ep[0] : '主题名称', style: null, color: null, size: null, sp: null, open: true },
-  author: { text: document.body.classList.contains('ep-mode') ? DEFAULT_TEXTS.ep[1] : '作者名称', style: null, color: null, size: null, sp: null, open: false }
+  author: { text: document.body.classList.contains('ep-mode') ? DEFAULT_TEXTS.ep[1] : '作者名称', style: null, color: null, size: null, sp: null, open: true }
 };
 const textCardRefs = [];   // 文字卡片引用 { cfg, kind, el, sync() }
 const T_BASE = { title: 42, author: 20, custom: 20 };
@@ -999,7 +1050,8 @@ function effText(cfg, kind) {
 function textLayout() {
   const t = effText(tcfg.title, 'title'), a = effText(tcfg.author, 'author');
   const lt = Math.max(T_BASE.title, t.size), la = Math.max(T_BASE.author, a.size);
-  return { t, a, lt, la, titleBlockH: lt * 1.35 + la * 1.35 + 32 };
+  const tOn = !!(tcfg.title.text || '').trim(), aOn = !!(tcfg.author.text || '').trim();
+  return { t, a, lt, la, tOn, aOn, titleBlockH: (tOn ? lt * 1.35 : 0) + (aOn ? la * 1.35 : 0) + ((tOn || aOn) ? 32 : 8) };
 }
 const opt = {
   layout: 'flat', frame: 'fold', collageBase: 'magMast', tapeStyle: 'none',
@@ -1058,69 +1110,64 @@ function setOpt(k, v) {
 }
 
 const PRESETS = [
-  { name:'大刊头', grp:'杂志版式', title:'masthead',   colors:['#f9f8f5','#1d1d1f','#c9c2b6','#ffffff','#1d1d1f'], bg:'magMast',       frame:'outline', tape:'none'  },
-  { name:'杂志封面', grp:'杂志版式', title:'magazine', colors:['#f4f6fa','#ffffff','#e2231a','#ffffff','#1d1d1f'], bg:'magCover',      frame:'fold', tape:'none'  },
-  { name:'编辑排版', grp:'杂志版式', title:'kicker', colors:['#ffffff','#1d1d1f','#00aeef','#ffffff','#1d1d1f'], bg:'magGrid',       frame:'outline', tape:'none'  },
-  { name:'色块海报', grp:'杂志版式', title:'label', colors:['#f2f3f6','#ffffff','#ec008c','#ffffff','#1d1d1f'], bg:'magColor',      frame:'fold', tape:'none'  },
-  { name:'报纸版面', grp:'杂志版式', title:'masthead', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], bg:'magNews',       frame:'fold', tape:'none'  },
-  { name:'展签留白', grp:'杂志版式', title:'italicMag', colors:['#ffffff','#cccccc','#1d1d1f','#ffffff','#1d1d1f'], bg:'magLabel',      frame:'outline', tape:'none'  },
-  { name:'对开内页', grp:'杂志版式', title:'masthead', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magSpread',     frame:'fold', tape:'none'  },
-  { name:'纸·大刊头', grp:'纸张', title:'masthead', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperMast',   frame:'fold', tape:'none' },
-  { name:'纸·信息框', grp:'纸张', title:'boxed', colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperBox',    frame:'outline', tape:'none' },
-  { name:'纸·邮戳', grp:'纸张', title:'stamp',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperPost',   frame:'polaroid', tape:'none' },
-  { name:'纸·信息栏', grp:'纸张', title:'kicker', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperLedger', frame:'fold', tape:'none' },
-  { name:'纸·角标', grp:'纸张', title:'issue',   colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperCorner', frame:'outline', tape:'none' },
-  { name:'经典羊皮', grp:'纸张', title:'italicMag', colors:['#e8d9c2','#f3ebd9','#c49a6c','#f5eee1','#3b2d1f'], bg:'parchment',     frame:'torn',    tape:'washi' },
-  { name:'宋韵青瓷', grp:'宋韵', title:'ink', colors:['#e9efea','#f6faf7','#8fa399','#ffffff','#2e3a34'], bg:'songPorcelain', frame:'torn',     tape:'none' },
-  { name:'宋式绢本', grp:'宋韵', title:'ink', colors:['#efe4c9','#f7f0df','#b8a074','#fffaf0','#4a3b28'], bg:'songSilk',      frame:'torn',     tape:'none' },
-  { name:'宋式雕窗', grp:'宋韵', title:'ink', colors:['#f3ece0','#8a7a5e','#8a7a5e','#ffffff','#3a2f24'], bg:'songWindow',    frame:'outline',   tape:'none' },
-  { name:'点茶暗香', grp:'宋韵', title:'seal', colors:['#efe9dc','#f7f2e8','#a89a7c','#ffffff','#3d3427'], bg:'songTea',       frame:'polaroid', tape:'none' },
-  { name:'哥窑开片', grp:'宋韵', title:'seal', colors:['#e6e2d6','#f2efe6','#9a8f7a','#ffffff','#4a443a'], bg:'crackedGlaze',  frame:'torn',     tape:'none' },
-  { name:'水墨山水', grp:'宋韵', title:'ink', colors:['#f4f1e8','#faf8f2','#c8423a','#ffffff','#2a2a2a'], bg:'inkMountain',   frame:'torn',     tape:'none' },
-  { name:'竹影月夜', grp:'宋韵', title:'ink', colors:['#eef2ee','#f7faf7','#5a7a62','#ffffff','#2c3a30'], bg:'bambooMoon',    frame:'torn',     tape:'none' },
-  { name:'卷轴装裱', grp:'宋韵', title:'seal', colors:['#f2e8d5','#faf3e4','#b8332b','#fffdf8','#3a2f24'], bg:'scroll',        frame:'polaroid', tape:'none' },
-  { name:'可爱·蓝条纹', grp:'可爱', title:'ribbon', colors:['#e3f6fa','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBlueStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·蓝星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBlueStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉条纹', grp:'可爱', title:'ribbon', colors:['#f8e1ec','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyPinkStripe', frame:'polaroid', tape:'none' },
-  { name:'可爱·粉星星', grp:'可爱', title:'sparkle', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyPinkStar', frame:'polaroid', tape:'none' },
-  { name:'可爱·蝴蝶结', grp:'可爱', title:'ribbon', colors:['#ffffff','#ffffff','#6b4c45','#ffffff','#6b4c45'], bg:'candyBowTape', frame:'polaroid', tape:'none' },
-  { name:'云朵波点', grp:'可爱', title:'sparkle', colors:['#eaf3fb','#ffffff','#a9d8ff','#ffffff','#3b4a5a'], bg:'cloudDots',     frame:'polaroid',tape:'washi' },
-  { name:'格纹野餐', grp:'可爱', title:'wave', colors:['#fdf0f2','#ffffff','#8fd3a4','#ffffff','#3a2d2f'], bg:'gingham',       frame:'polaroid',tape:'washi' },
-  { name:'海报·瑞士网格', grp:'海报', title:'kicker', colors:['#f1eee6','#111111','#e2231a','#ffffff','#111111'], bg:'pstSwiss', frame:'outline', tape:'none' },
-  { name:'海报·构成主义', grp:'海报', title:'banner', colors:['#eee4cd','#ffffff','#d62f26','#ffffff','#151515'], bg:'pstConstruct', frame:'polaroid', tape:'none' },
-  { name:'海报·波普网点', grp:'海报', title:'cutout', colors:['#ffd23f','#ffffff','#e8362c','#ffffff','#111111'], bg:'pstPop', frame:'polaroid', tape:'none' },
-  { name:'海报·电影', grp:'海报', title:'masthead', colors:['#0d0d10','#f4efe6','#e9561f','#ffffff','#f4efe6'], bg:'pstCinema', frame:'outline', tape:'none' },
+  { name:'大刊头', grp:'杂志版式', title:'masthead',   colors:['#f9f8f5','#1d1d1f','#c9c2b6','#ffffff','#1d1d1f'], bg:'magMast',       frame:'magpage', tape:'staple'  },
+  { name:'杂志封面', grp:'杂志版式', title:'magazine', colors:['#f4f6fa','#ffffff','#e2231a','#ffffff','#1d1d1f'], bg:'magCover',      frame:'magpage', tape:'staple'  },
+  { name:'编辑排版', grp:'杂志版式', title:'kicker', colors:['#ffffff','#1d1d1f','#00aeef','#ffffff','#1d1d1f'], bg:'magGrid',       frame:'magpage', tape:'clip'  },
+  { name:'色块海报', grp:'杂志版式', title:'label', colors:['#f2f3f6','#ffffff','#ec008c','#ffffff','#1d1d1f'], bg:'magColor',      frame:'magpage', tape:'pin'  },
+  { name:'报纸版面', grp:'杂志版式', title:'masthead', colors:['#ecebe6','#ffffff','#8a2a2a','#ffffff','#1f1a14'], bg:'magNews',       frame:'magpage', tape:'staple'  },
+  { name:'展签留白', grp:'杂志版式', title:'italicMag', colors:['#ffffff','#cccccc','#1d1d1f','#ffffff','#1d1d1f'], bg:'magLabel',      frame:'magpage', tape:'clip'  },
+  { name:'对开内页', grp:'杂志版式', title:'masthead', colors:['#f8f7f5','#ffffff','#1d1d1f','#ffffff','#1d1d1f'], bg:'magSpread',     frame:'magpage', tape:'staple'  },
+  { name:'纸·大刊头', grp:'纸张', title:'masthead', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperMast',   frame:'ledger', tape:'clip' },
+  { name:'纸·信息框', grp:'纸张', title:'boxed', colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperBox',    frame:'ledger', tape:'washi' },
+  { name:'纸·邮戳', grp:'纸张', title:'stamp',   colors:['#e9e4d6','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperPost',   frame:'stamp', tape:'seal' },
+  { name:'纸·信息栏', grp:'纸张', title:'kicker', colors:['#ece8dc','#f6f3ea','#a01820','#ffffff','#1a1a1a'], bg:'paperLedger', frame:'ledger', tape:'clip' },
+  { name:'纸·角标', grp:'纸张', title:'issue',   colors:['#ece8dc','#a01820','#a01820','#ffffff','#1a1a1a'], bg:'paperCorner', frame:'ledger', tape:'washi' },
+  { name:'经典羊皮', grp:'纸张', title:'italicMag', colors:['#e8d9c2','#f3ebd9','#c49a6c','#f5eee1','#3b2d1f'], bg:'parchment',     frame:'parchment',    tape:'seal' },
+  { name:'云朵波点', grp:'可爱', title:'sparkle', colors:['#eaf3fb','#ffffff','#a9d8ff','#ffffff','#3b4a5a'], bg:'cloudDots',     frame:'scallop',tape:'bow' },
+  { name:'格纹野餐', grp:'可爱', title:'wave', colors:['#fdf0f2','#ffffff','#8fd3a4','#ffffff','#3a2d2f'], bg:'gingham',       frame:'scallop',tape:'clothespin' },
+  { name:'海报·瑞士网格', grp:'海报', title:'kicker', colors:['#f1eee6','#111111','#e2231a','#ffffff','#111111'], bg:'pstSwiss', frame:'popblock', tape:'staple' },
+  { name:'海报·构成主义', grp:'海报', title:'banner', colors:['#eee4cd','#ffffff','#d62f26','#ffffff','#151515'], bg:'pstConstruct', frame:'popblock', tape:'pin' },
+  { name:'海报·波普网点', grp:'海报', title:'cutout', colors:['#ffd23f','#ffffff','#e8362c','#ffffff','#111111'], bg:'pstPop', frame:'popblock', tape:'heart' },
+  { name:'海报·电影', grp:'海报', title:'masthead', colors:['#0d0d10','#f4efe6','#e9561f','#ffffff','#f4efe6'], bg:'pstCinema', frame:'film', tape:'pin' },
   { name:'撕边海报', grp:'撕纸拼贴', title:'sticker', colors:['#f2ede4','#ffffff','#ff5f56','#fff8ee','#1a1a1a'], bg:'poster',        frame:'torn',    tape:'washi' },
-  { name:'撕页·杂志剪报', grp:'撕纸拼贴', title:'ransom', colors:['#cdbfa8','#f8f2e4','#c9573a','#ffffff','#2b2b2b'], bg:'tornClip', frame:'polaroid', tape:'none' },
-  { name:'撕页·撕纸拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fbf7ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCollage', frame:'polaroid', tape:'none' },
-  { name:'撕页·翻角连页', grp:'撕纸拼贴', title:'ransom', colors:['#e6dece','#fffdf6','#d33a2f','#ffffff','#2b2b2b'], bg:'tornRip', frame:'polaroid', tape:'none' },
-  { name:'撕纸·条纹拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornStripe', frame:'polaroid', tape:'none' },
-  { name:'撕纸·侧边拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fdf9f0','#ffffff','#d4ebdd','#ffffff','#3a2e30'], bg:'tornSide', frame:'polaroid', tape:'none' },
-  { name:'撕纸·牛皮纸框', grp:'撕纸拼贴', title:'sticker', colors:['#d7b98e','#fffaf0','#f6c9d4','#ffffff','#3a2e30'], bg:'tornFrame', frame:'polaroid', tape:'none' },
-  { name:'撕纸·对角拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCorner', frame:'polaroid', tape:'none' },
-  { name:'撕纸·补丁拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#faf4e6','#ffffff','#fbe7a6','#ffffff','#3a2e30'], bg:'tornPatch', frame:'polaroid', tape:'none' },
-  { name:'折页', grp:'界面窗口', title:'kicker', colors:['#f5f3ee','#d8d5ce','#d8d5ce','#ffffff','#333333'], bg:'appLight', frame:'outline', tape:'none', layout:'accordion' },
-  { name:'折页·暖米', grp:'界面窗口', title:'masthead', colors:['#f2efe6','#cfc6b2','#cfc6b2','#ffffff','#3a352e'], bg:'accordionBg', frame:'outline', tape:'none', layout:'accordion' },
-  { name:'浅色系统', grp:'界面窗口', title:'text', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], bg:'appLight',      frame:'fold',    tape:'none'  },
+  { name:'撕页·杂志剪报', grp:'撕纸拼贴', title:'ransom', colors:['#cdbfa8','#f8f2e4','#c9573a','#ffffff','#2b2b2b'], bg:'tornClip', frame:'torn', tape:'washi' },
+  { name:'撕页·撕纸拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fbf7ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCollage', frame:'torn', tape:'washi' },
+  { name:'撕页·翻角连页', grp:'撕纸拼贴', title:'ransom', colors:['#e6dece','#fffdf6','#d33a2f','#ffffff','#2b2b2b'], bg:'tornRip', frame:'torn', tape:'clip' },
+  { name:'撕纸·条纹拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornStripe', frame:'torn', tape:'washi' },
+  { name:'撕纸·侧边拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fdf9f0','#ffffff','#d4ebdd','#ffffff','#3a2e30'], bg:'tornSide', frame:'torn', tape:'clothespin' },
+  { name:'撕纸·牛皮纸框', grp:'撕纸拼贴', title:'sticker', colors:['#d7b98e','#fffaf0','#f6c9d4','#ffffff','#3a2e30'], bg:'tornFrame', frame:'torn', tape:'clothespin' },
+  { name:'撕纸·对角拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#fcf8ef','#ffffff','#f6c9d4','#ffffff','#3a2e30'], bg:'tornCorner', frame:'torn', tape:'washi' },
+  { name:'撕纸·补丁拼贴', grp:'撕纸拼贴', title:'sticker', colors:['#faf4e6','#ffffff','#fbe7a6','#ffffff','#3a2e30'], bg:'tornPatch', frame:'torn', tape:'staple' },
+  { name:'折页', grp:'界面窗口', title:'kicker', colors:['#f5f3ee','#d8d5ce','#d8d5ce','#ffffff','#333333'], bg:'appLight', frame:'fold', tape:'washi', layout:'accordion' },
+  { name:'折页·暖米', grp:'界面窗口', title:'masthead', colors:['#f2efe6','#cfc6b2','#cfc6b2','#ffffff','#3a352e'], bg:'accordionBg', frame:'fold', tape:'washi', layout:'accordion' },
+  { name:'浅色系统', grp:'界面窗口', title:'text', colors:['#f5f5f7','#ffffff','#d1d1d6','#ffffff','#1d1d1f'], bg:'appLight',      frame:'glass',    tape:'none'  },
   { name:'网页展示', grp:'界面窗口', title:'kicker', colors:['#ffffff','#f6f6f6','#4a9eff','#ffffff','#1d1d1f'], bg:'webLight',      frame:'window',  tape:'none'  },
-  { name:'标尺窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'rulerWin',      frame:'outline', tape:'none'  },
-  { name:'侧栏窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'sideWin',       frame:'outline', tape:'none'  },
-  { name:'双线圈本', grp:'界面窗口', title:'sticker', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], bg:'twinCoil',      frame:'polaroid',tape:'none'  },
-  { name:'暗夜迷雾', grp:'悬疑档案', title:'drip', colors:['#0f141c','#1b2230','#8b0000','#18202e','#e2e8f0'], bg:'suspenseFog',   frame:'window',  tape:'none'  },
-  { name:'犯罪现场', grp:'悬疑档案', title:'tape', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], bg:'crimeDna',      frame:'outline', tape:'none'  },
-  { name:'绝密档案', grp:'悬疑档案', title:'stamp', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], bg:'classifiedDossier', frame:'index', tape:'none' },
-  { name:'侦探线索', grp:'悬疑档案', title:'ransom', colors:['#2b231d','#3a2f26','#dc2626','#352b22','#f3eee3'], bg:'detectiveBoard',frame:'polaroid',tape:'none'  },
-  { name:'故障档案', grp:'悬疑档案', title:'glitch', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], bg:'glitchArchive', frame:'window',  tape:'none'  },
-  { name:'夜航星图', grp:'夜景', title:'sparkle', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], bg:'starChart', frame:'fold', tape:'none' },
-  { name:'余烬黄昏', grp:'夜景', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], bg:'emberDusk',  frame:'fold', tape:'none' },
-  { name:'深海潮汐', grp:'夜景', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], bg:'deepSea',    frame:'fold', tape:'none' },
-  { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'fold', tape:'none' },
-  { name:'玫瑰邀请函', grp:'约会票根', title:'invite', colors:['#f3e9df','#fbf7f1','#d6255f','#f8bfd1','#4a2a35'], bg:'dateInvite', frame:'ticket', tape:'none', layout:'flat' },
-  { name:'邮票蓝调', grp:'约会票根', title:'ticketLabel', colors:['#eaf0f3','#fbf9f4','#3e8fbe','#d7e8f2','#2f4252'], bg:'dateStubs', frame:'ticket', tape:'none', layout:'dateTilt' },
-  { name:'电报信笺', grp:'约会票根', title:'postmark', colors:['#ece6dd','#fffdf8','#2f7ea8','#e2eef4','#34414d'], bg:'dateTelegram', frame:'telegram', tape:'none', layout:'dateTilt' },
-  { name:'准备清单', grp:'约会票根', title:'invite', colors:['#f2e8de','#fffbf5','#c21f59','#fbe4ec','#4a2a35'], bg:'dateTelegram', frame:'telegram', tape:'none', layout:'dateTilt' },
-  { name:'剧场小票', grp:'约会票根', title:'ticketLabel', colors:['#e9e4f0','#fbf8f3','#6b78d6','#e1e4f7','#2e3350'], bg:'dateInvite', frame:'ticket', tape:'none', layout:'dateLadder' },
-  { name:'莓红合集', grp:'约会票根', title:'postmark', colors:['#f9dbe5','#fff5f8','#e0245e','#fbc6d6','#5a1f35'], bg:'dateStubs', frame:'ticket', tape:'none', layout:'flat' }
+  { name:'标尺窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'rulerWin',      frame:'window', tape:'none'  },
+  { name:'侧栏窗口', grp:'界面窗口', title:'text', colors:['#f5f5f7','#d1d1d6','#007aff','#ffffff','#1d1d1f'], bg:'sideWin',       frame:'window', tape:'none'  },
+  { name:'双线圈本', grp:'界面窗口', title:'sticker', colors:['#f5f5f7','#ffffff','#9bb2a8','#ffffff','#1d1d1f'], bg:'twinCoil',      frame:'index',tape:'clip'  },
+  { name:'暗夜迷雾', grp:'悬疑档案', title:'drip', colors:['#0f141c','#1b2230','#8b0000','#18202e','#e2e8f0'], bg:'suspenseFog',   frame:'dossier',  tape:'clip' },
+  { name:'犯罪现场', grp:'悬疑档案', title:'tape', colors:['#141518','#1f2229','#f3c614','#1f2229','#f5f5f7'], bg:'crimeDna',      frame:'dossier', tape:'pin' },
+  { name:'绝密档案', grp:'悬疑档案', title:'stamp', colors:['#d8ccb0','#e5dac0','#b91e1e','#f3ebd9','#2a2218'], bg:'classifiedDossier', frame:'dossier', tape:'clip' },
+  { name:'侦探线索', grp:'悬疑档案', title:'ransom', colors:['#2b231d','#3a2f26','#dc2626','#352b22','#f3eee3'], bg:'detectiveBoard',frame:'dossier',tape:'pin' },
+  { name:'故障档案', grp:'悬疑档案', title:'glitch', colors:['#0d1117','#161b22','#00e5ff','#161b22','#c9d1d9'], bg:'glitchArchive', frame:'dossier',  tape:'staple' },
+  { name:'夜航星图', grp:'夜景', title:'sparkle', colors:['#1f2547','#2b3260','#f2c66d','#161a35','#e8ecff'], bg:'starChart', frame:'neon', tape:'sparkle' },
+  { name:'余烬黄昏', grp:'夜景', colors:['#3a2233','#523044','#ffb067','#2a1824','#fff0e2'], bg:'emberDusk',  frame:'neon', tape:'sparkle' },
+  { name:'深海潮汐', grp:'夜景', colors:['#0b2a44','#123b5c','#6fd3ff','#071c2f','#e2f5ff'], bg:'deepSea',    frame:'neon', tape:'sparkle' },
+  { name:'霓虹雨夜', grp:'夜景', colors:['#161127','#221a3c','#ff4fa3','#0c0a16','#f4eeff'], bg:'neonRain',   frame:'neon', tape:'sparkle' },
+  { name:'玫瑰邀请函', grp:'约会票根', title:'invite', colors:['#f3e9df','#fbf7f1','#d6255f','#f8bfd1','#4a2a35'], bg:'dateInvite', frame:'ticket', tape:'seal', layout:'flat' },
+  { name:'邮票蓝调', grp:'约会票根', title:'ticketLabel', colors:['#eaf0f3','#fbf9f4','#3e8fbe','#d7e8f2','#2f4252'], bg:'dateStubs', frame:'ticket', tape:'staple', layout:'dateTilt' },
+  { name:'电报信笺', grp:'约会票根', title:'postmark', colors:['#ece6dd','#fffdf8','#2f7ea8','#e2eef4','#34414d'], bg:'dateTelegram', frame:'telegram', tape:'clip', layout:'dateTilt' },
+  { name:'准备清单', grp:'约会票根', title:'invite', colors:['#f2e8de','#fffbf5','#c21f59','#fbe4ec','#4a2a35'], bg:'dateTelegram', frame:'telegram', tape:'clothespin', layout:'dateTilt' },
+  { name:'剧场小票', grp:'约会票根', title:'ticketLabel', colors:['#e9e4f0','#fbf8f3','#6b78d6','#e1e4f7','#2e3350'], bg:'dateInvite', frame:'ticket', tape:'pin', layout:'dateLadder' },
+  { name:'莓红合集', grp:'约会票根', title:'postmark', colors:['#f9dbe5','#fff5f8','#e0245e','#fbc6d6','#5a1f35'], bg:'dateStubs', frame:'ticket', tape:'heart', layout:'flat' },
+  { name:'宋韵青瓷', grp:'宋韵', title:'ink', colors:['#e9efea','#f6faf7','#8fa399','#ffffff','#2e3a34'], bg:'songPorcelain', frame:'lattice',     tape:'chop' },
+  { name:'宋式绢本', grp:'宋韵', title:'ink', colors:['#efe4c9','#f7f0df','#b8a074','#fffaf0','#4a3b28'], bg:'songSilk',      frame:'scroll',     tape:'chop' },
+  { name:'宋式雕窗', grp:'宋韵', title:'ink', colors:['#f3ece0','#8a7a5e','#8a7a5e','#ffffff','#3a2f24'], bg:'songWindow',    frame:'lattice',   tape:'chop' },
+  { name:'点茶暗香', grp:'宋韵', title:'seal', colors:['#efe9dc','#f7f2e8','#a89a7c','#ffffff','#3d3427'], bg:'songTea',       frame:'lattice', tape:'chop' },
+  { name:'哥窑开片', grp:'宋韵', title:'seal', colors:['#e6e2d6','#f2efe6','#9a8f7a','#ffffff','#4a443a'], bg:'crackedGlaze',  frame:'lattice',     tape:'chop' },
+  { name:'水墨山水', grp:'宋韵', title:'ink', colors:['#f4f1e8','#faf8f2','#c8423a','#ffffff','#2a2a2a'], bg:'inkMountain',   frame:'scroll',     tape:'chop' },
+  { name:'竹影月夜', grp:'宋韵', title:'ink', colors:['#eef2ee','#f7faf7','#5a7a62','#ffffff','#2c3a30'], bg:'bambooMoon',    frame:'scroll',     tape:'sparkle' },
+  { name:'卷轴装裱', grp:'宋韵', title:'seal', colors:['#f2e8d5','#faf3e4','#b8332b','#fffdf8','#3a2f24'], bg:'scroll',        frame:'scroll', tape:'chop' }
 ]
 
 function clearPresetHighlight() {
@@ -1222,31 +1269,61 @@ function initColors() {
 
   $('autoColorBtn').onclick = () => {
     if (!state.images.length) { toast('请先在"截图"面板添加至少 1 张截图'); return; }
-    const img = state.images[0].img;
-    const cv = document.createElement('canvas');
-    cv.width = 40; cv.height = 40;
-    const ctx = cv.getContext('2d');
-    ctx.drawImage(img, 0, 0, 40, 40);
-    const data = ctx.getImageData(0, 0, 40, 40).data;
-    let r = 0, g = 0, b = 0, count2 = 0;
-    for (let i = 0; i < data.length; i += 16) { r += data[i]; g += data[i+1]; b += data[i+2]; count2++; }
-    r = Math.round(r / count2); g = Math.round(g / count2); b = Math.round(b / count2);
-    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-    let bgR, bgG, bgB;
-    if (lum > 128) {
-      bgR = Math.round(r * 0.6 + 255 * 0.4); bgG = Math.round(g * 0.6 + 255 * 0.4); bgB = Math.round(b * 0.6 + 255 * 0.4);
-    } else { bgR = Math.round(r * 1.2); bgG = Math.round(g * 1.2); bgB = Math.round(b * 1.2); }
-    const bgHex = hex([bgR, bgG, bgB]);
-    const frameHex = lum > 128 ? '#ffffff' : hex([Math.min(255, bgR+30), Math.min(255, bgG+30), Math.min(255, bgB+30)]);
-    const tapeHex = hex([Math.max(0,r-30), Math.max(0,g-30), Math.max(0,b-30)]);
-    const chipHex = lum > 128 ? '#ffffff' : '#1e2025';
-    const textHex = lum > 128 ? '#1d1d1f' : '#f5f5f7';
-    $('cBase').value = bgHex; $('cFrame').value = frameHex; $('cTape').value = tapeHex;
-    $('cChip').value = chipHex; $('cText').value = textHex;
-    document.body.style.background = bgHex;
+    const SZ = 48, NB = 24, bins = new Array(NB).fill(0), binS = new Array(NB).fill(0);
+    let lumSum = 0, n = 0, chromaSum = 0, ar = 0, ag = 0, ab = 0;
+    const cv = document.createElement('canvas'); cv.width = SZ; cv.height = SZ;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    state.images.forEach(it => {
+      ctx.clearRect(0, 0, SZ, SZ); ctx.drawImage(it.img, 0, 0, SZ, SZ);
+      const d = ctx.getImageData(0, 0, SZ, SZ).data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i] / 255, g = d[i + 1] / 255, bl = d[i + 2] / 255;
+        const mx = Math.max(r, g, bl), mn = Math.min(r, g, bl), l = (mx + mn) / 2, dl = mx - mn;
+        lumSum += l; n++; ar += r; ag += g; ab += bl;
+        if (l > 0.93 || l < 0.07 || dl < 0.08) continue;          // 忽略近白、近黑、灰色像素
+        const s = dl / (1 - Math.abs(2 * l - 1));
+        let h = mx === r ? ((g - bl) / dl + 6) % 6 : mx === g ? (bl - r) / dl + 2 : (r - g) / dl + 4;
+        h *= 60;
+        const wgt = s * (1 - Math.abs(2 * l - 1) * 0.8);          // 偏爱鲜明、明度适中的颜色
+        const bi = Math.floor(h / (360 / NB)) % NB;
+        bins[bi] += wgt; binS[bi] += s * wgt; chromaSum += wgt;
+      }
+    });
+    const avgL = lumSum / n, dark = avgL < 0.4;
+    let H = 28, S = 0.14;                                            // 灰度截图：给一个温和的暖色倾向
+    if (chromaSum / n > 0.015) {
+      let best = 0, bestScore = -1;
+      for (let i = 0; i < NB; i++) {
+        const sc = bins[(i + NB - 1) % NB] * 0.5 + bins[i] + bins[(i + 1) % NB] * 0.5;
+        if (sc > bestScore) { bestScore = sc; best = i; }
+      }
+      let vx = 0, vy = 0, ws = 0, wsum = 0;
+      [-1, 0, 1].forEach(o => {
+        const bi = (best + o + NB) % NB, ang = (bi + 0.5) * (360 / NB) * Math.PI / 180;
+        vx += Math.cos(ang) * bins[bi]; vy += Math.sin(ang) * bins[bi]; ws += binS[bi]; wsum += bins[bi];
+      });
+      H = (Math.atan2(vy, vx) * 180 / Math.PI + 360) % 360;
+      S = wsum ? ws / wsum : 0.4;
+    }
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const accS = chromaSum / n > 0.015 ? clamp(S, 0.38, 0.72) : 0.16;
+    const hslHex = (h, s, l) => {
+      s = clamp(s, 0, 1); l = clamp(l, 0, 1);
+      const k = m => (m + h / 30) % 12, a = s * Math.min(l, 1 - l);
+      const f = m => l - a * Math.max(-1, Math.min(k(m) - 3, Math.min(9 - k(m), 1)));
+      return hex([Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)]);
+    };
+    let pal;
+    if (!dark) pal = { base: hslHex(H, clamp(accS * 0.55, 0.1, 0.32), 0.93), frame: hslHex(H, clamp(accS * 0.3, 0.06, 0.2), 0.985),
+      tape: hslHex(H, accS, 0.5), chip: hslHex(H, accS * 0.6, 0.88), text: hslHex(H, clamp(accS * 0.6, 0.1, 0.35), 0.17) };
+    else pal = { base: hslHex(H, clamp(accS * 0.5, 0.1, 0.3), 0.11), frame: hslHex(H, clamp(accS * 0.45, 0.1, 0.28), 0.17),
+      tape: hslHex(H, accS, 0.62), chip: hslHex(H, clamp(accS * 0.5, 0.1, 0.3), 0.22), text: hslHex(H, clamp(accS * 0.3, 0.05, 0.15), 0.93) };
+    $('cBase').value = pal.base; $('cFrame').value = pal.frame; $('cTape').value = pal.tape;
+    $('cChip').value = pal.chip; $('cText').value = pal.text;
+    document.body.style.background = pal.base;
     clearPresetHighlight();
     schedule(true, true, true);
-    toast('已提取并生成和谐配色！');
+    toast('已按截图主色调生成配色');
   };
 }
 
@@ -1438,6 +1515,15 @@ function geometry() {
     case 'stamp':    sidePad = 20 * scale; topPad = 20 * scale; botPad = 20 * scale; break;
     case 'ticket':   sidePad = 22 * scale; topPad = 22 * scale; botPad = 66 * scale; break;
     case 'telegram': sidePad = 26 * scale; topPad = 26 * scale; botPad = 46 * scale; break;
+    case 'dossier':  sidePad = 20 * scale; topPad = 40 * scale; botPad = 56 * scale; break;
+    case 'neon':     sidePad = 22 * scale; topPad = 22 * scale; botPad = 22 * scale; break;
+    case 'scroll':   sidePad = 26 * scale; topPad = 40 * scale; botPad = 40 * scale; break;
+    case 'lattice':  sidePad = 30 * scale; topPad = 30 * scale; botPad = 30 * scale; break;
+    case 'magpage':  sidePad = 18 * scale; topPad = 38 * scale; botPad = 38 * scale; break;
+    case 'ledger':   sidePad = 26 * scale; topPad = 20 * scale; botPad = 44 * scale; break;
+    case 'parchment': sidePad = 28 * scale; topPad = 28 * scale; botPad = 36 * scale; break;
+    case 'popblock': sidePad = 14 * scale; topPad = 14 * scale; botPad = 30 * scale; break;
+    case 'scallop':  sidePad = 24 * scale; topPad = 24 * scale; botPad = 24 * scale; break;
   }
 
   const gap = NEWLAY
@@ -1497,6 +1583,110 @@ function drawStampEdge(c, x, y, w, h, toothW) {
   for (let i = 0; i < nTop; i++) c.quadraticCurveTo(x + w - stepX * (i + 0.5), y + h + depth, x + w - stepX * (i + 1), y + h);
   for (let i = 0; i < nSide; i++) c.quadraticCurveTo(x - depth, y + h - stepY * (i + 0.5), x, y + h - stepY * (i + 1));
   c.closePath();
+}
+
+function epRR(c, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function drawDecor(c, kind, fw, fh, s, R, accent) {
+  const ar = rgb(accent), ac = a => `rgba(${ar[0]},${ar[1]},${ar[2]},${a})`;
+  const dk = `rgb(${ar[0] * 0.6 | 0},${ar[1] * 0.6 | 0},${ar[2] * 0.6 | 0})`;
+  const jx = (R() - 0.5) * 24 * s;
+  c.save();
+  if (kind === 'clip') {                                   // 回形针
+    c.translate(fw * 0.22 + jx * 0.5, 10 * s); c.rotate(-0.12 + (R() - 0.5) * 0.1); c.scale(0.95 * s, 0.95 * s);
+    const P = new Path2D('M -4 10 V -12 a 4 4 0 0 1 8 0 V 14 a 8 8 0 0 1 -16 0 V -14 a 12 12 0 0 1 24 0 V 6');
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 4 * s; c.shadowOffsetY = 2 * s;
+    c.lineWidth = 3; c.strokeStyle = '#8b95a1'; c.stroke(P);
+    c.shadowColor = 'transparent'; c.lineWidth = 1.1; c.strokeStyle = 'rgba(255,255,255,0.75)'; c.stroke(P);
+  } else if (kind === 'pin') {                             // 图钉
+    c.translate(fw / 2 + jx, 12 * s);
+    c.shadowColor = 'rgba(0,0,0,0.38)'; c.shadowBlur = 6 * s; c.shadowOffsetX = 3 * s; c.shadowOffsetY = 5 * s;
+    const g = c.createRadialGradient(-3 * s, -3 * s, 1 * s, 0, 0, 10 * s);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(0.28, ac(1)); g.addColorStop(1, dk);
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, 9.5 * s, 0, Math.PI * 2); c.fill();
+    c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 1.3 * s;
+    c.beginPath(); c.arc(0, 0, 6 * s, Math.PI * 0.9, Math.PI * 1.6); c.stroke();
+  } else if (kind === 'clothespin') {                      // 木夹
+    c.translate(fw * 0.5 + jx, -8 * s); c.rotate((R() - 0.5) * 0.2);
+    const wg = c.createLinearGradient(-8 * s, 0, 8 * s, 0);
+    wg.addColorStop(0, '#c4945a'); wg.addColorStop(0.5, '#e4c08c'); wg.addColorStop(1, '#b98750');
+    c.shadowColor = 'rgba(0,0,0,0.32)'; c.shadowBlur = 5 * s; c.shadowOffsetY = 3 * s;
+    c.fillStyle = wg; c.fillRect(-8 * s, 0, 16 * s, 42 * s);
+    c.shadowColor = 'transparent';
+    c.strokeStyle = 'rgba(90,55,20,0.55)'; c.lineWidth = 1.2 * s;
+    c.beginPath(); c.moveTo(0, 14 * s); c.lineTo(0, 42 * s); c.stroke();
+    c.beginPath(); c.moveTo(-8 * s, 9 * s); c.lineTo(8 * s, 9 * s); c.stroke();
+    c.fillStyle = '#9aa3ad'; c.beginPath(); c.arc(0, 11 * s, 3.6 * s, 0, Math.PI * 2); c.fill();
+    c.fillStyle = 'rgba(255,255,255,0.7)'; c.beginPath(); c.arc(-1 * s, 10 * s, 1.2 * s, 0, Math.PI * 2); c.fill();
+  } else if (kind === 'staple') {                          // 订书钉
+    c.translate(fw * 0.16, 12 * s); c.rotate(0.55); c.lineCap = 'round';
+    c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 3 * s; c.shadowOffsetY = 1.5 * s;
+    c.strokeStyle = '#69737e'; c.lineWidth = 4 * s; c.lineCap = 'butt'; c.beginPath(); c.moveTo(-15 * s, 0); c.lineTo(15 * s, 0); c.stroke();
+    c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,0.65)'; c.lineWidth = 1.2 * s;
+    c.beginPath(); c.moveTo(-14 * s, -1.2 * s); c.lineTo(14 * s, -1.2 * s); c.stroke();
+    c.strokeStyle = 'rgba(0,0,0,0.25)'; c.lineWidth = 0.9 * s;
+    c.beginPath(); c.moveTo(-14 * s, 1.4 * s); c.lineTo(14 * s, 1.4 * s); c.stroke();
+  } else if (kind === 'bow') {                             // 蝴蝶结
+    c.translate(fw * 0.5 + jx * 0.4, 6 * s); c.rotate((R() - 0.5) * 0.15); c.scale(s * 1.05, s * 1.05);
+    const fillShadow = () => { c.shadowColor = 'rgba(0,0,0,0.25)'; c.shadowBlur = 4; c.shadowOffsetY = 2; };
+    c.fillStyle = ac(0.96);
+    fillShadow(); c.beginPath(); c.moveTo(-2, 3); c.lineTo(-13, 23); c.lineTo(-7, 21); c.lineTo(-4, 26); c.lineTo(2, 5); c.closePath(); c.fill();
+    fillShadow(); c.beginPath(); c.moveTo(2, 3); c.lineTo(13, 23); c.lineTo(7, 21); c.lineTo(4, 26); c.lineTo(-2, 5); c.closePath(); c.fill();
+    [-1, 1].forEach(sx => {
+      fillShadow(); c.beginPath(); c.moveTo(0, 0); c.bezierCurveTo(sx * 10, -16, sx * 32, -14, sx * 28, 1); c.bezierCurveTo(sx * 26, 14, sx * 10, 10, 0, 0); c.closePath(); c.fill();
+      c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,0.45)'; c.lineWidth = 1.2;
+      c.beginPath(); c.moveTo(sx * 6, -2); c.bezierCurveTo(sx * 14, -8, sx * 22, -7, sx * 23, -1); c.stroke();
+    });
+    c.shadowColor = 'transparent'; c.fillStyle = dk; c.beginPath(); c.ellipse(0, 1, 5, 5.5, 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = 'rgba(255,255,255,0.35)'; c.beginPath(); c.ellipse(-1.5, -0.5, 1.8, 2.2, 0, 0, Math.PI * 2); c.fill();
+  } else if (kind === 'heart') {                           // 爱心贴
+    c.translate(fw - 20 * s, 10 * s); c.rotate(0.3); c.scale(s * 1.05, s * 1.05);
+    const H = new Path2D('M 0 12 C -22 -2 -14 -20 0 -9 C 14 -20 22 -2 0 12 Z');
+    c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 5; c.shadowOffsetY = 2;
+    c.lineJoin = 'round'; c.lineWidth = 5; c.strokeStyle = '#ffffff'; c.stroke(H);
+    c.shadowColor = 'transparent'; c.fillStyle = ac(1); c.fill(H);
+    c.fillStyle = 'rgba(255,255,255,0.5)'; c.beginPath(); c.ellipse(-7, -7, 4.2, 2.2, -0.6, 0, Math.PI * 2); c.fill();
+  } else if (kind === 'seal') {                            // 火漆印
+    c.translate(fw * 0.5 + jx * 0.5, 12 * s); c.rotate(R() * 0.6);
+    const r = 15 * s, ph = R() * 6;
+    c.beginPath();
+    for (let k = 0; k <= 56; k++) {
+      const a = k / 56 * Math.PI * 2, rr = r * (1 + 0.07 * Math.sin(a * 7 + ph) + 0.03 * Math.sin(a * 3 + ph * 2));
+      k ? c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : c.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+    }
+    c.closePath();
+    c.shadowColor = 'rgba(0,0,0,0.38)'; c.shadowBlur = 6 * s; c.shadowOffsetX = 2 * s; c.shadowOffsetY = 4 * s;
+    const g = c.createRadialGradient(-4 * s, -4 * s, 1 * s, 0, 0, r * 1.1);
+    g.addColorStop(0, '#d9444c'); g.addColorStop(1, '#8c1a22');
+    c.fillStyle = g; c.fill();
+    c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,0.22)'; c.lineWidth = 1.2 * s;
+    c.beginPath(); c.arc(0, 0, r * 0.66, 0, Math.PI * 2); c.stroke();
+    c.fillStyle = 'rgba(255,215,215,0.6)'; c.font = `700 ${15 * s}px "Playfair Display", Georgia, serif`;
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', 0, 1 * s);
+    c.strokeStyle = 'rgba(255,255,255,0.35)'; c.lineWidth = 1.4 * s;
+    c.beginPath(); c.arc(0, 0, r * 0.88, Math.PI * 1.1, Math.PI * 1.45); c.stroke();
+  } else if (kind === 'chop') {                            // 朱印
+    c.translate(fw - 22 * s, 14 * s); c.rotate(-0.08);
+    c.shadowColor = 'rgba(0,0,0,0.22)'; c.shadowBlur = 3 * s; c.shadowOffsetY = 1.5 * s;
+    c.fillStyle = '#b3261e'; c.fillRect(-13 * s, -13 * s, 26 * s, 26 * s); c.shadowColor = 'transparent';
+    c.strokeStyle = 'rgba(255,235,225,0.85)'; c.lineWidth = 1.4 * s; c.strokeRect(-10 * s, -10 * s, 20 * s, 20 * s);
+    c.fillStyle = 'rgba(255,235,225,0.92)'; c.font = `700 ${15 * s}px "Noto Serif SC", "Songti SC", serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('印', 0, 1 * s);
+  } else if (kind === 'sparkle') {                         // 星光
+    const star = (x, y, r, rot) => {
+      c.save(); c.translate(x, y); c.rotate(rot); c.beginPath();
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * 0.26 : r; c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      c.closePath(); c.fill(); c.restore();
+    };
+    c.fillStyle = '#fff3c4'; c.shadowColor = 'rgba(255,226,140,0.95)'; c.shadowBlur = 10 * s;
+    star(fw - 12 * s, 10 * s, 13 * s, 0); star(12 * s, 24 * s, 7 * s, 0.3); star(fw - 28 * s, fh - 6 * s, 8 * s, 0.2);
+    c.beginPath(); c.arc(fw * 0.62, -2 * s, 1.8 * s, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.arc(8 * s, fh - 20 * s, 1.6 * s, 0, Math.PI * 2); c.fill();
+  }
+  c.restore();
 }
 
 function drawWashiTape(c, x, y, width, height, angle, style, R, tapeCustomColor) {
@@ -1658,7 +1848,7 @@ function dateBackground(c, w, h, cb, o) {
     lt('NO. 1028', 62, 54, 11, aA(0.9), 3, 'left');
     c.fillStyle = aA(0.55); c.fillRect(60, h - 96, w - 120, 1.2);
     lt('T E L E G R A M', w / 2, h - 70, 20, acc, 8);
-    lt('FROM  Q.      TO  晚晚      SENT  10/21 22:15', w / 2, h - 42, 11, aA(0.85), 2);
+    lt('FROM  Q.      TO  XX      SENT  10/21 22:15', w / 2, h - 42, 11, aA(0.85), 2);
     lt('Created by Q.', 64, h - 70, 18, aA(0.95), 0.5, 'left', '"Pinyon Script", "Playfair Display", Georgia, serif', true);
     c.save(); c.translate(w - 110, h - 68); c.rotate(-0.2); c.strokeStyle = RED; c.globalAlpha = 0.55; c.lineWidth = 1.6;
     c.beginPath(); c.arc(0, 0, 30, 0, Math.PI * 2); c.stroke(); c.beginPath(); c.arc(0, 0, 24, 0, Math.PI * 2); c.stroke();
@@ -2416,8 +2606,8 @@ function creditLine(c, w, h, cb, o) {
       break;
     case 'parchment':
       const pc = tcol(0.88);
-      const tw2 = T('Penned by Q.', w / 2, h - 34, { size: 16, italic: true, family: F.fell, sp: 3, col: pc });
-      bgDiamond(c, w / 2 - tw2 / 2 - 16, h - 34, 3, pc); bgDiamond(c, w / 2 + tw2 / 2 + 16, h - 34, 3, pc);
+      const tw2 = T('Penned by Q.', w / 2, h - 13, { size: 14, italic: true, family: F.fell, sp: 3, col: pc });
+      bgDiamond(c, w / 2 - tw2 / 2 - 16, h - 13, 3, pc); bgDiamond(c, w / 2 + tw2 / 2 + 16, h - 13, 3, pc);
       break;
     case 'cloudDots':
       T('made with ♡ by Q.', w / 2, h - 12, { size: 17, weight: 700, family: F.hand, sp: 1, col: tcol(0.88) });
@@ -2929,8 +3119,8 @@ function renderBookPageBackground(c, w, h) {
     const pcol = tcol(0.42);
     const ptw = bgText(c, "Ex Libris  ·  From the Reader's Shelf", w / 2, 54, { size: 15, italic: true, family: BGF.parch, sp: 3, col: pcol });
     bgDiamond(c, w / 2 - ptw / 2 - 20, 54, 3, pcol); bgDiamond(c, w / 2 + ptw / 2 + 20, 54, 3, pcol);
-    const pbw = bgText(c, '—  Folio I  ·  A Quiet Chapter  —', w / 2, h - 52, { size: 15, italic: true, family: BGF.parch, sp: 3, col: pcol });
-    bgDiamond(c, w / 2 - pbw / 2 - 20, h - 52, 3, pcol); bgDiamond(c, w / 2 + pbw / 2 + 20, h - 52, 3, pcol);
+    const pbw = bgText(c, '—  Folio I  ·  A Quiet Chapter  —', w / 2, h - 44, { size: 15, italic: true, family: BGF.parch, sp: 3, col: pcol });
+    bgDiamond(c, w / 2 - pbw / 2 - 20, h - 44, 3, pcol); bgDiamond(c, w / 2 + pbw / 2 + 20, h - 44, 3, pcol);
     c.strokeStyle = tcol(0.3); c.fillStyle = tcol(0.3); c.lineWidth = 1.2;
     [[26, 26, 1, 1], [w - 26, 26, -1, 1], [26, h - 26, 1, -1], [w - 26, h - 26, -1, -1]].forEach(([x, y, sx, sy]) => {
       const ox = x + sx * 10, oy = y + sy * 10;
@@ -3248,6 +3438,51 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.strokeRect(11 * scale, 11 * scale, fw - 22 * scale, g.fh - 22 * scale);
     c.globalAlpha = 0.5; c.lineWidth = 1 * scale;
     c.strokeRect(16 * scale, 16 * scale, fw - 32 * scale, g.fh - 32 * scale); c.restore();
+  } else if (frameType === 'dossier') {
+    imgR = 2 * scale;
+    const tw = fw * 0.4, ty = 14 * scale;
+    c.beginPath(); c.moveTo(0, g.fh); c.lineTo(0, 6 * scale); c.quadraticCurveTo(0, 0, 6 * scale, 0); c.lineTo(tw, 0);
+    c.lineTo(tw + 10 * scale, ty); c.lineTo(fw - 4 * scale, ty); c.quadraticCurveTo(fw, ty, fw, ty + 4 * scale); c.lineTo(fw, g.fh); c.closePath(); c.fill();
+    c.shadowColor = 'transparent'; c.strokeStyle = tA(0.3); c.lineWidth = 1 * scale; c.stroke();
+  } else if (frameType === 'neon') {
+    imgR = 8 * scale;
+    epRR(c, 0, 0, fw, g.fh, 14 * scale); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.lineWidth = 2.2 * scale; c.shadowColor = tapeCol; c.shadowBlur = 14 * scale;
+    epRR(c, 6 * scale, 6 * scale, fw - 12 * scale, g.fh - 12 * scale, 10 * scale); c.stroke();
+    c.shadowBlur = 0; c.shadowColor = 'transparent'; c.globalAlpha = 0.5; c.lineWidth = 1 * scale;
+    epRR(c, 11 * scale, 11 * scale, fw - 22 * scale, g.fh - 22 * scale, 7 * scale); c.stroke(); c.restore();
+  } else if (frameType === 'scroll') {
+    imgR = 1 * scale;
+    c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.globalAlpha = 0.4; c.lineWidth = 7 * scale; c.strokeRect(11 * scale, 17 * scale, fw - 22 * scale, g.fh - 34 * scale);
+    c.globalAlpha = 0.85; c.lineWidth = 1 * scale; c.strokeRect(6 * scale, 13 * scale, fw - 12 * scale, g.fh - 26 * scale); c.restore();
+  } else if (frameType === 'lattice') {
+    imgR = 0;
+    c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.lineWidth = 3 * scale; c.strokeRect(7 * scale, 7 * scale, fw - 14 * scale, g.fh - 14 * scale);
+    c.globalAlpha = 0.5; c.strokeStyle = textCol; c.lineWidth = 1 * scale; c.strokeRect(15 * scale, 15 * scale, fw - 30 * scale, g.fh - 30 * scale); c.restore();
+  } else if (frameType === 'magpage' || frameType === 'ledger') {
+    imgR = 0; c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill(); c.shadowColor = 'transparent';
+  } else if (frameType === 'parchment') {
+    imgR = 1 * scale;
+    drawTornEdge(c, 0, 0, fw, g.fh, 1.6 * scale, 8 * scale, R); c.fill(); c.shadowColor = 'transparent';
+  } else if (frameType === 'popblock') {
+    imgR = 0; c.shadowColor = 'transparent';
+    c.save(); c.fillStyle = textCol; c.fillRect(8 * scale, 8 * scale, fw, g.fh); c.restore();
+    c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill();
+    c.save(); c.strokeStyle = textCol; c.lineWidth = 3.2 * scale; c.strokeRect(1.6 * scale, 1.6 * scale, fw - 3.2 * scale, g.fh - 3.2 * scale); c.restore();
+  } else if (frameType === 'scallop') {
+    imgR = 6 * scale;
+    const nx = Math.max(3, Math.round(fw / (16 * scale))), ny = Math.max(3, Math.round(g.fh / (16 * scale)));
+    const sx = fw / nx, sy = g.fh / ny, rx = sx / 2, ry = sy / 2;
+    c.beginPath(); c.moveTo(0, 0);
+    for (let k = 0; k < nx; k++) c.arc(sx * (k + 0.5), 0, rx, Math.PI, 0);
+    for (let k = 0; k < ny; k++) c.arc(fw, sy * (k + 0.5), ry, -Math.PI / 2, Math.PI / 2);
+    for (let k = 0; k < nx; k++) c.arc(fw - sx * (k + 0.5), g.fh, rx, 0, Math.PI);
+    for (let k = 0; k < ny; k++) c.arc(0, g.fh - sy * (k + 0.5), ry, Math.PI / 2, 3 * Math.PI / 2);
+    c.closePath(); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.globalAlpha = 0.85; c.lineWidth = 1.4 * scale; c.setLineDash([3 * scale, 4 * scale]);
+    c.strokeRect(11 * scale, 11 * scale, fw - 22 * scale, g.fh - 22 * scale); c.restore();
   } else {
     drawTornEdge(c, 0, 0, fw, g.fh, 2.5 * scale, 12 * scale, R); c.fill();
   }
@@ -3293,6 +3528,74 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   }
   c.restore();
 
+  if (frameType === 'dossier') {
+    c.save(); c.textBaseline = 'middle'; c.fillStyle = tA(0.7); c.font = `700 ${8 * scale}px ${BGF.parch}`;
+    try { c.letterSpacing = `${1.6 * scale}px`; } catch (e) {}
+    c.textAlign = 'left'; c.fillText(`CASE No.${String(i + 1).padStart(3, '0')}`, 12 * scale, 7 * scale);
+    c.translate(fw / 2, g.fh - 24 * scale); c.rotate(-0.04);
+    c.strokeStyle = 'rgba(179,38,30,0.8)'; c.lineWidth = 1.8 * scale; c.strokeRect(-48 * scale, -11 * scale, 96 * scale, 22 * scale);
+    c.fillStyle = 'rgba(179,38,30,0.85)'; c.textAlign = 'center'; c.font = `700 ${12 * scale}px ${BGF.parch}`;
+    try { c.letterSpacing = `${3 * scale}px`; } catch (e) {}
+    c.fillText('CLASSIFIED', 1.5 * scale, 1 * scale); c.restore();
+  } else if (frameType === 'neon') {
+    c.save(); c.fillStyle = tapeCol; c.shadowColor = tapeCol; c.shadowBlur = 8 * scale;
+    [[6, 6], [fw / scale - 6, 6], [6, g.fh / scale - 6], [fw / scale - 6, g.fh / scale - 6]].forEach(([x, y]) => { c.beginPath(); c.arc(x * scale, y * scale, 2.4 * scale, 0, Math.PI * 2); c.fill(); });
+    c.restore();
+  } else if (frameType === 'scroll') {
+    const rod = y => {
+      c.save();
+      const wg = c.createLinearGradient(0, y - 7 * scale, 0, y + 7 * scale);
+      wg.addColorStop(0, '#7a5232'); wg.addColorStop(0.5, '#4a2f1b'); wg.addColorStop(1, '#2f1e12');
+      c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 5 * scale; c.shadowOffsetY = 2 * scale;
+      c.fillStyle = wg; c.fillRect(-8 * scale, y - 7 * scale, fw + 16 * scale, 14 * scale);
+      c.shadowColor = 'transparent'; c.fillStyle = '#c9a35a';
+      [-8 * scale, fw + 8 * scale].forEach(x => { c.beginPath(); c.arc(x, y, 7 * scale, 0, Math.PI * 2); c.fill(); });
+      c.fillStyle = 'rgba(255,255,255,0.25)'; c.fillRect(-4 * scale, y - 5 * scale, fw + 8 * scale, 2 * scale);
+      c.restore();
+    };
+    c.save(); c.strokeStyle = '#5a3c26'; c.lineWidth = 1.5 * scale; c.beginPath(); c.moveTo(fw * 0.2, 4 * scale); c.quadraticCurveTo(fw * 0.5, -32 * scale, fw * 0.8, 4 * scale); c.stroke(); c.restore();
+    rod(5 * scale); rod(g.fh - 5 * scale);
+  } else if (frameType === 'lattice') {
+    c.save(); c.strokeStyle = tapeCol; c.lineWidth = 1.6 * scale;
+    [[7, 7], [fw / scale - 7, 7], [7, g.fh / scale - 7], [fw / scale - 7, g.fh / scale - 7]].forEach(([x, y]) => {
+      const cx = x * scale, cy = y * scale;
+      c.fillStyle = frameCol; c.fillRect(cx - 10 * scale, cy - 10 * scale, 20 * scale, 20 * scale);
+      c.strokeRect(cx - 10 * scale, cy - 10 * scale, 20 * scale, 20 * scale);
+      c.strokeRect(cx - 6 * scale, cy - 6 * scale, 12 * scale, 12 * scale);
+      c.fillStyle = tapeCol; c.fillRect(cx - 2 * scale, cy - 2 * scale, 4 * scale, 4 * scale);
+    });
+    c.restore();
+  } else if (frameType === 'magpage') {
+    c.save(); c.fillStyle = textCol; c.fillRect(14 * scale, 11 * scale, fw - 28 * scale, 3 * scale); c.fillRect(14 * scale, 17 * scale, fw - 28 * scale, 0.9 * scale);
+    c.fillStyle = tA(0.7); c.font = `700 ${8 * scale}px ${BGF.parch}`; c.textBaseline = 'middle';
+    try { c.letterSpacing = `${1.8 * scale}px`; } catch (e) {}
+    c.textAlign = 'left'; c.fillText(`ISSUE No.0${i + 1}`, 14 * scale, 27 * scale);
+    c.textAlign = 'right'; c.fillText(`P.0${i + 1}`, fw - 14 * scale, 27 * scale);
+    c.fillStyle = textCol; c.fillRect(14 * scale, g.fh - 24 * scale, fw - 28 * scale, 0.9 * scale);
+    c.fillStyle = tA(0.6); c.font = `600 ${7.5 * scale}px ${BGF.parch}`; c.textAlign = 'center'; c.fillText('— VOL. 28 · EDITORIAL —', fw / 2, g.fh - 13 * scale); c.restore();
+  } else if (frameType === 'ledger') {
+    c.save(); c.lineWidth = 1 * scale; c.strokeStyle = 'rgba(211,90,90,0.65)';
+    c.beginPath(); c.moveTo(14 * scale, 0); c.lineTo(14 * scale, g.fh); c.moveTo(17 * scale, 0); c.lineTo(17 * scale, g.fh); c.stroke();
+    c.strokeStyle = 'rgba(90,130,200,0.3)';
+    for (let y = g.fh - g.botPad + 12 * scale; y < g.fh - 4 * scale; y += 10 * scale) { c.beginPath(); c.moveTo(21 * scale, y); c.lineTo(fw - 8 * scale, y); c.stroke(); }
+    c.fillStyle = 'rgba(0,0,0,0.16)'; [0.2, 0.5, 0.8].forEach(t => { c.beginPath(); c.arc(6 * scale, g.fh * t, 3.2 * scale, 0, Math.PI * 2); c.fill(); });
+    c.fillStyle = tA(0.65); c.font = `italic 600 ${9 * scale}px ${BGF.parch}`; c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillText(`MEMO  No.0${i + 1}`, 24 * scale, g.fh - 16 * scale); c.restore();
+  } else if (frameType === 'parchment') {
+    c.save(); c.strokeStyle = tA(0.5); c.lineWidth = 1.2 * scale; c.strokeRect(12 * scale, 12 * scale, fw - 24 * scale, g.fh - 24 * scale);
+    c.lineWidth = 0.6 * scale; c.strokeRect(16 * scale, 16 * scale, fw - 32 * scale, g.fh - 32 * scale);
+    c.lineWidth = 1 * scale; const fr = 7 * scale;
+    [[12, 12, 0], [fw / scale - 12, 12, 1], [fw / scale - 12, g.fh / scale - 12, 2], [12, g.fh / scale - 12, 3]].forEach(([x, y, q]) => {
+      c.beginPath(); c.arc(x * scale, y * scale, fr, q * Math.PI / 2, (q + 1) * Math.PI / 2); c.stroke();
+    });
+    const my = g.fh - 24 * scale;
+    c.fillStyle = tA(0.55); c.fillRect(fw / 2 - 40 * scale, my, 30 * scale, 0.8 * scale); c.fillRect(fw / 2 + 10 * scale, my, 30 * scale, 0.8 * scale);
+    bgDiamond(c, fw / 2, my + 0.4 * scale, 2.8 * scale, tA(0.65)); c.restore();
+  } else if (frameType === 'popblock') {
+    c.save(); c.fillStyle = tapeCol; c.globalAlpha = 0.85;
+    for (let row = 0; row < 2; row++) for (let x = 14 * scale + (row ? 4 * scale : 0); x < fw - 12 * scale; x += 8 * scale) { c.beginPath(); c.arc(x, g.fh - 20 * scale + row * 7 * scale, 1.7 * scale, 0, Math.PI * 2); c.fill(); }
+    c.restore();
+  }
   if (frameType === 'ticket') {
     const ny = g.fh - g.botPad + 20 * scale;
     c.save(); c.strokeStyle = tA(0.4); c.lineWidth = 1.2 * scale; c.setLineDash([4 * scale, 4 * scale]);
@@ -3363,7 +3666,8 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   if (opt.tapeStyle !== 'none') {
     const tapeW = Math.min(90 * scale, fw * 0.45);
     const tapeH = 22 * scale;
-    drawWashiTape(c, fw / 2 + (R() - 0.5) * 30 * scale, 5 * scale, tapeW, tapeH, (R() - 0.5) * 0.15, opt.tapeStyle, R, tapeCol);
+    if (opt.tapeStyle === 'washi') drawWashiTape(c, fw / 2 + (R() - 0.5) * 30 * scale, 5 * scale, tapeW, tapeH, (R() - 0.5) * 0.15, opt.tapeStyle, R, tapeCol);
+    else drawDecor(c, opt.tapeStyle, fw, g.fh, scale, R, tapeCol);
   }
 }
 
@@ -3527,34 +3831,34 @@ function renderText(c, w, h, g) {
   const availableTopSpace = h - (titleBlockH + g.fh + g.stag);
   const baseTitleY = Math.max(80, availableTopSpace * 0.32);
 
-  const rawTitle = (tcfg.title.text || '').trim() || '主题名称';
-  const rawAuthor = (tcfg.author.text || '').trim() || '作者名称';
+  const rawTitle = (tcfg.title.text || '').trim();
+  const rawAuthor = (tcfg.author.text || '').trim();
   ensureFontChars(rawTitle + rawAuthor + state.customTexts.map(t => t.text || '').join('') + '等待导入截图晚晚');
   const fontFam = state.font || SANS;
 
   // 主标题
   const titleActualY = baseTitleY + offsets.title.y;
   const titleActualX = offsets.title.x + g.paddingLeft;
-  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, L.t.size, fontFam, chipCol, L.t.color, R, titleActualX, L.t.style, L.t.sp, !!tcfg.title.color);
+  const tInfo = drawCollageTextGroup(c, rawTitle, titleActualY, L.t.size, tcfg.title.fontFam || fontFam, chipCol, L.t.color, R, titleActualX, L.t.style, L.t.sp, !!tcfg.title.color);
 
   // 副标题
   const aInfo = { totalW: 0, height: 0, actualY: 0, actualX: 0 };
-  const defaultAuthorY = baseTitleY + L.lt * 1.35 + 10;
+  const defaultAuthorY = baseTitleY + (L.tOn ? L.lt * 1.35 + 10 : 0);
   aInfo.actualY = defaultAuthorY + offsets.author.y;
   aInfo.actualX = offsets.author.x + g.paddingLeft;
-  const aDraw = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, L.a.size, fontFam, chipCol, L.a.color, R, aInfo.actualX, L.a.style, L.a.sp, !!tcfg.author.color);
+  const aDraw = drawCollageTextGroup(c, rawAuthor.toUpperCase(), aInfo.actualY, L.a.size, tcfg.author.fontFam || fontFam, chipCol, L.a.color, R, aInfo.actualX, L.a.style, L.a.sp, !!tcfg.author.color);
   aInfo.totalW = aDraw.totalW;
   aInfo.height = aDraw.height;
 
   // 附加文字：按各自字号依次向下排布，互不重叠
   const ctInfos = [];
-  let flowY = defaultAuthorY + L.la * 1.35 + 20;
+  let flowY = defaultAuthorY + (L.aOn ? L.la * 1.35 + 20 : 0);
   state.customTexts.forEach(ct => {
     const E = effText(ct, 'custom');
     const off = offsets.customTexts[ct.id] || { x: 0, y: 0 };
     const ctY = flowY + off.y;
     const ctX = off.x + g.paddingLeft;
-    const info = drawCollageTextGroup(c, ct.text || '', ctY, E.size, fontFam, chipCol, E.color, R, ctX, E.style, E.sp, !!ct.color);
+    const info = drawCollageTextGroup(c, ct.text || '', ctY, E.size, ct.fontFam || fontFam, chipCol, E.color, R, ctX, E.style, E.sp, !!ct.color);
     ctInfos.push({ id: ct.id, info, actualX: ctX, actualY: ctY });
     flowY += E.size * 1.35 + 14;
   });
@@ -3572,8 +3876,8 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
   const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700, invite: 900, postmark: 400, ticketLabel: 700 }[style] || 800;
   const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22 }[style] ?? 0.5;
   let famBase = fontFam;
-  if (!state.font && (style === 'italicMag' || style === 'postmark')) famBase = BGF.parch;
-  if (!state.font && style === 'invite') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
+  if (fontFam === SANS && (style === 'italicMag' || style === 'postmark')) famBase = BGF.parch;
+  if (fontFam === SANS && style === 'invite') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
   const ital = (style === 'italicMag' || style === 'postmark') ? 'italic ' : '';
   const accent = $('cTape').value;
   c.font = `${ital}${weight} ${fontSize}px ${famBase}`;
@@ -3924,7 +4228,25 @@ function startCanvasPick(targetId) {
     : '点击预览图上任意位置取色（Esc 取消）';
   $('pickHex').textContent = '—';
   $('pickSw').style.background = '#ccc';
+  const barBottom = placePickBar();
+  const wideEp = window.innerWidth >= 1040 && document.body.classList.contains('ep-mode');
+  const hdr = document.querySelector('.top');
+  previewCanvas.style.scrollMarginTop = (wideEp ? (hdr ? hdr.getBoundingClientRect().bottom : 0) + 16 : barBottom + 10) + 'px';
   previewCanvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// 取色提示条默认放在顶栏下方；宽屏双栏时放在右侧面板上方，不挡住预览图
+function placePickBar() {
+  const bar = $('pickBar'), hdr = document.querySelector('.top'), dock = document.querySelector('.dock');
+  const top = Math.max(8, (hdr ? hdr.getBoundingClientRect().bottom : 0) + 8);
+  bar.style.bottom = 'auto'; bar.style.top = top + 'px';
+  if (window.innerWidth >= 1040 && document.body.classList.contains('ep-mode') && dock) {
+    const r = dock.getBoundingClientRect();
+    bar.style.left = r.left + 'px'; bar.style.width = r.width + 'px'; bar.style.transform = 'none';
+  } else {
+    bar.style.left = '50%'; bar.style.width = ''; bar.style.transform = 'translateX(-50%)';
+  }
+  return top + bar.offsetHeight;
 }
 
 function stopCanvasPick() {
@@ -4219,7 +4541,7 @@ async function exportPNG() {
   if (state.busy || state.images.length < 1) return;
   state.busy = true;
   $('export').disabled = $('exportTop').disabled = true;
-  $('export').textContent = '生成中…';
+  $('export').textContent = exportLabel('busy');
   await new Promise(r => setTimeout(r, 50));
   try {
     await document.fonts.ready;
@@ -4232,7 +4554,7 @@ async function exportPNG() {
     toast(e.message || '生成失败');
   } finally {
     state.busy = false;
-    $('export').textContent = '导出拼贴画';
+    $('export').textContent = exportLabel('panel');
     render();
   }
 }
@@ -4367,7 +4689,8 @@ $('resetFont').onclick = () => {
 Object.entries(opt).forEach(([k, v]) => setOpt(k, v));
 document.body.style.background = $('cBase').value;
 render();
-applyPreset(PRESETS.find(x => x.name === '准备清单'), true);
+applyPreset(PRESETS.find(x => x.name === THEME_PRESET[themeCls()]) || PRESETS[0], true);
+setExportLabels();
 
 function initPickBarDrag() {
   const bar = document.getElementById('pickBar');
@@ -4455,7 +4778,7 @@ function makeTextCard(cfg, kind, label, onDelete) {
   // 文字输入
   const tw = document.createElement('div'); tw.className = 'tc-text';
   const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'line';
-  inp.value = cfg.text || ''; inp.placeholder = kind === 'title' ? '主题名称' : (kind === 'author' ? '作者名称' : '输入文字');
+  inp.value = cfg.text || ''; inp.placeholder = kind === 'title' ? '留空则不显示标题' : (kind === 'author' ? '留空则不显示副标题' : '输入文字');
   inp.maxLength = kind === 'title' ? 40 : (kind === 'author' ? 30 : 60);
   inp.addEventListener('input', () => { cfg.text = inp.value; schedule(false, false, true); });
   tw.append(inp);
@@ -4507,9 +4830,32 @@ function makeTextCard(cfg, kind, label, onDelete) {
   rp.undo.onclick = () => { cfg.sp = null; schedule(false, false, true); sync(); };
   rp.row.append(sp, spV, rp.undo);
 
-  body.append(rs.row, rc.row, rz.row, rp.row);
+  // 字体：每行文字可单独导入字体
+  const rf = mkRow('字体');
+  const fbtn = document.createElement('button'); fbtn.type = 'button'; fbtn.className = 'tc-fontbtn'; fbtn.textContent = '导入字体';
+  const fname = document.createElement('span'); fname.className = 'tc-fname';
+  const fin = document.createElement('input'); fin.type = 'file'; fin.accept = '.ttf,.otf,.woff,.woff2,font/*'; fin.hidden = true;
+  const dropFont = () => { if (cfg.fontFace) { try { document.fonts.delete(cfg.fontFace); } catch (e) {} } cfg.fontFace = null; cfg.fontFam = null; cfg.fontName = null; };
+  fbtn.onclick = () => fin.click();
+  fin.onchange = async () => {
+    const f = fin.files[0]; if (!f) return;
+    try {
+      if (f.size > 50 * 1048576) throw 0;
+      const face = new FontFace('TextFont' + Date.now() + Math.floor(Math.random() * 1e4), await f.arrayBuffer());
+      await face.load();
+      dropFont(); document.fonts.add(face);
+      cfg.fontFace = face; cfg.fontFam = '"' + face.family + '"'; cfg.fontName = f.name;
+      schedule(true, true, true); sync();
+    } catch (_) { toast('字体解析失败'); }
+    finally { fin.value = ''; }
+  };
+  rf.undo.onclick = () => { dropFont(); schedule(true, true, true); sync(); };
+  rf.row.append(fbtn, fname, rf.undo, fin);
+
+  body.append(rs.row, rf.row, rc.row, rz.row, rp.row);
 
   resetAll.onclick = () => {
+    dropFont();
     cfg.style = null; cfg.color = null; cfg.size = null; cfg.sp = null;
     schedule(true, true, true); sync();
   };
@@ -4535,6 +4881,8 @@ function makeTextCard(cfg, kind, label, onDelete) {
     if (document.activeElement !== sp && sp.value !== spVal) sp.value = spVal;
     spV.textContent = spVal + 'px';
     rp.undo.classList.toggle('on', cfg.sp != null);
+    fname.textContent = cfg.fontName || '跟随全局字体'; fname.title = fname.textContent;
+    rf.undo.classList.toggle('on', !!cfg.fontFam);
   }
 
   el.append(head, tw, body);
@@ -4700,21 +5048,26 @@ function initThemeToggle() {
     const saved = localStorage.getItem('q_theme');
     if (saved !== null) idx = Math.max(0, THEMES.findIndex(t => t.cls === saved));
   } catch (e) {}
-  const apply = () => {
+  const apply = (fromClick) => {
     document.body.classList.remove('dark-mode', 'ep-mode');
     const t = THEMES[idx];
     if (t.cls) document.body.classList.add(t.cls);
     btn.textContent = t.icon; btn.title = t.tip;
+    setExportLabels();
     const dt = DEFAULT_TEXTS[t.cls === 'ep-mode' ? 'ep' : 'base'];
     [tcfg.title, tcfg.author].forEach((cfg, k) => {
       if (cfg.text === DEFAULT_TEXTS.base[k] || cfg.text === DEFAULT_TEXTS.ep[k]) cfg.text = dt[k];
     });
+    if (fromClick) {
+      const pr = PRESETS.find(x => x.name === THEME_PRESET[t.cls]);
+      if (pr) { applyPreset(pr, true); toast('已切换主题 · 套用预设「' + pr.name + '」'); }
+    }
     if (typeof refreshTextCards === 'function') refreshTextCards();
     schedule(false, false, true);
     try { localStorage.setItem('q_theme', t.cls); localStorage.setItem('q_dark_mode', t.cls === 'dark-mode' ? '1' : '0'); } catch (e) {}
   };
   apply();
-  btn.addEventListener('click', () => { idx = (idx + 1) % THEMES.length; apply(); });
+  btn.addEventListener('click', () => { idx = (idx + 1) % THEMES.length; apply(true); });
 }
 (function moveBgImgControls() {
   const box = $('bgImgControls'), row = document.querySelector('#p6 .bgrow');
