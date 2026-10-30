@@ -357,7 +357,7 @@ body.ep-mode {
 }
 body.ep-mode .app { background: transparent; border: none; box-shadow: none; position: relative; }
 body.ep-mode .top {
-  height: auto; min-height: 84px; padding: 16px 18px 14px 30px; background: transparent; border-bottom: 1px solid rgba(214,37,95,.45); background: rgba(241,235,228,.96);
+  height: auto; min-height: 84px; padding: 16px 18px 14px 30px; background: transparent; border-bottom: 1px solid rgba(214,37,95,.45); background: #f1ebe4;
 }
 body.ep-mode .top::before { content: none; }
 body.ep-mode .top b { font-size: 0; line-height: 0; }
@@ -463,11 +463,11 @@ body.ep-mode .bgcat { background: #fff; border: 1px dashed rgba(214,37,95,.45); 
 body.ep-mode .bgcat .pgroup-title { color: var(--accent); font-style: italic; font-size: 14px; }
 body.ep-mode .bgcat .pgroup-title::before { width: 6px; height: 6px; border-radius: 50%; }
 /* 提示语：便签小票 */
-body.ep-mode .tip { display: flex; align-items: center; gap: 0; width: fit-content; max-width: calc(100% - 40px); margin: 18px 0 0 22px; padding: 0 14px 0 0; background: #fffdf9; border: 1.5px dashed rgba(214,37,95,.5); border-radius: 3px; color: #8a4a60; font-style: italic; font-size: 12px; transform: rotate(-.8deg); box-shadow: 0 3px 8px rgba(150,40,80,.14); }
+body.ep-mode .tip { display: flex; align-items: center; gap: 0; width: fit-content; max-width: calc(100% - 40px); margin: 18px 0 16px 22px; padding: 0 20px 0 0; overflow: visible; background: #fffdf9; border: 1.5px dashed rgba(214,37,95,.5); border-radius: 3px; color: #8a4a60; font-style: italic; font-size: 12px; transform: rotate(-.8deg); box-shadow: 0 3px 8px rgba(150,40,80,.14); }
 body.ep-mode .tip::before { content: 'TIP'; align-self: stretch; display: flex; align-items: center; margin-right: 10px; padding: 0 9px 0 10px; background: var(--accent); color: #fff; font: 700 9px "Playfair Display", Georgia, serif; font-style: normal; letter-spacing: .24em; border-radius: 1px; }
 body.ep-mode .tip svg { display: none; }
 body.ep-mode .tip span { padding: 8px 0; }
-@media (min-width: 1040px) { body.ep-mode .tip { margin-left: 4px; } body.ep-mode .dock { align-self: start; } }
+@media (min-width: 1040px) { body.ep-mode .tip { margin-left: 4px; margin-bottom: 8px; } body.ep-mode .dock { align-self: start; } }
 
 /* ===== 约会票根：剩余控件统一风格 ===== */
 body.ep-mode input[type=range] { height: 22px; background: transparent repeating-linear-gradient(90deg, rgba(214,37,95,.6) 0 5px, transparent 5px 9px) center / 100% 2px no-repeat; border: none; border-radius: 0; }
@@ -548,6 +548,70 @@ body.ep-mode #p2 > .r:last-child .add span, body.ep-mode #p2 > .r:last-child but
 body.ep-mode #p2 > .r:last-child .add span:hover, body.ep-mode #p2 > .r:last-child button:hover { background: #fde7ee; }
 body.ep-mode #fontStatus { flex: 1 1 0 !important; min-width: 0; margin-left: 4px; text-align: left; color: #9a5a70 !important; font-style: italic; font-size: 12px !important; }
 body.ep-mode .bgcat-grid button { width: auto; flex: none; padding: 0 2px; }
+
+/* ===== 预览固定在顶部：下滑菜单时预览始终可见 ===== */
+.stage { position: sticky; top: var(--top-h, 44px); z-index: 9; padding-top: 8px; padding-bottom: 8px; box-shadow: 0 6px 12px rgba(0,0,0,.08); }
+.stage canvas { width: auto; height: auto; max-width: 100%; max-height: var(--pv-h, 42vh); margin: 0 auto; display: block; }
+body.pv-s { --pv-h: 28vh; } body.pv-m { --pv-h: 42vh; } body.pv-l { --pv-h: 54vh; }
+.pin-btn.pv-size { font: 700 12px/1 -apple-system, 'Helvetica Neue', sans-serif; }
+body.unpin-preview .stage { position: static; box-shadow: none; padding-top: 16px; padding-bottom: 16px; }
+body.unpin-preview .stage canvas { width: 100%; max-width: 500px; max-height: none; }
+.pin-btn { position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; min-height: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); background: rgba(255,255,255,.9); z-index: 3; cursor: pointer; }
+body.unpin-preview .pin-btn { opacity: .55; }
+body.dark-mode .stage { box-shadow: 0 6px 12px rgba(0,0,0,.35); }
+body.dark-mode .pin-btn { background: rgba(40,40,40,.9); border-color: #555; }
+body.ep-mode .stage { background-color: #f1ebe4; background-image: var(--ep-grain, none); box-shadow: 0 6px 12px rgba(150,40,80,.12); }
+body.ep-mode .pin-btn { border: 1.5px solid rgba(214,37,95,.55); background: #fff; }
+@media (max-width: 1039px) { body.ep-mode .stage::after { display: none; } }
+@media (min-width: 1040px) {
+  body.ep-mode .pin-btn, body.ep-mode .pv-size { display: none !important; }
+  body.ep-mode .stage { background: transparent; box-shadow: none; padding: 24px 16px 6px; }
+  body.ep-mode .stage canvas { width: 100%; max-width: 640px; max-height: none; }
+}
+
+/* ===== 固定预览的分隔：票券撕线（票根主题）/ 柔和圆角（日夜间） ===== */
+@media (max-width: 1039px) {
+  body.ep-mode .stage { box-shadow: none; padding-bottom: 18px; }
+  body.ep-mode .stage::before { content: ''; position: absolute; left: 14px; right: 14px; bottom: 8px; border-top: 1.5px dashed rgba(214,37,95,.5); pointer-events: none; }
+  body.ep-mode .stage::after { content: ''; display: block; position: absolute; left: 0; right: 0; top: 100%; height: 8px; margin: 0; background: radial-gradient(circle at 7px 0, #f1ebe4 0 6px, transparent 6.5px) 0 0 / 14px 8px repeat-x; pointer-events: none; }
+  body:not(.ep-mode) .stage { border-radius: 0 0 16px 16px; box-shadow: 0 8px 14px -6px rgba(0,0,0,.2); }
+  body.dark-mode .stage { box-shadow: 0 8px 14px -6px rgba(0,0,0,.6); }
+  body.unpin-preview.ep-mode .stage::before, body.unpin-preview.ep-mode .stage::after { display: none; }
+  body.unpin-preview:not(.ep-mode) .stage { border-radius: 0; box-shadow: none; }
+}
+
+/* ===== 固定预览：控制栏（不再盖住预览图）+ 各主题风格 ===== */
+.stage { display: flex; flex-direction: column; align-items: center; }
+.pv-bar { align-self: stretch; display: flex; align-items: center; gap: 8px; min-height: 26px; font-size: 12px; }
+.pv-dots { display: none; gap: 6px; }
+.pv-dots i { display: block; width: 11px; height: 11px; border-radius: 50%; }
+.pv-dots i:nth-child(1) { background: #ff5f57; } .pv-dots i:nth-child(2) { background: #febc2e; } .pv-dots i:nth-child(3) { background: #28c840; }
+.pv-title { flex: 1; text-align: center; color: #6b6b6f; font-weight: 600; letter-spacing: .04em; }
+.pv-title::before { content: '预览'; }
+.pv-ctl { display: flex; gap: 4px; margin-left: auto; }
+.pv-btn { min-height: 0; height: 22px; min-width: 22px; padding: 0 8px; font-size: 11px; line-height: 1; white-space: nowrap; border: 1px solid #c6c6c8; border-radius: 6px; background: linear-gradient(#fff, #f2f2f2); color: #444; cursor: pointer; }
+body.unpin-preview .pv-size { display: none; }
+body:not(.ep-mode) .pv-dots { display: flex; }
+body:not(.ep-mode) .pv-bar { order: -1; margin: -8px -16px 8px; padding: 6px 12px; background: #f4f4f5; border-bottom: 1px solid #d8d8da; border-radius: 0; }
+body:not(.ep-mode) .pv-title { text-align: center; }
+body.dark-mode .pv-bar { background: #2b2b2f; border-bottom: 1px solid #3c3c40; }
+body.dark-mode .pv-title { color: #a8a8ae; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; }
+body.dark-mode .pv-title::before { content: 'PREVIEW'; }
+body.dark-mode .pv-btn { background: #3a3a3f; border-color: #55555b; color: #d6d6dc; }
+body.dark-mode .stage { box-shadow: 0 8px 14px -6px rgba(0,0,0,.6), inset 0 -1px 0 rgba(120,170,255,.3); }
+body.ep-mode .pv-bar { order: 2; margin: 8px 0 -4px; padding: 0 2px; }
+body.ep-mode .pv-title { flex: 1; text-align: left; color: rgba(214,37,95,.65); font: 600 10px "Playfair Display", Georgia, serif; letter-spacing: .2em; }
+body.ep-mode .pv-title::before { content: 'FIG. 1 — PREVIEW · No. 1028'; }
+body.ep-mode .pv-btn { border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; background: #fff; color: var(--accent); font: italic 600 11px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; box-shadow: none; padding: 0 10px; }
+body.ep-mode .pv-pin[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); font-style: normal; }
+#pinFab { display: none; position: fixed; right: 14px; bottom: 18px; z-index: 25; height: 40px; padding: 0 16px; align-items: center; justify-content: center; font-size: 13px; border-radius: 999px; border: 1px solid #c6c6c8; background: rgba(255,255,255,.95); color: #333; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; }
+body.unpin-preview #pinFab { display: inline-flex; }
+body.dark-mode #pinFab { background: #3a3a3f; border-color: #55555b; color: #eee; }
+body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; color: var(--accent); font: italic 600 13px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; box-shadow: 0 4px 10px rgba(150,40,80,.25); }
+@media (min-width: 1040px) {
+  body.ep-mode .pv-bar, body.ep-mode #pinFab { display: none !important; }
+  body.unpin-preview.ep-mode .stage { position: sticky; }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4231,14 +4295,19 @@ function startCanvasPick(targetId) {
   const barBottom = placePickBar();
   const wideEp = window.innerWidth >= 1040 && document.body.classList.contains('ep-mode');
   const hdr = document.querySelector('.top');
-  previewCanvas.style.scrollMarginTop = (wideEp ? (hdr ? hdr.getBoundingClientRect().bottom : 0) + 16 : barBottom + 10) + 'px';
-  previewCanvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (document.body.classList.contains('unpin-preview')) {
+    previewCanvas.style.scrollMarginTop = (wideEp ? (hdr ? hdr.getBoundingClientRect().bottom : 0) + 16 : barBottom + 10) + 'px';
+    previewCanvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // 取色提示条默认放在顶栏下方；宽屏双栏时放在右侧面板上方，不挡住预览图
 function placePickBar() {
   const bar = $('pickBar'), hdr = document.querySelector('.top'), dock = document.querySelector('.dock');
-  const top = Math.max(8, (hdr ? hdr.getBoundingClientRect().bottom : 0) + 8);
+  const stg = document.querySelector('.stage');
+  const pinned = !document.body.classList.contains('unpin-preview') && !(window.innerWidth >= 1040 && document.body.classList.contains('ep-mode'));
+  const base = pinned && stg ? stg.getBoundingClientRect().bottom : (hdr ? hdr.getBoundingClientRect().bottom : 0);
+  const top = Math.max(8, base + 8);
   bar.style.bottom = 'auto'; bar.style.top = top + 'px';
   if (window.innerWidth >= 1040 && document.body.classList.contains('ep-mode') && dock) {
     const r = dock.getBoundingClientRect();
@@ -5069,6 +5138,34 @@ function initThemeToggle() {
   apply();
   btn.addEventListener('click', () => { idx = (idx + 1) % THEMES.length; apply(true); });
 }
+(function initPreviewPin() {
+  const st = document.querySelector('.stage'), hdr = document.querySelector('.top');
+  if (!st || !hdr) return;
+  const bar = document.createElement('div'); bar.className = 'pv-bar';
+  bar.innerHTML = '<span class="pv-dots"><i></i><i></i><i></i></span><span class="pv-title"></span><span class="pv-ctl"><button type="button" class="pv-btn pv-size"></button><button type="button" class="pv-btn pv-pin"></button></span>';
+  st.appendChild(bar);
+  const sz = bar.querySelector('.pv-size'), pin = bar.querySelector('.pv-pin');
+  const fab = document.createElement('button'); fab.id = 'pinFab'; fab.type = 'button'; fab.textContent = '📌 固定预览'; document.body.appendChild(fab);
+  let on = true, size = 'm';
+  try { on = localStorage.getItem('q_pin') !== '0'; size = localStorage.getItem('q_pvsize') || 'm'; } catch (e) {}
+  if (!['s', 'm', 'l'].includes(size)) size = 'm';
+  const NAMES = { s: '小', m: '中', l: '大' };
+  const apply = () => {
+    document.body.classList.toggle('unpin-preview', !on);
+    document.body.classList.remove('pv-s', 'pv-m', 'pv-l'); document.body.classList.add('pv-' + size);
+    pin.textContent = on ? '📌 已固定' : '📍 固定'; pin.setAttribute('aria-pressed', String(on));
+    pin.title = on ? '预览固定在顶部，点击取消固定' : '点击把预览固定在顶部';
+    sz.textContent = NAMES[size]; sz.title = '固定预览大小：' + NAMES[size] + '（点击切换 小 / 中 / 大）';
+    try { localStorage.setItem('q_pin', on ? '1' : '0'); localStorage.setItem('q_pvsize', size); } catch (e) {}
+  };
+  const togglePin = e => { e.stopPropagation(); on = !on; apply(); };
+  pin.addEventListener('click', togglePin); fab.addEventListener('click', togglePin);
+  sz.addEventListener('click', e => { e.stopPropagation(); size = size === 's' ? 'm' : size === 'm' ? 'l' : 's'; apply(); });
+  apply();
+  const setH = () => document.documentElement.style.setProperty('--top-h', hdr.getBoundingClientRect().height + 'px');
+  setH(); window.addEventListener('resize', setH);
+  if (window.ResizeObserver) new ResizeObserver(setH).observe(hdr);
+})();
 (function moveBgImgControls() {
   const box = $('bgImgControls'), row = document.querySelector('#p6 .bgrow');
   if (box && row && row.parentNode) row.parentNode.insertBefore(box, row);
@@ -5077,4 +5174,4 @@ setTimeout(initThemeToggle, 100);
 
 </script>
 </body>
-  </html>
+              </html>
