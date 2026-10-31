@@ -154,6 +154,11 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
 .color-cell .picker svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .pre { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border-radius: 4px; font-size: 11px; background: #fff; border: 1px solid #ccc; }
 .pre .dots { display: flex; gap: 2px; }
+.pre canvas.thumb { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid rgba(0,0,0,.08); background: #eee; }
+.pre .pname { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25; }
+.hgrp { display: inline-flex; gap: 4px; align-items: center; flex: none; margin-right: 4px; }
+.hgrp .pv-btn { min-width: 26px; padding: 0 6px; font-size: 13px; }
+.hgrp .pv-btn:disabled { opacity: .35; }
 .pre i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.1); }
 .pre:hover { background: #f5f7fa; }
 .pre.on { border-color: var(--accent); background: #eaf3ff; box-shadow: 0 0 0 2px rgba(0,122,255,.22); font-weight: 600; }
@@ -163,7 +168,7 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
 .pgroup-title::before { content: ''; width: 3px; height: 12px; border-radius: 2px; background: var(--accent); flex: none; }
 .pg-line { flex: 1; height: 1px; background: #e4e4e4; }
 .pg-count { flex: none; font-size: 10px; font-weight: 500; color: #aaa; }
-.pgroup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; }
+.pgroup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
 .tip {
   flex: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 5px 16px;
   background: #efefef; border-bottom: 1px solid #d8d8d8; color: #777; font-size: 11px; letter-spacing: 0.2px; text-align: center; user-select: none;
@@ -190,7 +195,7 @@ input[type=range]::-webkit-slider-thumb:active { background: #d0d0d0; }
 @media (max-width: 560px) {
   .tabs button svg { display: none; }
   .tabs button { font-size: 11px; padding: 0 2px; }
-  .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+  .pgroup-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
 }
 
 
@@ -710,6 +715,7 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
         <span style="padding-top:2px">模板库</span>
         <p class="hint" style="margin:0;flex:1">点击任意模板，一键套用配色、背景样式、边框与标题样式。</p>
       </div>
+      <div class="r" style="margin-bottom:12px"><button id="randomBtn" style="flex:1;font-weight:500">🎲 一键随机换风格</button></div>
       <div id="presets"></div>
     </div>
 
@@ -756,6 +762,9 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="parchment">羊皮卷边</button>
           <button data-v="popblock">波普硬框</button>
           <button data-v="scallop">云朵花边</button>
+          <button data-v="bookpage">书页</button>
+          <button data-v="menucard">菜单卡</button>
+          <button data-v="retrowin">复古窗口</button>
         </div>
       </div>
       <div id="olCtl" style="display:none;padding:10px;margin-bottom:12px;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px">
@@ -797,12 +806,13 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
             <button data-v="none">透明底</button>
             <button data-v="parchment">羊皮纸</button>
           </div></section>
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">界面窗口</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">界面窗口</span><span class="pg-line"></span><span class="pg-count">6</span></h4><div class="bgcat-grid">
             <button data-v="webLight">网页</button>
             <button data-v="appLight">应用窗口</button>
             <button data-v="twinCoil">双线圈本</button>
             <button data-v="rulerWin">标尺窗口</button>
             <button data-v="sideWin">侧栏窗口</button>
+            <button data-v="retroPC">复古电脑</button>
           </div></section>
           <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">纸张信息</span><span class="pg-line"></span><span class="pg-count">6</span></h4><div class="bgcat-grid">
             <button data-v="paperMast">纸·大刊头</button>
@@ -823,9 +833,11 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
             <button data-v="tornCorner">撕纸·对角拼贴</button>
             <button data-v="tornPatch">撕纸·补丁拼贴</button>
           </div></section>
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">可爱手账</span><span class="pg-line"></span><span class="pg-count">2</span></h4><div class="bgcat-grid">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">可爱手账</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
             <button data-v="cloudDots">云朵波点</button>
             <button data-v="gingham">格纹野餐</button>
+            <button data-v="journalStickers">手帐贴纸页</button>
+            <button data-v="polaroidWall">拍立得墙</button>
           </div></section>
           <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">海报</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
             <button data-v="pstSwiss">海报·瑞士网格</button>
@@ -842,11 +854,12 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
             <button data-v="magLabel">展签留白</button>
             <button data-v="magSpread">对开内页</button>
           </div></section>
-          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">夜景</span><span class="pg-line"></span><span class="pg-count">4</span></h4><div class="bgcat-grid">
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">夜景</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
             <button data-v="starChart">夜航星图</button>
             <button data-v="emberDusk">余烬黄昏</button>
             <button data-v="deepSea">深海潮汐</button>
             <button data-v="neonRain">霓虹雨夜</button>
+            <button data-v="cyberGrid">赛博霓虹</button>
           </div></section>
           <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">悬疑档案</span><span class="pg-line"></span><span class="pg-count">5</span></h4><div class="bgcat-grid">
             <button data-v="suspenseFog">暗夜迷雾</button>
@@ -869,6 +882,21 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
             <button data-v="inkMountain">水墨山水</button>
             <button data-v="bambooMoon">竹影月夜</button>
             <button data-v="scroll">卷轴装裱</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">书香手作</span><span class="pg-line"></span><span class="pg-count">2</span></h4><div class="bgcat-grid">
+            <button data-v="bookShelf">书脊书架</button>
+            <button data-v="bookCover">实体书封面</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">城市生活</span><span class="pg-line"></span><span class="pg-count">2</span></h4><div class="bgcat-grid">
+            <button data-v="cafeMenu">咖啡馆菜单</button>
+            <button data-v="metroMap">地铁线路图</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">日式和风</span><span class="pg-line"></span><span class="pg-count">1</span></h4><div class="bgcat-grid">
+            <button data-v="wafuu">日式和风</button>
+          </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">节日限定</span><span class="pg-line"></span><span class="pg-count">2</span></h4><div class="bgcat-grid">
+            <button data-v="xmasEve">圣诞限定</button>
+            <button data-v="newYear">新春限定</button>
           </div></section>
         </div>
       </div>
@@ -916,6 +944,8 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="seal" title="复古 · 邀请函">火漆印</button>
           <button data-v="sparkle" title="夜景 · 星空">星光</button>
           <button data-v="chop" title="宋韵 · 国风">朱印</button>
+          <button data-v="bookmark" title="书卷 · 阅读">书签带</button>
+          <button data-v="bulbs" title="节日 · 夜景">灯串</button>
           <button data-v="none" aria-pressed="true">无</button>
         </div>
       </div>
@@ -955,6 +985,14 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="postmark">邮戳</button>
           <button data-v="ticketLabel">票签</button>
           <button data-v="boxed">方框刊名</button>
+          <button data-v="spine">书脊烫金</button>
+          <button data-v="menu">菜单手写</button>
+          <button data-v="metro">线路徽章</button>
+          <button data-v="pixel">像素字</button>
+          <button data-v="doodle">手写涂鸦</button>
+          <button data-v="hanko">和风印</button>
+          <button data-v="neonSign">霓虹灯管</button>
+          <button data-v="festive">节日彩灯</button>
         </div>
       </div>
       <div class="r" style="margin-top:12px">
@@ -1069,6 +1107,23 @@ const SUPPORTS_CANVAS_FILTER = (function () {
 })();
 
 const $ = id => document.getElementById(id);
+
+/* 自动取当天：期号=当年第几周(2位)，卷号=月份，罗马卷=年份-1899 */
+const TODAY = (() => {
+  const pad = n => String(n).padStart(2, '0');
+  const rom = n => { const m = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']]; let r = ''; m.forEach(([v, t]) => { while (n >= v) { r += t; n -= v; } }); return r; };
+  const MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const week = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const dn = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - dn); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 86400000 + 1) / 7); };
+  return {
+    get yyyy() { return String(new Date().getFullYear()); },
+    get mm() { return pad(new Date().getMonth() + 1); },
+    get issue() { return pad(week(new Date())); },
+    get roman() { return rom(Math.max(1, new Date().getFullYear() - 1899)); },
+    get season() { const m = new Date().getMonth() + 1; return m >= 3 && m <= 5 ? 'SPRING' : m >= 6 && m <= 8 ? 'SUMMER' : m >= 9 && m <= 11 ? 'AUTUMN' : 'WINTER'; },
+    get slash() { const d = new Date(); return d.getFullYear() + '/' + pad(d.getMonth() + 1) + '/' + pad(d.getDate()); },
+    get dmy() { const d = new Date(); return pad(d.getDate()) + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear(); }
+  };
+})();
 const SANS = '"ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif';
 
 const state = { images: [], bgImage: null, font: null, face: null, busy: false, customTexts: [] };
@@ -1144,6 +1199,8 @@ let cardCacheVersion = 0;
 function invalidateCardCache() { cardCache.length = 0; cardCacheVersion++; }
 
 let applyingPreset = false;
+let curPreset = null;
+var HIST = null;
 
 let tm, raf;
 const toast = msg => {
@@ -1156,6 +1213,7 @@ const hex = a => '#' + a.map(v => Math.round(v).toString(16).padStart(2, '0')).j
 const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 
 function schedule(dirtyBg = true, dirtyCards = true, dirtyText = true) {
+  if (HIST) HIST.queue();
   if (dirtyBg) cacheDirty.bg = true;
   if (dirtyCards) cacheDirty.cards = true;
   if (dirtyText) cacheDirty.text = true;
@@ -1191,6 +1249,8 @@ const PRESETS = [
   { name:'经典羊皮', grp:'纸张', title:'italicMag', sub:'kicker', tc:null, sc:'#8a6d48', colors:['#e6d8c0','#f3ebd9','#b08d5e','#f5eee1','#44352a'], bg:'parchment', frame:'parchment', tape:'seal', layout:'flat' },
   { name:'云朵波点', grp:'可爱', title:'sparkle', sub:'text', tc:null, sc:'#6f8fb0', colors:['#e8f2fb','#ffffff','#9fcdf2','#ffffff','#4a5d78'], bg:'cloudDots', frame:'scallop', tape:'bow', layout:'wave' },
   { name:'格纹野餐', grp:'可爱', title:'wave', sub:'highlight', tc:null, sc:'#5a4448', colors:['#fdeff0','#fffdfb','#8fcfa3','#ffffff','#5a4448'], bg:'gingham', frame:'scallop', tape:'clothespin', layout:'dateTilt' },
+  { name:'手帐贴纸页', grp:'可爱', title:'doodle', sub:'doodle', tc:null, sc:'#7a5a60', colors:['#fbf3f2','#ffffff','#f19ab0','#ffffff','#5a4448'], bg:'journalStickers', frame:'scallop', tape:'washi', layout:'dateTilt' },
+  { name:'拍立得墙', grp:'可爱', title:'doodle', sub:'doodle', tc:null, sc:'#8a7068', colors:['#f1e4d6','#fffdf8','#e48d7a','#fffdf8','#5a4540'], bg:'polaroidWall', frame:'polaroid', tape:'clothespin', layout:'scatter' },
   { name:'海报·瑞士网格', grp:'海报', title:'kicker', sub:'text', tc:null, sc:'#5b6678', colors:['#f0ede4','#fbfaf5','#d9574a','#fbfaf5','#1f2a3d'], bg:'pstSwiss', frame:'popblock', tape:'staple', layout:'flat' },
   { name:'海报·构成主义', grp:'海报', title:'banner', sub:'kicker', tc:null, sc:'#6b5a4a', colors:['#ecdfc3','#fbf5e6','#cf5a43','#fbf5e6','#2a2a33'], bg:'pstConstruct', frame:'popblock', tape:'pin', layout:'stairs' },
   { name:'海报·波普网点', grp:'海报', title:'cutout', sub:'kicker', tc:null, sc:'#2b2a3c', colors:['#fbd85d','#fffaf0','#e8645a','#fffaf0','#2b2a3c'], bg:'pstPop', frame:'popblock', tape:'heart', layout:'scatter' },
@@ -1211,6 +1271,8 @@ const PRESETS = [
   { name:'标尺窗口', grp:'界面窗口', title:'text', sub:'text', tc:null, sc:'#6a7488', colors:['#eceef2','#d9dde4','#4f8ff0','#ffffff','#2a3140'], bg:'rulerWin', frame:'window', tape:'none', layout:'flat' },
   { name:'侧栏窗口', grp:'界面窗口', title:'text', sub:'text', tc:null, sc:'#6f7890', colors:['#eef0f3','#dfe3ea','#6a8fd8','#ffffff','#2d3340'], bg:'sideWin', frame:'window', tape:'none', layout:'flat' },
   { name:'双线圈本', grp:'界面窗口', title:'sticker', sub:'text', tc:null, sc:'#6f8a80', colors:['#f1f1ee','#fffefb','#8fb0a3','#fffefb','#3a4440'], bg:'twinCoil', frame:'index', tape:'clip', layout:'dateTilt' },
+  { name:'复古电脑·青绿', grp:'界面窗口', title:'pixel', sub:'text', tc:null, sc:'#f4f2e8', colors:['#3f8f8a','#d7d6cf','#d9c05a','#26435a','#f4f2e8'], bg:'retroPC', frame:'retrowin', tape:'none', layout:'flat' },
+  { name:'复古电脑·紫调', grp:'界面窗口', title:'pixel', sub:'text', tc:null, sc:'#f0ecff', colors:['#4b3f6e','#d9d6e6','#f2b0d0','#2b2250','#f0ecff'], bg:'retroPC', frame:'retrowin', tape:'none', layout:'flat' },
   { name:'暗夜迷雾', grp:'悬疑档案', title:'ink', sub:'kicker', tc:null, sc:'#c97a7a', colors:['#10151d','#232c3b','#a8504f','#232c3b','#e3e8f0'], bg:'suspenseFog', frame:'dossier', tape:'clip', layout:'stack' },
   { name:'犯罪现场', grp:'悬疑档案', title:'tape', sub:'text', tc:null, sc:'#e8bd2a', colors:['#15171b','#262a31','#e8bd2a','#262a31','#eceef2'], bg:'crimeDna', frame:'dossier', tape:'pin', layout:'scatter' },
   { name:'绝密档案', grp:'悬疑档案', title:'stamp', sub:'kicker', tc:null, sc:'#6a5a44', colors:['#d9ceb4','#ebe2cc','#a8453a','#f3ebd9','#2e261c'], bg:'classifiedDossier', frame:'dossier', tape:'clip', layout:'flat' },
@@ -1220,6 +1282,7 @@ const PRESETS = [
   { name:'余烬黄昏', grp:'夜景', title:'italicMag', sub:'kicker', tc:null, sc:'#f4a76a', colors:['#35202f','#4a2c3f','#f4a76a','#2a1824','#fdeede'], bg:'emberDusk', frame:'neon', tape:'sparkle', layout:'wave' },
   { name:'深海潮汐', grp:'夜景', title:'wave', sub:'kicker', tc:null, sc:'#6fd3ff', colors:['#0c2740','#12385a','#6fcdf5','#071c2f','#e2f4ff'], bg:'deepSea', frame:'neon', tape:'sparkle', layout:'stairs' },
   { name:'霓虹雨夜', grp:'夜景', title:'glitch', sub:'kicker', tc:null, sc:'#ff7ab8', colors:['#171229','#221a3c','#f25aa6','#0c0a16','#f4eeff'], bg:'neonRain', frame:'neon', tape:'sparkle', layout:'scatter' },
+  { name:'赛博霓虹', grp:'夜景', title:'neonSign', sub:'kicker', tc:null, sc:'#41e0ee', colors:['#120f26','#201a3f','#a45cf5','#120f26','#e9e4ff'], bg:'cyberGrid', frame:'neon', tape:'sparkle', layout:'stairs' },
   { name:'玫瑰邀请函', grp:'约会票根', title:'invite', sub:'italicMag', tc:null, sc:'#9a5a6c', colors:['#f1e6dc','#fbf6ef','#c94d73','#f6c5d4','#4a2f38'], bg:'dateInvite', frame:'ticket', tape:'seal', layout:'flat' },
   { name:'邮票蓝调', grp:'约会票根', title:'ticketLabel', sub:'kicker', tc:null, sc:'#4a86ad', colors:['#e8eff3','#fbf9f4','#4a90ba','#d7e8f2','#2f4252'], bg:'dateStubs', frame:'ticket', tape:'staple', layout:'dateTilt' },
   { name:'电报信笺', grp:'约会票根', title:'postmark', sub:'kicker', tc:null, sc:'#3f7fa6', colors:['#ebe5dc','#fffdf8','#3a85ad','#e2eef4','#34414d'], bg:'dateTelegram', frame:'telegram', tape:'clip', layout:'dateTilt' },
@@ -1233,10 +1296,21 @@ const PRESETS = [
   { name:'哥窑开片', grp:'宋韵', title:'seal', sub:'text', tc:null, sc:'#7a705c', colors:['#e4e0d3','#f2efe6','#948a74','#ffffff','#4a443a'], bg:'crackedGlaze', frame:'lattice', tape:'chop', layout:'flat' },
   { name:'水墨山水', grp:'宋韵', title:'ink', sub:'text', tc:null, sc:'#7a7468', colors:['#f1eee6','#faf8f2','#b8483f','#ffffff','#2d2f33'], bg:'inkMountain', frame:'scroll', tape:'chop', layout:'stairs' },
   { name:'竹影月夜', grp:'宋韵', title:'ink', sub:'kicker', tc:null, sc:'#5a7a62', colors:['#e9efe9','#f6faf6','#5f8068','#ffffff','#2c3a30'], bg:'bambooMoon', frame:'scroll', tape:'sparkle', layout:'wave' },
-  { name:'卷轴装裱', grp:'宋韵', title:'seal', sub:'text', tc:null, sc:'#8a6a48', colors:['#efe3cc','#f8f0df','#b24b3f','#fffdf8','#3a2f24'], bg:'scroll', frame:'scroll', tape:'chop', layout:'flat' }
+  { name:'卷轴装裱', grp:'宋韵', title:'seal', sub:'text', tc:null, sc:'#8a6a48', colors:['#efe3cc','#f8f0df','#b24b3f','#fffdf8','#3a2f24'], bg:'scroll', frame:'scroll', tape:'chop', layout:'flat' },
+  { name:'书脊书架', grp:'书香手作', title:'spine', sub:'italicMag', tc:null, sc:'#8a7a64', colors:['#efe6d6','#fbf6ea','#b5654a','#fbf6ea','#3d3128'], bg:'bookShelf', frame:'bookpage', tape:'bookmark', layout:'flat' },
+  { name:'布面精装·靛蓝', grp:'书香手作', title:'spine', sub:'kicker', tc:null, sc:'#d8c38f', colors:['#3c5a78','#f4efe2','#d6b36a','#243b55','#f1e8d2'], bg:'bookCover', frame:'bookpage', tape:'bookmark', layout:'flat' },
+  { name:'布面精装·酒红', grp:'书香手作', title:'spine', sub:'italicMag', tc:null, sc:'#e3c48c', colors:['#7a3f4a','#f6efe4','#d4b06a','#4a2430','#f3e6d8'], bg:'bookCover', frame:'bookpage', tape:'clip', layout:'flat' },
+  { name:'咖啡馆·牛皮菜单', grp:'城市生活', title:'menu', sub:'text', tc:null, sc:'#6a5238', colors:['#d7bd96','#fbf5e8','#a8643f','#fbf5e8','#3f2f22'], bg:'cafeMenu', frame:'menucard', tape:'washi', layout:'dateTilt' },
+  { name:'咖啡馆·黑板', grp:'城市生活', title:'menu', sub:'kicker', tc:null, sc:'#e0b36a', colors:['#2f3a36','#f1ead8','#e0b36a','#f1ead8','#ece5d2'], bg:'cafeMenu', frame:'menucard', tape:'pin', layout:'wave' },
+  { name:'地铁线路图', grp:'城市生活', title:'metro', sub:'text', tc:null, sc:'#6a7686', colors:['#f4f2ec','#ffffff','#e0745a','#ffffff','#2e3a4a'], bg:'metroMap', frame:'fold', tape:'none', layout:'flat' },
+  { name:'和风·樱', grp:'日式和风', title:'hanko', sub:'kicker', tc:null, sc:'#6a7090', colors:['#f3ebe3','#fbf7f1','#c9564e','#fbf7f1','#2f3a5a'], bg:'wafuu', frame:'lattice', tape:'chop', layout:'wave' },
+  { name:'和风·夜樱', grp:'日式和风', title:'hanko', sub:'kicker', tc:null, sc:'#e6b3bd', colors:['#1f2742','#2c3556','#d98f9c','#2c3556','#f1e9e6'], bg:'wafuu', frame:'lattice', tape:'chop', layout:'stairs' },
+  { name:'圣诞限定', grp:'节日限定', title:'festive', sub:'italicMag', tc:null, sc:'#e6c27a', colors:['#2d4a3e','#f7f1e4','#d3604f','#f7f1e4','#f7f1e4'], bg:'xmasEve', frame:'scallop', tape:'bulbs', layout:'scatter' },
+  { name:'新春限定', grp:'节日限定', title:'festive', sub:'text', tc:null, sc:'#9a6a2a', colors:['#f6ecd8','#fffaf0','#cf4a3c','#fff6e0','#7a2f28'], bg:'newYear', frame:'scroll', tape:'chop', layout:'wave' }
 ]
 
 function clearPresetHighlight() {
+  curPreset = null;
   document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
 }
 
@@ -1279,6 +1353,7 @@ function applyPreset(p, silent) {
   if (p.frame) setOpt('frame', p.frame);
   if (p.tape) setOpt('tapeStyle', p.tape);
 
+  curPreset = p.name;
   document.querySelectorAll('#presets .pre').forEach(b => {
     b.classList.toggle('on', b.dataset.preset === p.name);
   });
@@ -1327,7 +1402,7 @@ function initColors() {
     b.className = 'pre';
     b.dataset.preset = p.name;
     const [base, frame, tape] = p.colors;
-    b.innerHTML = `<span class="dots"><i style="background:${base}"></i><i style="background:${frame}"></i><i style="background:${tape}"></i></span>${p.name}`;
+    b.innerHTML = `<canvas class="thumb" width="300" height="400" style="background:${base}"></canvas><span class="pname">${p.name}</span>`;
     b.title = `标题：${p.title || '-'} · 副标题：${p.sub || '-'} · 背景：${p.bg} · 排列：${p.layout || 'flat'}`;
     b.onclick = () => applyPreset(p);
     grid.append(b);
@@ -1592,6 +1667,9 @@ function geometry() {
     case 'parchment': sidePad = 28 * scale; topPad = 28 * scale; botPad = 36 * scale; break;
     case 'popblock': sidePad = 14 * scale; topPad = 14 * scale; botPad = 30 * scale; break;
     case 'scallop':  sidePad = 24 * scale; topPad = 24 * scale; botPad = 24 * scale; break;
+    case 'bookpage': sidePad = 24 * scale; topPad = 28 * scale; botPad = 42 * scale; break;
+    case 'menucard': sidePad = 26 * scale; topPad = 30 * scale; botPad = 50 * scale; break;
+    case 'retrowin': sidePad = 10 * scale; topPad = 34 * scale; botPad = 28 * scale; break;
   }
 
   const gap = NEWLAY
@@ -1743,6 +1821,20 @@ function drawDecor(c, kind, fw, fh, s, R, accent) {
     c.fillStyle = '#b3261e'; c.fillRect(-13 * s, -13 * s, 26 * s, 26 * s); c.shadowColor = 'transparent';
     c.strokeStyle = 'rgba(255,235,225,0.85)'; c.lineWidth = 1.4 * s; c.strokeRect(-10 * s, -10 * s, 20 * s, 20 * s);
     c.fillStyle = 'rgba(255,235,225,0.92)'; c.font = `700 ${15 * s}px "Noto Serif SC", "Songti SC", serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('印', 0, 1 * s);
+  } else if (kind === 'bookmark') {                        // 书签带
+    c.translate(fw * 0.8 + jx * 0.3, 0);
+    c.shadowColor = 'rgba(0,0,0,0.28)'; c.shadowBlur = 5 * s; c.shadowOffsetX = 1.5 * s; c.shadowOffsetY = 2.5 * s;
+    c.fillStyle = ac(0.95); c.beginPath(); c.moveTo(-9 * s, -4 * s); c.lineTo(9 * s, -4 * s); c.lineTo(9 * s, 54 * s); c.lineTo(0, 45 * s); c.lineTo(-9 * s, 54 * s); c.closePath(); c.fill();
+    c.shadowColor = 'transparent'; c.fillStyle = 'rgba(255,255,255,0.22)'; c.fillRect(-9 * s, -4 * s, 3.5 * s, 58 * s);
+    c.strokeStyle = 'rgba(255,255,255,0.45)'; c.lineWidth = 1 * s; c.setLineDash([2.5 * s, 2.5 * s]); c.beginPath(); c.moveTo(0, 2 * s); c.lineTo(0, 38 * s); c.stroke();
+  } else if (kind === 'bulbs') {                           // 灯串
+    const cols = [accent, '#ffd27a', '#8fd0c0', '#f2a1b5'], n = Math.max(5, Math.round(fw / (26 * s)));
+    c.strokeStyle = 'rgba(40,40,40,0.55)'; c.lineWidth = 1.4 * s; c.beginPath(); c.moveTo(4 * s, 3 * s); c.quadraticCurveTo(fw / 2, 22 * s, fw - 4 * s, 3 * s); c.stroke();
+    for (let k = 1; k < n; k++) {
+      const t = k / n, bx = 4 * s + (fw - 8 * s) * t, by = 2 * (1 - t) * t * 22 * s + 3 * s * (1 - t) * (1 - t) + 3 * s * t * t, col = cols[k % cols.length];
+      c.shadowColor = col; c.shadowBlur = 9 * s; c.fillStyle = col; c.beginPath(); c.ellipse(bx, by + 6 * s, 3.4 * s, 5 * s, 0, 0, Math.PI * 2); c.fill();
+      c.shadowColor = 'transparent'; c.fillStyle = 'rgba(60,60,60,0.7)'; c.fillRect(bx - 1.6 * s, by - 0.5 * s, 3.2 * s, 2.6 * s);
+    }
   } else if (kind === 'sparkle') {                         // 星光
     const star = (x, y, r, rot) => {
       c.save(); c.translate(x, y); c.rotate(rot); c.beginPath();
@@ -2168,14 +2260,14 @@ function premiumBackground(c, w, h, cb, o) {
     sealStamp(c, w - 70, 40, 36, '哥窑开片');
   } else if (cb === 'magCover') {
     const m = 44;
-    bgText(c, 'VOL. 07', m, 30, { size: 12, weight: 600, family: SANSF, sp: 3, align: 'left', col: tcol(0.7) });
+    bgText(c, 'VOL. ' + TODAY.mm, m, 30, { size: 12, weight: 600, family: SANSF, sp: 3, align: 'left', col: tcol(0.7) });
     bgText(c, 'THE THEME ISSUE', w / 2, 30, { size: 17, italic: true, family: SERIF, sp: 5, col: tcol(0.8) });
-    bgText(c, 'AUTUMN 2026', w - m, 30, { size: 12, weight: 600, family: SANSF, sp: 3, align: 'right', col: tcol(0.7) });
+    bgText(c, TODAY.season + ' ' + TODAY.yyyy, w - m, 30, { size: 12, weight: 600, family: SANSF, sp: 3, align: 'right', col: tcol(0.7) });
     c.fillStyle = tcol(0.85); c.fillRect(m, 46, w - 2 * m, 3);
     c.fillStyle = tcol(0.55); c.fillRect(m, 53, w - 2 * m, 1);
     c.fillStyle = tcol(0.55); c.fillRect(m, h - 62, w - 2 * m, 1);
     bgText(c, 'SCREENSHOT COLLECTION', m, h - 38, { size: 11, weight: 600, family: SANSF, sp: 3, align: 'left', col: tcol(0.65) });
-    bgText(c, 'NO. 07  —  ¥ 38.00', w / 2, h - 38, { size: 11, family: MONO, sp: 2, col: tcol(0.5) });
+    bgText(c, 'NO. ' + TODAY.issue + '  —  ¥ 38.00', w / 2, h - 38, { size: 11, family: MONO, sp: 2, col: tcol(0.5) });
     let bx = w - m - 112; const by = h - 52, bh = 30;
     c.fillStyle = tcol(0.85);
     while (bx < w - m) { const bw = 1 + Math.floor(R() * 3); c.fillRect(bx, by, bw, bh); bx += bw + 1 + Math.floor(R() * 3); }
@@ -2183,7 +2275,7 @@ function premiumBackground(c, w, h, cb, o) {
     bgText(c, 'AUTUMN / WINTER COLLECTION  ·  READING THEMES', 0, 0, { size: 10, weight: 500, family: SANSF, sp: 4, col: tcol(0.4) });
     c.restore();
     c.save(); c.translate(w - 24, h / 2); c.rotate(Math.PI / 2);
-    bgText(c, 'DESIGNED FOR MOBILE  ·  EDITION 07', 0, 0, { size: 10, weight: 500, family: SANSF, sp: 4, col: tcol(0.4) });
+    bgText(c, 'DESIGNED FOR MOBILE  ·  EDITION ' + TODAY.issue, 0, 0, { size: 10, weight: 500, family: SANSF, sp: 4, col: tcol(0.4) });
     c.restore();
   } else if (cb === 'magGrid') {
     c.fillStyle = tcol(0.06);
@@ -2194,7 +2286,7 @@ function premiumBackground(c, w, h, cb, o) {
       c.beginPath(); c.moveTo(gx, y + sy * 34); c.lineTo(gx, y + sy * 18); c.moveTo(x + sx * 34, gy); c.lineTo(x + sx * 18, gy); c.stroke();
     });
     bgText(c, 'THEME COLLECTION — SCREENSHOTS', 60, 34, { size: 11, weight: 600, family: SANSF, sp: 3, align: 'left', col: tcol(0.6) });
-    bgText(c, '07', w - 60, 34, { size: 15, italic: true, family: SERIF, align: 'right', col: tcol(0.7) });
+    bgText(c, TODAY.issue, w - 60, 34, { size: 15, italic: true, family: SERIF, align: 'right', col: tcol(0.7) });
     c.fillStyle = tcol(0.3); c.fillRect(60, 48, w - 120, 1);
     const sw = 14, cy = h - 34; const cols = ['#00aeef', '#ec008c', '#fff200', '#231f20', '#ed1c24', '#00a651'];
     cols.forEach((cc, i) => { c.fillStyle = cc; c.fillRect(60 + i * (sw + 2), cy, sw, sw); });
@@ -2202,33 +2294,33 @@ function premiumBackground(c, w, h, cb, o) {
     const rx = w - 76, ry = h - 27;
     c.strokeStyle = tcol(0.8); c.lineWidth = 1;
     c.beginPath(); c.arc(rx, ry, 8, 0, Math.PI * 2); c.moveTo(rx - 13, ry); c.lineTo(rx + 13, ry); c.moveTo(rx, ry - 13); c.lineTo(rx, ry + 13); c.stroke();
-    bgText(c, 'PAGE 07 / 120', w / 2, h - 27, { size: 10, family: MONO, sp: 2, col: tcol(0.45) });
+    bgText(c, 'PAGE ' + TODAY.issue + ' / 120', w / 2, h - 27, { size: 10, family: MONO, sp: 2, col: tcol(0.45) });
   } else if (cb === 'magColor') {
     const acc = $('cTape').value, ar = rgb(acc);
     const onAcc = (0.299 * ar[0] + 0.587 * ar[1] + 0.114 * ar[2]) > 150 ? 'rgba(20,20,20,.8)' : 'rgba(255,255,255,.9)';
     c.fillStyle = acc; c.fillRect(0, 0, 64, h);
     c.save(); c.translate(32, h / 2); c.rotate(-Math.PI / 2);
-    bgText(c, 'ISSUE 07  ·  THEME COLLECTION  ·  AUTUMN 2026', 0, 0, { size: 12, weight: 600, family: SANSF, sp: 5, col: onAcc });
+    bgText(c, 'ISSUE ' + TODAY.issue + '  ·  THEME COLLECTION  ·  ' + TODAY.season + ' ' + TODAY.yyyy, 0, 0, { size: 12, weight: 600, family: SANSF, sp: 5, col: onAcc });
     c.restore();
     c.fillStyle = tcol(0.88); c.beginPath(); c.moveTo(w, 0); c.lineTo(w - 130, 0); c.arc(w, 0, 130, Math.PI, Math.PI / 2, true); c.closePath(); c.fill();
     c.fillStyle = acc; c.fillRect(w - 56, h - 56, 56, 56);
     c.strokeStyle = tcol(0.3); c.lineWidth = 1.5; c.lineJoin = 'round';
     c.font = `400 200px ${BGF.poster}`; c.textAlign = 'right'; c.textBaseline = 'alphabetic';
-    c.strokeText('07', w - 80, h - 40);
+    c.strokeText(TODAY.issue, w - 80, h - 40);
     c.fillStyle = tcol(0.55); c.fillRect(100, 40, 1, h - 80);
-    bgText(c, 'N° 07', 124, 40, { size: 12, weight: 600, family: SANSF, sp: 4, align: 'left', col: tcol(0.6) });
+    bgText(c, 'N° ' + TODAY.issue, 124, 40, { size: 12, weight: 600, family: SANSF, sp: 4, align: 'left', col: tcol(0.6) });
   } else if (cb === 'magMast') {
     c.save();
     c.font = `italic 400 ${Math.round(w * 0.3)}px ${SERIF}`; c.fillStyle = tcol(0.07); c.textAlign = 'center'; c.textBaseline = 'middle';
     try { c.letterSpacing = '6px'; } catch (e) {}
     c.fillText('THEME', w / 2, 170);
     c.restore();
-    bgText(c, 'THE READING THEME ISSUE  ·  AUTUMN 2026', w / 2, 36, { size: 12, weight: 600, family: SANSF, sp: 5, col: tcol(0.6) });
+    bgText(c, 'THE READING THEME ISSUE  ·  ' + TODAY.season + ' ' + TODAY.yyyy, w / 2, 36, { size: 12, weight: 600, family: SANSF, sp: 5, col: tcol(0.6) });
     c.fillStyle = tcol(0.7); c.fillRect(44, 50, w - 88, 1);
     c.strokeStyle = tcol(0.75); c.lineWidth = 1.5;
     c.beginPath(); c.arc(w - 90, 120, 40, 0, Math.PI * 2); c.stroke();
     bgText(c, 'N°', w - 90, 110, { size: 14, italic: true, family: SERIF, col: tcol(0.75) });
-    bgText(c, '07', w - 90, 132, { size: 24, italic: true, family: SERIF, col: tcol(0.85) });
+    bgText(c, TODAY.issue, w - 90, 132, { size: 24, italic: true, family: SERIF, col: tcol(0.85) });
     c.fillStyle = tcol(0.7); c.fillRect(44, h - 50, w - 88, 1);
     bgText(c, 'EXCLUSIVE SCREENSHOT EDITION', 44, h - 30, { size: 11, weight: 600, family: SANSF, sp: 4, align: 'left', col: tcol(0.55) });
     bgText(c, 'WWW.READING-THEME.COM', w - 44, h - 30, { size: 11, family: MONO, sp: 2, align: 'right', col: tcol(0.45) });
@@ -2242,7 +2334,7 @@ function premiumBackground(c, w, h, cb, o) {
     bgText(c, 'THE DAILY THEME', w / 2, 30, { size: 30, weight: 700, family: '"Old Standard TT", "Playfair Display", Georgia, serif', sp: 3, col: tcol(0.88) });
     c.fillStyle = tcol(0.85); c.fillRect(m, 50, w - 2 * m, 3); c.fillRect(m, 57, w - 2 * m, 1);
     const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
-    bgText(c, 'VOL. CXXVII', m, 68, { size: 10, weight: 600, family: SANSF, sp: 2, align: 'left', col: tcol(0.6) });
+    bgText(c, 'VOL. ' + TODAY.roman, m, 68, { size: 10, weight: 600, family: SANSF, sp: 2, align: 'left', col: tcol(0.6) });
     bgText(c, dateStr, w / 2, 68, { size: 10, weight: 600, family: SANSF, sp: 2, col: tcol(0.6) });
     bgText(c, 'PRICE FIVE CENTS', w - m, 68, { size: 10, weight: 600, family: SANSF, sp: 2, align: 'right', col: tcol(0.6) });
     c.fillStyle = tcol(0.5); c.fillRect(m, 77, w - 2 * m, 1);
@@ -2260,10 +2352,10 @@ function premiumBackground(c, w, h, cb, o) {
     bgText(c, 'GALLERY 03', 60, 54, { size: 11, weight: 600, family: SANSF, sp: 4, align: 'left', col: tcol(0.55) });
     bgText(c, 'N 35°41′  E 139°41′', w - 60, 54, { size: 11, family: MONO, sp: 2, align: 'right', col: tcol(0.45) });
     bgText(c, 'Reading Themes', 60, h - 84, { size: 24, italic: true, family: SERIF, align: 'left', col: tcol(0.85) });
-    bgText(c, 'Screenshot Collection, 2026', 60, h - 60, { size: 12, family: SANSF, sp: 1, align: 'left', col: tcol(0.65) });
+    bgText(c, 'Screenshot Collection, ' + TODAY.yyyy, 60, h - 60, { size: 12, family: SANSF, sp: 1, align: 'left', col: tcol(0.65) });
     bgText(c, 'Digital print  ·  Edition 7 / 100', 60, h - 44, { size: 11, family: MONO, sp: 1, align: 'left', col: tcol(0.45) });
     c.strokeStyle = tcol(0.5); c.strokeRect(w - 100, h - 94, 40, 40);
-    bgText(c, '07', w - 80, h - 74, { size: 18, italic: true, family: SERIF, col: tcol(0.8) });
+    bgText(c, TODAY.issue, w - 80, h - 74, { size: 18, italic: true, family: SERIF, col: tcol(0.8) });
   } else if (cb === 'magSpread') {
     const gw = 130, gx = w / 2 - gw / 2;
     const g = c.createLinearGradient(gx, 0, gx + gw, 0);
@@ -2566,7 +2658,7 @@ function premiumBackground(c, w, h, cb, o) {
     c.save(); c.shadowColor = cy; c.shadowBlur = 12;
     bgText(c, 'RAIN CITY  ·  02:17 AM', w / 2, 58, { size: 14, family: SANS, sp: 7, col: '#ffffff' });
     c.restore();
-    bgText(c, 'CH.07  /  OPEN ALL NIGHT', 62, h - 42, { size: 11, family: MONO, sp: 2, align: 'left', col: 'rgba(255,255,255,.95)' });
+    bgText(c, 'CH.' + TODAY.issue + '  /  OPEN ALL NIGHT', 62, h - 42, { size: 11, family: MONO, sp: 2, align: 'left', col: 'rgba(255,255,255,.95)' });
     c.save(); c.shadowColor = cy; c.shadowBlur = 10;
     bgText(c, 'LIT UP BY Q.', w - 62, h - 42, { size: 11, family: MONO, sp: 2, align: 'right', col: 'rgba(255,255,255,.95)' });
     c.restore();
@@ -2786,8 +2878,8 @@ function paperBackground(c, w, h, cb, o) {
     wax(w - m - 30, 92, 6);
     S('Our Infodata', w / 2, h - 96, { size: 30, weight: 700, col: tcol(0.88) });
     T('HABITANT  MORBI  TRISTIQUE  SENECTUS  ET  NETUS', w / 2, h - 62, { size: 13, sp: 3, col: tcol(0.8) });
-    T('# TIME: 2026/10/27', w - m - 24, h - 30, { size: 20, align: 'right', sp: 1, col: tcol(0.9) });
-    postmark(w - m - 70, h - 130, 64, 40, -0.35, '27 OCT 2026');
+    T('# TIME: ' + TODAY.slash, w - m - 24, h - 30, { size: 20, align: 'right', sp: 1, col: tcol(0.9) });
+    postmark(w - m - 70, h - 130, 64, 40, -0.35, TODAY.dmy);
   } else if (cb === 'paperBox') {
     topLabels(40);
     c.strokeStyle = tcol(0.75); c.lineWidth = 1; c.strokeRect(m, 64, w - 2 * m, 46);
@@ -2935,7 +3027,7 @@ function posterBackground(c, w, h, cb, o) {
     c.fillStyle = ACC; c.fillRect(0, 0, 26, h);
     c.fillStyle = INK; c.fillRect(56, 30, w - 112, 6);
     T('READING THEMES', 56, 54, 13, INK, { align: 'left', sp: 4 });
-    T('NO. 07 / 2026', w - 56, 54, 13, INK, { align: 'right', sp: 4, family: MONO });
+    T('NO. ' + TODAY.issue + ' / ' + TODAY.yyyy, w - 56, 54, 13, INK, { align: 'right', sp: 4, family: MONO });
     c.fillStyle = INK; c.fillRect(56, h - 84, w - 112, 6);
     c.fillStyle = ACC; c.beginPath(); c.arc(w - 82, h - 44, 18, 0, 7); c.fill();
     T('DESIGNED BY Q.', 56, h - 44, 13, INK, { align: 'left', sp: 4 });
@@ -2948,7 +3040,7 @@ function posterBackground(c, w, h, cb, o) {
     c.fillStyle = INK; c.fillRect(0, 0, w, 16); c.fillRect(0, h - 68, w, 68);
     c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(0, h * 0.70 - 18); c.lineTo(w, h * 0.50 - 18); c.stroke();
     T('BUILT BY Q.', 40, h - 34, 24, baseCol, { align: 'left', sp: 2, family: DISP, weight: 400 });
-    T('№ 07', w - 40, h - 34, 24, ACC, { align: 'right', sp: 2, family: DISP, weight: 400 });
+    T('№ ' + TODAY.issue, w - 40, h - 34, 24, ACC, { align: 'right', sp: 2, family: DISP, weight: 400 });
   } else if (cb === 'pstPop') {
     fill(baseCol);
     const dots = (cx, cy, rr, col) => {
@@ -2963,7 +3055,7 @@ function posterBackground(c, w, h, cb, o) {
     c.fillStyle = ACC; c.fillRect(0, h - 64, w, 58);
     T('POP! READING THEMES', w / 2, 44, 20, INK, { family: DISP, sp: 4, weight: 400 });
     T('POPPED BY Q.', 40, h - 35, 18, '#fff', { align: 'left', sp: 3, family: DISP, weight: 400 });
-    T('SERIES 07', w - 40, h - 35, 18, '#fff', { align: 'right', sp: 3, family: DISP, weight: 400 });
+    T('SERIES ' + TODAY.issue, w - 40, h - 35, 18, '#fff', { align: 'right', sp: 3, family: DISP, weight: 400 });
   } else if (cb === 'pstCinema') {
     fill(baseCol);
     c.fillStyle = ACC; c.fillRect(0, 0, w, 8);
@@ -3096,6 +3188,285 @@ function sketchBackground(c, w, h, cb, o) {
   }
 }
 
+/* ====== 新增背景风格（书脊书架 / 实体书封面 / 咖啡馆菜单 / 地铁线路图 / 拍立得墙 / 复古电脑 / 手帐贴纸 / 和风 / 赛博霓虹 / 圣诞 / 新春） ====== */
+const NB_SERIF = '"Playfair Display", "Noto Serif SC", Georgia, serif';
+const nbBlend = (h1, h2, t) => { const a = rgb(h1), b = rgb(h2); return hex([0, 1, 2].map(i => a[i] + (b[i] - a[i]) * t)); };
+const nbA = (h, a) => { const r = rgb(h); return `rgba(${r[0]},${r[1]},${r[2]},${a})`; };
+function nbStar(c, x, y, r, rot = 0) {
+  c.beginPath();
+  for (let i = 0; i < 10; i++) { const a = rot + i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? r * 0.45 : r; c[i ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  c.closePath(); c.fill();
+}
+function nbHeart(c, x, y, s) {
+  c.beginPath(); c.moveTo(x, y + s * 0.35);
+  c.bezierCurveTo(x - s, y - s * 0.3, x - s * 0.55, y - s * 0.95, x, y - s * 0.4);
+  c.bezierCurveTo(x + s * 0.55, y - s * 0.95, x + s, y - s * 0.3, x, y + s * 0.35); c.fill();
+}
+function nbFlower(c, x, y, r, petal, center) {
+  c.fillStyle = petal;
+  for (let i = 0; i < 5; i++) { const a = i * Math.PI * 2 / 5; c.beginPath(); c.arc(x + Math.cos(a) * r * 0.6, y + Math.sin(a) * r * 0.6, r * 0.5, 0, Math.PI * 2); c.fill(); }
+  c.fillStyle = center; c.beginPath(); c.arc(x, y, r * 0.38, 0, Math.PI * 2); c.fill();
+}
+function nbPetal(c, x, y, r, rot, col) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.fillStyle = col;
+  for (let i = 0; i < 5; i++) { c.save(); c.rotate(i * Math.PI * 2 / 5); c.beginPath(); c.moveTo(0, 0); c.bezierCurveTo(-r * 0.55, -r * 0.5, -r * 0.35, -r, 0, -r * 0.82); c.bezierCurveTo(r * 0.35, -r, r * 0.55, -r * 0.5, 0, 0); c.fill(); c.restore(); }
+  c.restore();
+}
+function nbCup(c, x, y, s, col) {
+  c.save(); c.strokeStyle = col; c.lineWidth = 2; c.lineCap = 'round'; c.lineJoin = 'round';
+  c.beginPath(); c.moveTo(x - 22 * s, y - 14 * s); c.lineTo(x + 22 * s, y - 14 * s); c.quadraticCurveTo(x + 20 * s, y + 18 * s, x, y + 20 * s); c.quadraticCurveTo(x - 20 * s, y + 18 * s, x - 22 * s, y - 14 * s); c.stroke();
+  c.beginPath(); c.moveTo(x + 22 * s, y - 8 * s); c.bezierCurveTo(x + 36 * s, y - 8 * s, x + 36 * s, y + 8 * s, x + 19 * s, y + 8 * s); c.stroke();
+  c.beginPath(); c.ellipse(x, y + 24 * s, 32 * s, 6 * s, 0, 0, Math.PI * 2); c.stroke();
+  for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(x + i * 10 * s, y - 22 * s); c.bezierCurveTo(x + i * 10 * s - 6 * s, y - 32 * s, x + i * 10 * s + 6 * s, y - 40 * s, x + i * 10 * s, y - 50 * s); c.stroke(); }
+  c.restore();
+}
+
+const NEWBG = {
+  /* 书脊书架 */
+  bookShelf(c, w, h, X) {
+    const { R, tcol, isDark, tapeCol } = X;
+    const spines = ['#b86f50', '#5f8272', '#c9a45e', '#4f6f8f', '#8f5d70', '#7f8f5e', '#a58260', '#6f649a', '#c98b6b', '#5a7f8f'];
+    spines.push(tapeCol);
+    const plankY = h - 92;
+    let x = 52;
+    while (x < w - 90) {
+      const bw = 26 + R() * 34, bh = 120 + R() * 74, col = spines[(R() * spines.length) | 0];
+      const top = plankY - bh;
+      c.fillStyle = col; c.beginPath(); c.roundRect(x, top, bw, bh, [3, 3, 0, 0]); c.fill();
+      c.fillStyle = 'rgba(0,0,0,0.16)'; c.fillRect(x + bw * 0.72, top, bw * 0.28, bh);
+      c.fillStyle = 'rgba(255,255,255,0.22)'; c.fillRect(x + 3, top, 2, bh);
+      c.fillStyle = 'rgba(255,255,255,0.55)'; c.fillRect(x, top + 14, bw, 3); c.fillRect(x, top + bh - 22, bw, 3);
+      if (R() < 0.7) { c.fillStyle = 'rgba(255,250,235,0.78)'; c.fillRect(x + bw * 0.2, top + bh * 0.3, bw * 0.46, 22 + R() * 18); }
+      x += bw + (R() < 0.18 ? 16 : 1.5);
+    }
+    const wood = isDark ? '#5b4636' : '#b08b66';
+    const g = c.createLinearGradient(0, plankY, 0, plankY + 28);
+    g.addColorStop(0, nbBlend(wood, '#ffffff', 0.18)); g.addColorStop(1, nbBlend(wood, '#000000', 0.12));
+    c.fillStyle = g; c.fillRect(30, plankY, w - 60, 18);
+    c.fillStyle = nbBlend(wood, '#000000', 0.28); c.fillRect(30, plankY + 18, w - 60, 10);
+    c.fillStyle = 'rgba(0,0,0,0.10)'; c.fillRect(40, plankY + 28, w - 80, 6);
+    bgText(c, 'THE READING SHELF  ·  ' + TODAY.yyyy, w / 2, 44, { size: 11, weight: 600, family: BGF.web, sp: 4, col: tcol(0.55) });
+    bgText(c, 'SHELF NO. ' + TODAY.issue, 60, h - 38, { size: 11, weight: 600, family: BGF.web, sp: 4, align: 'left', col: tcol(0.55) });
+    bgText(c, 'SHELVED BY Q.', w - 60, h - 38, { size: 11, weight: 600, family: BGF.web, sp: 4, align: 'right', col: tcol(0.55) });
+  },
+  /* 实体书封面 */
+  bookCover(c, w, h, X) {
+    const { tcol, tapeCol, transparent, isDark } = X;
+    const sp = 70;
+    if (!transparent) {
+      c.strokeStyle = isDark ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.04)'; c.lineWidth = 1; c.beginPath();
+      for (let y = 0; y < h; y += 5) { c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); }
+      for (let x = 0; x < w; x += 5) { c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); }
+      c.stroke();
+    }
+    const g = c.createLinearGradient(0, 0, sp + 10, 0);
+    g.addColorStop(0, 'rgba(0,0,0,0.22)'); g.addColorStop(0.8, 'rgba(0,0,0,0.06)'); g.addColorStop(1, 'rgba(255,255,255,0.10)');
+    c.fillStyle = g; c.fillRect(0, 0, sp + 10, h);
+    c.fillStyle = 'rgba(0,0,0,0.28)'; c.fillRect(sp, 0, 3, h); c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(sp + 3, 0, 2, h);
+    c.strokeStyle = tcol(0.32); c.lineWidth = 1.5; c.setLineDash([9, 7]); c.beginPath(); c.moveTo(sp + 16, 0); c.lineTo(sp + 16, h); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = tcol(0.4); c.lineWidth = 2; c.strokeRect(sp + 34, 30, w - sp - 64, h - 60);
+    c.strokeStyle = tcol(0.2); c.lineWidth = 1; c.strokeRect(sp + 42, 38, w - sp - 80, h - 76);
+    [[sp + 34, 30, 1, 1], [w - 30, 30, -1, 1], [sp + 34, h - 30, 1, -1], [w - 30, h - 30, -1, -1]].forEach(([x, y, sx, sy]) => { bgDiamond(c, x + sx * 14, y + sy * 14, 4, tcol(0.5)); });
+    const rx = w - 120; c.fillStyle = nbA(tapeCol, 0.92);
+    c.beginPath(); c.moveTo(rx, 0); c.lineTo(rx + 24, 0); c.lineTo(rx + 24, 130); c.lineTo(rx + 12, 116); c.lineTo(rx, 130); c.closePath(); c.fill();
+    c.fillStyle = 'rgba(0,0,0,0.12)'; c.fillRect(rx + 17, 0, 7, 128);
+    const cx = (w + sp) / 2;
+    bgText(c, 'A COLLECTION OF THEMES  ·  ' + TODAY.yyyy, cx - 40, 64, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.55) });
+    bgText(c, 'Q. PRESS  ·  VOL. ' + TODAY.mm, cx, h - 76, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.55) });
+    bgText(c, 'BOUND BY Q.', cx, h - 58, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.55) });
+  },
+  /* 咖啡馆菜单 */
+  cafeMenu(c, w, h, X) {
+    const { R, tcol, transparent, isDark } = X;
+    if (!transparent) { c.fillStyle = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(90,60,30,0.04)'; for (let i = 0; i < 1300; i++) c.fillRect(R() * w, R() * h, 1 + R() * 2, 1); }
+    c.strokeStyle = tcol(0.38); c.lineWidth = 2; c.strokeRect(26, 26, w - 52, h - 52);
+    c.strokeStyle = tcol(0.2); c.lineWidth = 1; c.strokeRect(34, 34, w - 68, h - 68);
+    nbCup(c, 92, h - 150, 0.9, tcol(0.4)); nbCup(c, w - 92, 130, 0.9, tcol(0.4));
+    bgText(c, '— TODAY\u2019S MENU  ·  ' + TODAY.slash + ' —', w / 2, 58, { size: 15, italic: true, family: NB_SERIF, col: tcol(0.6) });
+    const row = (y, left, right) => {
+      const lw = bgText(c, left, 150, y, { size: 15, italic: true, family: NB_SERIF, align: 'left', col: tcol(0.6) });
+      const rw = bgText(c, right, w - 150, y, { size: 15, italic: true, family: NB_SERIF, align: 'right', col: tcol(0.6) });
+      c.save(); c.fillStyle = tcol(0.4);
+      for (let x = 150 + lw + 14; x < w - 150 - rw - 14; x += 9) { c.beginPath(); c.arc(x, y + 6, 1.3, 0, Math.PI * 2); c.fill(); }
+      c.restore();
+    };
+    row(h - 102, 'Cold Brew', '¥ 28');
+    row(h - 72, 'Brewed by Q.', '♡');
+  },
+  /* 地铁线路图 */
+  metroMap(c, w, h, X) {
+    const { tcol, tapeCol, baseCol } = X;
+    const cols = [tapeCol, nbBlend('#4fa3a5', tapeCol, 0.1), '#d98c4a'];
+    const line = (pts, col) => { c.save(); c.strokeStyle = col; c.lineWidth = 11; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath(); pts.forEach((p, i) => c[i ? 'lineTo' : 'moveTo'](p[0], p[1])); c.stroke(); c.restore(); };
+    const st = (x, y, col, big) => { c.save(); c.fillStyle = baseCol; c.strokeStyle = col; c.lineWidth = big ? 5 : 4; c.beginPath(); c.arc(x, y, big ? 11 : 8, 0, Math.PI * 2); c.fill(); c.stroke(); c.restore(); };
+    const top = [[30, 170], [30, 74], [60, 44], [w - 60, 44], [w - 30, 74], [w - 30, 170]];
+    const bot = [[30, h - 170], [30, h - 74], [60, h - 44], [w - 60, h - 44], [w - 30, h - 74], [w - 30, h - 170]];
+    line(top, cols[0]); line(bot, cols[1]);
+    c.save(); c.strokeStyle = cols[2]; c.lineWidth = 11; c.lineCap = 'round'; c.beginPath(); c.moveTo(30, 170); c.lineTo(30, h - 170); c.stroke(); c.restore();
+    const topN = ['Reading', 'Light', 'Dark', 'Notes', 'Theme'], botN = ['Type', 'Scroll', 'Quote', 'Margin', 'Operated by Q.'];
+    topN.forEach((n, i) => { const x = 170 + i * ((w - 340) / 4); st(x, 44, cols[0]); bgText(c, n, x, 74, { size: 10, weight: 600, family: BGF.web, sp: 1, col: tcol(0.6) }); });
+    botN.forEach((n, i) => { const x = 170 + i * ((w - 340) / 4); st(x, h - 44, cols[1]); bgText(c, n, x, h - 74, { size: 10, weight: 600, family: BGF.web, sp: 1, col: tcol(0.6) }); });
+    st(30, 74, cols[0], true); st(w - 30, 74, cols[0], true); st(30, h - 74, cols[1], true); st(w - 30, h - 74, cols[1], true);
+    c.save(); c.fillStyle = cols[0]; c.beginPath(); c.arc(30, 178, 14, 0, Math.PI * 2); c.fill(); c.restore();
+    bgText(c, TODAY.issue, 30, 178, { size: 13, weight: 700, family: BGF.web, col: 'rgba(255,255,255,0.95)' });
+    bgText(c, 'LINE ' + TODAY.issue + '  ·  ' + TODAY.slash, w - 54, 112, { size: 10, weight: 600, family: BGF.web, sp: 2, align: 'right', col: tcol(0.55) });
+  },
+  /* 拍立得墙 */
+  polaroidWall(c, w, h, X) {
+    const { R, tcol, tapeCol, isDark, transparent } = X;
+    if (!transparent) { c.fillStyle = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'; for (let y = 20; y < h; y += 30) for (let x = 20 + ((y / 30) % 2) * 15; x < w; x += 30) { c.beginPath(); c.arc(x, y, 1.6, 0, Math.PI * 2); c.fill(); } }
+    const cols = [tapeCol, '#ffd27a', '#8fd0c0', '#f2a1b5', '#9ec6ee'];
+    const n = 8, seg = w / n;
+    c.strokeStyle = tcol(0.4); c.lineWidth = 2; c.beginPath(); c.moveTo(0, 26);
+    for (let i = 0; i < n; i++) c.quadraticCurveTo(seg * i + seg / 2, 62, seg * (i + 1), 26);
+    c.stroke();
+    for (let i = 0; i < n; i++) for (let k = 1; k <= 2; k++) {
+      const t = k / 3, bx = seg * i + seg * t, by = 2 * (1 - t) * t * 62 + 26 * (1 - t) * (1 - t) + 26 * t * t;
+      const col = cols[(i * 2 + k) % cols.length];
+      const gr = c.createRadialGradient(bx, by + 10, 1, bx, by + 10, 26);
+      gr.addColorStop(0, nbA(col, 0.55)); gr.addColorStop(1, nbA(col, 0));
+      c.fillStyle = gr; c.fillRect(bx - 26, by - 16, 52, 52);
+      c.fillStyle = col; c.beginPath(); c.ellipse(bx, by + 9, 5.5, 8, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = tcol(0.5); c.fillRect(bx - 2.5, by - 1, 5, 4);
+    }
+    bgText(c, 'memories on the wall', w / 2, h - 66, { size: 22, weight: 500, family: BGF.note, sp: 1, col: tcol(0.5) });
+    bgText(c, 'snapped by Q. ♡', w / 2, h - 36, { size: 22, weight: 500, family: BGF.note, sp: 1, col: tcol(0.5) });
+  },
+  /* 复古电脑 */
+  retroPC(c, w, h, X) {
+    const { tcol, frameCol, transparent, isDark } = X;
+    if (!transparent) {
+      const pc = document.createElement('canvas'); pc.width = 4; pc.height = 4; const px = pc.getContext('2d');
+      px.fillStyle = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'; px.fillRect(0, 0, 2, 2); px.fillRect(2, 2, 2, 2);
+      const pat = c.createPattern(pc, 'repeat'); if (pat) { c.fillStyle = pat; c.fillRect(0, 0, w, h); }
+    }
+    const tb = 44, gray = nbBlend(frameCol, '#c3c3c3', 0.5);
+    c.fillStyle = gray; c.fillRect(0, h - tb, w, tb);
+    c.fillStyle = 'rgba(255,255,255,0.9)'; c.fillRect(0, h - tb, w, 2);
+    const btn = (x, wd, label, pressed) => {
+      c.fillStyle = gray; c.fillRect(x, h - tb + 7, wd, 30);
+      c.fillStyle = pressed ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.95)'; c.fillRect(x, h - tb + 7, wd, 2); c.fillRect(x, h - tb + 7, 2, 30);
+      c.fillStyle = pressed ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.5)'; c.fillRect(x, h - tb + 35, wd, 2); c.fillRect(x + wd - 2, h - tb + 7, 2, 30);
+      bgText(c, label, x + wd / 2, h - tb + 23, { size: 12, weight: 700, family: BGF.ruler, col: 'rgba(30,30,40,0.9)' });
+    };
+    btn(8, 84, '▣ Start', false); btn(104, 190, 'made_by_Q.exe', true);
+    c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(w - 118, h - tb + 8, 108, 28);
+    bgText(c, new Date().toTimeString().slice(0, 5) + '  ' + TODAY.slash.slice(5), w - 64, h - tb + 22, { size: 12, weight: 700, family: BGF.ruler, col: 'rgba(30,30,40,0.9)' });
+    [[26, 100, 'Themes'], [26, 176, 'Notes']].forEach(([x, y, label]) => {
+      c.fillStyle = '#e8c45a'; c.fillRect(x, y + 6, 18, 8); c.fillRect(x, y + 12, 36, 24);
+      c.fillStyle = 'rgba(255,255,255,0.45)'; c.fillRect(x + 2, y + 14, 32, 3);
+      bgText(c, label, x + 18, y + 50, { size: 11, weight: 600, family: BGF.ruler, col: tcol(0.8) });
+    });
+    bgText(c, 'C:\\THEMES\\PREVIEW  ·  NO. ' + TODAY.issue, w / 2, 40, { size: 12, weight: 600, family: BGF.ruler, sp: 2, col: tcol(0.55) });
+  },
+  /* 手帐贴纸页 */
+  journalStickers(c, w, h, X) {
+    const { R, tcol, tapeCol, isDark } = X;
+    c.fillStyle = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)';
+    for (let y = 28; y < h; y += 28) for (let x = 28; x < w; x += 28) { c.beginPath(); c.arc(x, y, 1.5, 0, Math.PI * 2); c.fill(); }
+    const washi = (x, y, ang, col) => {
+      c.save(); c.translate(x, y); c.rotate(ang); c.fillStyle = nbA(col, 0.72); c.fillRect(-70, -16, 140, 32);
+      c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 3; c.beginPath(); for (let k = -60; k < 70; k += 16) { c.moveTo(k, -16); c.lineTo(k + 16, 16); } c.stroke(); c.restore();
+    };
+    washi(70, 40, -0.6, tapeCol); washi(w - 70, 40, 0.6, '#9ec6ee');
+    const mc = [tapeCol, '#ffd27a', '#8fd0c0', '#f2a1b5', '#9ec6ee'];
+    for (let i = 0; i < 12; i++) {
+      const left = i % 2 === 0, x = left ? 26 + R() * 34 : w - 26 - R() * 34, y = 130 + R() * (h - 260), r = 10 + R() * 9, col = mc[i % mc.length];
+      c.fillStyle = col;
+      if (i % 3 === 0) nbStar(c, x, y, r + 3, R()); else if (i % 3 === 1) nbHeart(c, x, y, r); else nbFlower(c, x, y, r, col, '#fff6d8');
+    }
+    [['#f2a1b5', 220], ['#ffd27a', 290], ['#8fd0c0', 360]].forEach(([col, y]) => { c.fillStyle = col; c.beginPath(); c.roundRect(w - 20, y, 28, 56, 8); c.fill(); });
+    bgText(c, 'Date: ' + TODAY.slash, 62, h - 38, { size: 22, weight: 500, family: BGF.note, sp: 1, align: 'left', col: tcol(0.5) });
+    bgText(c, 'made by Q. ✿', w - 62, h - 38, { size: 22, weight: 500, family: BGF.note, sp: 1, align: 'right', col: tcol(0.5) });
+  },
+  /* 和风 */
+  wafuu(c, w, h, X) {
+    const { R, tcol, tapeCol, isDark } = X;
+    const ink = isDark ? '255,255,255' : '40,50,80';
+    for (let row = 0, y = h - 40; row < 5; row++, y -= 22) {
+      for (let x = (row % 2) * 36 - 36; x < w + 72; x += 72) {
+        for (let k = 3; k >= 1; k--) { c.strokeStyle = `rgba(${ink},${0.07 + (4 - k) * 0.025})`; c.lineWidth = 1.6; c.beginPath(); c.arc(x, y, k * 12, Math.PI, 0); c.stroke(); }
+      }
+    }
+    c.fillStyle = nbA(tapeCol, 0.2); c.beginPath(); c.arc(w - 130, 170, 62, 0, Math.PI * 2); c.fill();
+    for (let i = 0; i < 16; i++) {
+      const left = i % 2 === 0; nbPetal(c, left ? 14 + R() * 50 : w - 14 - R() * 50, 90 + R() * (h - 300), 7 + R() * 6, R() * 6, nbA('#f2a1b5', isDark ? 0.5 : 0.7));
+    }
+    const vt = (chars, x, y0, step, col) => { chars.forEach((ch, i) => bgText(c, ch, x, y0 + i * step, { size: 17, family: SANS, col })); };
+    const a = ['四', '季', 'の', '便', 'り'], b = ['制', '作', '·', 'Q', '.'];
+    ensureFontChars(a.join('') + b.join(''));
+    vt(a, w - 34, 270, 24, tcol(0.5));
+    vt(b, 34, h - 260, 24, tcol(0.5));
+  },
+  /* 赛博霓虹 */
+  cyberGrid(c, w, h, X) {
+    const { tcol, tapeCol, transparent } = X;
+    const neon = tapeCol, pink = '#ff5fa8', cyan = '#41e0ee';
+    const gy = h * 0.74;
+    c.save(); c.strokeStyle = nbA(cyan, 0.32); c.lineWidth = 1.5;
+    c.beginPath();
+    for (let i = 0; i <= 14; i++) { const x = (w / 14) * i; c.moveTo(w / 2 + (x - w / 2) * 0.12, gy); c.lineTo(w / 2 + (x - w / 2) * 2.4, h); }
+    let yy = gy; for (let k = 0, st = 6; yy < h; k++, st *= 1.32) { yy += st; c.moveTo(0, yy); c.lineTo(w, yy); }
+    c.stroke(); c.restore();
+    c.save(); const sg = c.createLinearGradient(0, gy - 190, 0, gy); sg.addColorStop(0, nbA(pink, 0.5)); sg.addColorStop(1, nbA(neon, 0.45));
+    c.fillStyle = sg; c.beginPath(); c.arc(w / 2, gy, 150, Math.PI, 0); c.fill();
+    c.fillStyle = X.baseCol; for (let k = 0; k < 6; k++) c.fillRect(w / 2 - 150, gy - 70 + k * 12, 300, 2 + k * 1.4);
+    c.restore();
+    c.save(); c.strokeStyle = 'rgba(255,255,255,0.035)'; c.lineWidth = 1; c.beginPath(); for (let y = 0; y < h; y += 4) { c.moveTo(0, y); c.lineTo(w, y); } c.stroke(); c.restore();
+    const br = (x, y, sx, sy, col) => { c.save(); c.strokeStyle = col; c.lineWidth = 3; c.shadowColor = col; c.shadowBlur = 12; c.beginPath(); c.moveTo(x, y + sy * 34); c.lineTo(x, y); c.lineTo(x + sx * 34, y); c.stroke(); c.restore(); };
+    br(26, 26, 1, 1, pink); br(w - 26, 26, -1, 1, cyan); br(26, h - 26, 1, -1, cyan); br(w - 26, h - 26, -1, -1, pink);
+    bgText(c, 'SYS://THEME.PREVIEW  ·  NO. ' + TODAY.issue, 56, 50, { size: 11, family: BGF.ruler, sp: 2, align: 'left', col: tcol(0.6) });
+    bgText(c, 'BUILD ' + TODAY.slash.replace(/\//g, '.'), w - 56, 50, { size: 11, family: BGF.ruler, sp: 2, align: 'right', col: tcol(0.6) });
+    bgText(c, 'RENDERED BY Q.', 56, h - 50, { size: 11, family: BGF.ruler, sp: 2, align: 'left', col: tcol(0.6) });
+  },
+  /* 圣诞 */
+  xmasEve(c, w, h, X) {
+    const { R, tcol, tapeCol, isDark } = X;
+    const snow = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.95)';
+    for (let i = 0; i < 90; i++) { c.fillStyle = `rgba(255,255,255,${(isDark ? 0.3 : 0.7) + R() * 0.3})`; c.beginPath(); c.arc(R() * w, R() * h, 1.2 + R() * 2.6, 0, Math.PI * 2); c.fill(); }
+    c.strokeStyle = '#4f7a5c'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(0, 20);
+    const n = 6, sg = w / n; for (let i = 0; i < n; i++) c.quadraticCurveTo(sg * i + sg / 2, 70, sg * (i + 1), 20); c.stroke();
+    const bc = [tapeCol, '#e0b252', '#f2f0e6'];
+    for (let i = 0; i < n; i++) for (let k = 1; k <= 2; k++) {
+      const t = k / 3, bx = sg * i + sg * t, by = 2 * (1 - t) * t * 70 + 20 * (1 - t) * (1 - t) + 20 * t * t;
+      c.fillStyle = bc[(i + k) % 3]; c.beginPath(); c.arc(bx, by + 12, 8, 0, Math.PI * 2); c.fill();
+      c.fillStyle = 'rgba(255,255,255,0.5)'; c.beginPath(); c.arc(bx - 2.5, by + 9, 2.2, 0, Math.PI * 2); c.fill();
+    }
+    c.fillStyle = snow; c.beginPath(); c.moveTo(0, h);
+    for (let x = 0; x <= w; x += 20) c.lineTo(x, h - 38 - Math.sin(x / 90) * 10 - Math.sin(x / 37) * 4);
+    c.lineTo(w, h); c.closePath(); c.fill();
+    const tree = (x, y, s) => { c.fillStyle = '#3f6b4e'; for (let k = 0; k < 3; k++) { c.beginPath(); c.moveTo(x, y - 90 * s + k * 34 * s); c.lineTo(x - (30 + k * 12) * s, y - 40 * s + k * 34 * s); c.lineTo(x + (30 + k * 12) * s, y - 40 * s + k * 34 * s); c.closePath(); c.fill(); } c.fillStyle = '#7a5a3e'; c.fillRect(x - 5 * s, y + 6 * s, 10 * s, 16 * s); };
+    tree(60, h - 62, 0.9); tree(w - 60, h - 62, 0.9); tree(112, h - 54, 0.6);
+    bgText(c, 'MERRY MOMENTS  ·  ' + TODAY.yyyy, w / 2, 100, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.55) });
+    bgText(c, 'WRAPPED BY Q.', w / 2, h - 18, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.5) });
+  },
+  /* 新春 */
+  newYear(c, w, h, X) {
+    const { tcol, tapeCol, isDark } = X;
+    const gold = isDark ? '#e3b95a' : '#c79a3c';
+    const lantern = (x, y, s) => {
+      c.save(); c.strokeStyle = gold; c.lineWidth = 2; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, y); c.stroke();
+      c.fillStyle = nbA(tapeCol, 0.95); c.beginPath(); c.ellipse(x, y + 34 * s, 30 * s, 34 * s, 0, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(255,255,255,0.25)'; c.lineWidth = 1.6; [0.45, 0.2].forEach(k => { c.beginPath(); c.ellipse(x, y + 34 * s, 30 * s * k * 2, 34 * s, 0, 0, Math.PI * 2); c.stroke(); });
+      c.fillStyle = gold; c.fillRect(x - 12 * s, y - 2, 24 * s, 7 * s); c.fillRect(x - 12 * s, y + 66 * s, 24 * s, 7 * s);
+      c.strokeStyle = gold; c.lineWidth = 2.5; c.beginPath(); c.moveTo(x, y + 73 * s); c.lineTo(x, y + 104 * s); c.stroke();
+      for (let k = -2; k <= 2; k++) { c.beginPath(); c.moveTo(x, y + 90 * s); c.lineTo(x + k * 4, y + 112 * s); c.stroke(); }
+      c.restore();
+    };
+    lantern(78, 62, 1); lantern(w - 78, 62, 1); lantern(160, 30, 0.6); lantern(w - 160, 30, 0.6);
+    c.save(); c.strokeStyle = nbA(gold, 0.32); c.lineWidth = 2;
+    [[0, h], [w, h]].forEach(([x0]) => { for (let k = 0; k < 3; k++) { c.beginPath(); c.arc(x0, h - 10, 60 + k * 26, x0 ? Math.PI : Math.PI * 1.5, x0 ? Math.PI * 1.5 : Math.PI * 2); c.stroke(); } });
+    c.restore();
+    c.fillStyle = nbA(gold, 0.5);
+    for (let i = 0; i < 6; i++) { c.beginPath(); c.arc(w / 2 - 125 + i * 50, h - 90, 8, 0, Math.PI * 2); c.fill(); }
+    const a = ['新', '春', '大', '吉'], b = ['制', '作', '·', 'Q', '.'];
+    ensureFontChars(a.join('') + b.join('') + '恭贺新禧');
+    a.forEach((ch, i) => bgText(c, ch, w - 34, 250 + i * 26, { size: 18, family: SANS, col: tcol(0.55) }));
+    b.forEach((ch, i) => bgText(c, ch, 34, h - 250 + i * 26, { size: 18, family: SANS, col: tcol(0.55) }));
+    bgText(c, '恭 贺 新 禧', w / 2, h - 36, { size: 15, family: SANS, sp: 4, col: tcol(0.55) });
+  }
+};
+
 function renderBookPageBackground(c, w, h) {
   const baseCol = $('cBase').value;
   const frameCol = $('cFrame').value;
@@ -3159,6 +3530,14 @@ function renderBookPageBackground(c, w, h) {
   }
   if (cb === 'custom') return;
 
+  if (NEWBG[cb]) {
+    c.save();
+    try { NEWBG[cb](c, w, h, { R, tcol, baseCol, frameCol, textCol, tapeCol: $('cTape').value, isDark, transparent: isTransparentBg }); }
+    catch (e) { console.warn('bg ' + cb, e); }
+    c.restore();
+    return;
+  }
+
   if (cb === 'parchment') {
     if (!isTransparentBg) {
       const noiseCount = w > 1500 ? 800 : 2000;
@@ -3200,7 +3579,7 @@ function renderBookPageBackground(c, w, h) {
       c.restore();
     }
     const pf = BGF.poster;
-    bgText(c, 'VOL. 01  ·  NEW ARRIVAL', 50, 52, { size: 17, weight: 400, family: pf, sp: 4, align: 'left', col: tcol(0.4) });
+    bgText(c, 'VOL. ' + TODAY.mm + '  ·  NEW ARRIVAL', 50, 52, { size: 17, weight: 400, family: pf, sp: 4, align: 'left', col: tcol(0.4) });
     bgText(c, 'FIRST EDITION', w - 50, 52, { size: 17, weight: 400, family: pf, sp: 4, align: 'right', col: tcol(0.4) });
     bgText(c, 'PRINTED ON PAPER  ·  READ IT LOUD', w / 2, h - 48, { size: 17, weight: 400, family: pf, sp: 4, col: tcol(0.4) });
     c.fillStyle = tcol(0.4);
@@ -3350,7 +3729,7 @@ function renderBookPageBackground(c, w, h) {
       c.strokeStyle = tcol(0.45); c.lineWidth = 1.5;
       c.beginPath(); c.moveTo(x, y + sy * 18); c.lineTo(x, y); c.lineTo(x + sx * 18, y); c.stroke();
     });
-    bgText(c, 'FOLDED EDITION  ·  NO. 07', w / 2, 56, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.5) });
+    bgText(c, 'FOLDED EDITION  ·  NO. ' + TODAY.issue, w / 2, 56, { size: 11, weight: 600, family: BGF.web, sp: 5, col: tcol(0.5) });
     c.fillStyle = tcol(0.22); c.fillRect(w / 2 - 150, 72, 300, 1);
   } else if (cb === 'twinCoil') {
     const trackW = 45;
@@ -3381,7 +3760,7 @@ function renderBookPageBackground(c, w, h) {
       c.beginPath(); c.moveTo(trackW, y - 8); c.bezierCurveTo(trackW + 30, y - 15, trackW + 30, y + 15, trackW, y + 8); c.stroke();
     }
     const nf = BGF.note;
-    bgText(c, 'Subject: Reading Notes   ·   No. 01', w - 40, 46, { size: 18, weight: 500, family: nf, align: 'right', col: tcol(0.45) });
+    bgText(c, 'Subject: Reading Notes   ·   No. ' + TODAY.issue, w - 40, 46, { size: 18, weight: 500, family: nf, align: 'right', col: tcol(0.45) });
     const ktw = bgText(c, 'keep writing, keep wandering', (w + trackW) / 2, h - 40, { size: 19, weight: 500, family: nf, sp: 1, col: tcol(0.4) });
     bgSparkle(c, (w + trackW) / 2 - ktw / 2 - 22, h - 40, 6, tcol(0.4));
     bgSparkle(c, (w + trackW) / 2 + ktw / 2 + 22, h - 40, 6, tcol(0.4));
@@ -3541,6 +3920,31 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.save(); c.fillStyle = textCol; c.fillRect(8 * scale, 8 * scale, fw, g.fh); c.restore();
     c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill();
     c.save(); c.strokeStyle = textCol; c.lineWidth = 3.2 * scale; c.strokeRect(1.6 * scale, 1.6 * scale, fw - 3.2 * scale, g.fh - 3.2 * scale); c.restore();
+  } else if (frameType === 'bookpage') {
+    imgR = 0; c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill(); c.shadowColor = 'transparent';
+    const sg = c.createLinearGradient(0, 0, 20 * scale, 0); sg.addColorStop(0, 'rgba(0,0,0,0.16)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = sg; c.fillRect(0, 0, 20 * scale, g.fh);
+    c.fillStyle = 'rgba(0,0,0,0.07)'; [1.5, 3, 4.5].forEach(k => { c.fillRect(fw - k * scale, 2 * scale, 0.8 * scale, g.fh - 4 * scale); });
+    c.save(); c.strokeStyle = tapeCol; c.globalAlpha = 0.75; c.lineWidth = 1.1 * scale; c.strokeRect(10 * scale, 10 * scale, fw - 20 * scale, g.fh - 20 * scale); c.restore();
+  } else if (frameType === 'menucard') {
+    imgR = 2 * scale; const rr = 9 * scale;
+    c.beginPath(); c.moveTo(rr, 0); c.lineTo(fw - rr, 0); c.arc(fw, 0, rr, Math.PI, Math.PI / 2, true); c.lineTo(fw, g.fh - rr); c.arc(fw, g.fh, rr, -Math.PI / 2, Math.PI, true);
+    c.lineTo(rr, g.fh); c.arc(0, g.fh, rr, 0, -Math.PI / 2, true); c.lineTo(0, rr); c.arc(0, 0, rr, Math.PI / 2, 0, true); c.closePath(); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = tapeCol; c.globalAlpha = 0.85; c.lineWidth = 1.3 * scale; c.setLineDash([4 * scale, 3.5 * scale]); c.strokeRect(12 * scale, 12 * scale, fw - 24 * scale, g.fh - 24 * scale); c.restore();
+  } else if (frameType === 'retrowin') {
+    imgR = 0; c.beginPath(); c.rect(0, 0, fw, g.fh); c.fill(); c.shadowColor = 'transparent';
+    c.fillStyle = 'rgba(255,255,255,0.9)'; c.fillRect(0, 0, fw, 1.6 * scale); c.fillRect(0, 0, 1.6 * scale, g.fh);
+    c.fillStyle = 'rgba(0,0,0,0.5)'; c.fillRect(0, g.fh - 1.6 * scale, fw, 1.6 * scale); c.fillRect(fw - 1.6 * scale, 0, 1.6 * scale, g.fh);
+    const chipC = $('cChip').value, tg = c.createLinearGradient(0, 0, fw, 0); tg.addColorStop(0, chipC); tg.addColorStop(1, mixHex(chipC, '#ffffff', 0.32));
+    c.fillStyle = tg; c.fillRect(3 * scale, 3 * scale, fw - 6 * scale, 22 * scale);
+    c.fillStyle = 'rgba(255,255,255,0.95)'; c.font = `700 ${9.5 * scale}px ${BGF.ruler}`; c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillText(`preview_0${i + 1}.bmp`, 9 * scale, 14 * scale);
+    ['_', '□', '×'].forEach((t, k) => {
+      const bx = fw - (3 + 17 * (3 - k)) * scale, by = 6 * scale, bw = 15 * scale, bh = 16 * scale;
+      c.fillStyle = frameCol; c.fillRect(bx, by, bw, bh); c.fillStyle = 'rgba(255,255,255,0.95)'; c.fillRect(bx, by, bw, 1.2 * scale); c.fillRect(bx, by, 1.2 * scale, bh);
+      c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(bx, by + bh - 1.2 * scale, bw, 1.2 * scale); c.fillRect(bx + bw - 1.2 * scale, by, 1.2 * scale, bh);
+      c.fillStyle = 'rgba(20,20,30,0.9)'; c.font = `700 ${9 * scale}px ${BGF.ruler}`; c.textAlign = 'center'; c.fillText(t, bx + bw / 2, by + bh / 2 + (k === 0 ? -1.5 * scale : 0));
+    });
   } else if (frameType === 'scallop') {
     imgR = 6 * scale;
     const nx = Math.max(3, Math.round(fw / (16 * scale))), ny = Math.max(3, Math.round(g.fh / (16 * scale)));
@@ -3664,6 +4068,29 @@ function drawOneCard(c, i, g, w, noShadow = false) {
   } else if (frameType === 'popblock') {
     c.save(); c.fillStyle = tapeCol; c.globalAlpha = 0.85;
     for (let row = 0; row < 2; row++) for (let x = 14 * scale + (row ? 4 * scale : 0); x < fw - 12 * scale; x += 8 * scale) { c.beginPath(); c.arc(x, g.fh - 20 * scale + row * 7 * scale, 1.7 * scale, 0, Math.PI * 2); c.fill(); }
+    c.restore();
+  }
+  if (frameType === 'bookpage') {
+    c.save(); c.fillStyle = tA(0.6); c.textBaseline = 'middle'; c.textAlign = 'center';
+    c.font = `italic 600 ${10 * scale}px ${BGF.parch}`; c.fillText(`— ${i + 1} —`, fw / 2, g.fh - 21 * scale);
+    c.font = `600 ${7 * scale}px ${BGF.web}`; try { c.letterSpacing = `${2 * scale}px`; } catch (e) {}
+    c.fillStyle = tA(0.5); c.fillText(`CHAPTER ${['I', 'II', 'III', 'IV', 'V', 'VI'][i] || i + 1}`, fw / 2, 17 * scale);
+    c.restore();
+  } else if (frameType === 'menucard') {
+    c.save(); c.textBaseline = 'middle'; c.fillStyle = tA(0.7); c.font = `italic 600 ${10 * scale}px ${BGF.parch}`;
+    const ly = g.fh - 26 * scale; c.textAlign = 'left'; const lt = `No. 0${i + 1}`; c.fillText(lt, 22 * scale, ly);
+    const lw = c.measureText(lt).width; c.textAlign = 'right'; const rt = `¥ ${24 + i * 6}`; c.fillText(rt, fw - 22 * scale, ly);
+    const rw = c.measureText(rt).width; c.fillStyle = tA(0.45);
+    for (let x = 22 * scale + lw + 8 * scale; x < fw - 22 * scale - rw - 8 * scale; x += 5 * scale) { c.beginPath(); c.arc(x, ly + 3 * scale, 0.9 * scale, 0, Math.PI * 2); c.fill(); }
+    c.restore();
+  } else if (frameType === 'retrowin') {
+    c.save(); c.lineWidth = 1.6 * scale;
+    c.strokeStyle = 'rgba(0,0,0,0.55)'; c.beginPath(); c.moveTo(imgX - 0.8 * scale, imgY + imgH + 0.8 * scale); c.lineTo(imgX - 0.8 * scale, imgY - 0.8 * scale); c.lineTo(imgX + imgW + 0.8 * scale, imgY - 0.8 * scale); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,0.95)'; c.beginPath(); c.moveTo(imgX + imgW + 0.8 * scale, imgY - 0.8 * scale); c.lineTo(imgX + imgW + 0.8 * scale, imgY + imgH + 0.8 * scale); c.lineTo(imgX - 0.8 * scale, imgY + imgH + 0.8 * scale); c.stroke();
+    const sy = g.fh - 21 * scale, sh = 15 * scale;
+    c.strokeStyle = 'rgba(0,0,0,0.45)'; c.lineWidth = 1 * scale; c.strokeRect(6 * scale, sy, fw - 12 * scale, sh);
+    c.fillStyle = 'rgba(20,20,30,0.8)'; c.font = `600 ${8.5 * scale}px ${BGF.ruler}`; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillText('Ready', 10 * scale, sy + sh / 2 + 0.5 * scale);
+    c.textAlign = 'right'; c.fillText(`${120 + i * 37} KB`, fw - 10 * scale, sy + sh / 2 + 0.5 * scale);
     c.restore();
   }
   if (frameType === 'ticket') {
@@ -3941,14 +4368,17 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
   if (!chars.length) return { totalW: 0, height: 0 };
   const isFlat = opt.layout === 'flat' || opt.layout === 'accordion' || !!LAYOUT_NEW[opt.layout];
   const fontSize = baseFontSize;
-  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed', 'invite', 'postmark', 'ticketLabel'];
+  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed', 'invite', 'postmark', 'ticketLabel', 'spine', 'menu', 'metro', 'pixel', 'doodle', 'hanko', 'neonSign', 'festive'];
   const isNew = ALIGNED.includes(style);
-  const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700, invite: 900, postmark: 400, ticketLabel: 700 }[style] || 800;
-  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22 }[style] ?? 0.5;
+  const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700, invite: 900, postmark: 400, ticketLabel: 700, spine: 700, menu: 500, pixel: 700, doodle: 700, hanko: 900, neonSign: 700 }[style] || 800;
+  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22, spine: 0.2, menu: 0.06, metro: 0.14, pixel: 0.12, doodle: 0.08, hanko: 0.16, neonSign: 0.14, festive: 0.12 }[style] ?? 0.5;
   let famBase = fontFam;
   if (fontFam === SANS && (style === 'italicMag' || style === 'postmark')) famBase = BGF.parch;
+  if (fontFam === SANS && style === 'menu') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
+  if (fontFam === SANS && style === 'pixel') famBase = BGF.ruler + ', "ZCOOL XiaoWei", "Noto Serif SC"';
+  if (fontFam === SANS && style === 'doodle') famBase = BGF.note;
   if (fontFam === SANS && style === 'invite') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
-  const ital = (style === 'italicMag' || style === 'postmark') ? 'italic ' : '';
+  const ital = (style === 'italicMag' || style === 'postmark' || style === 'menu') ? 'italic ' : '';
   const accent = $('cTape').value;
   c.font = `${ital}${weight} ${fontSize}px ${famBase}`;
   const charWidths = chars.map(ch => ch === ' ' ? fontSize * 0.4 + spacing : c.measureText(ch).width + fontSize * gapK + spacing);
@@ -4005,7 +4435,7 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
     if (big) { c.globalAlpha = 0.8; c.fillRect((x0 + x1) / 2 - 30, startY + cH + 4, 60, 2); }
   } else if (style === 'issue') {
     if (big) {
-      bgText(c, 'N°07', x1 + fontSize * 0.3, startY + fontSize * 0.28, { size: fontSize * 0.3, weight: 600, family: BGF.web, sp: 2, align: 'left', col: chipText });
+      bgText(c, 'N°' + TODAY.issue, x1 + fontSize * 0.3, startY + fontSize * 0.28, { size: fontSize * 0.3, weight: 600, family: BGF.web, sp: 2, align: 'left', col: chipText });
       c.globalAlpha = 0.7; c.fillRect(x1 + fontSize * 0.3, startY + fontSize * 0.5, fontSize * 0.7, 2);
     }
   } else if (style === 'boxed') {
@@ -4040,6 +4470,54 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
     c.strokeStyle = 'rgba(255,255,255,0.7)'; c.lineWidth = Math.max(1, fontSize * 0.02);
     c.setLineDash([fontSize * 0.1, fontSize * 0.08]);
     c.strokeRect(bx + fontSize * 0.16, by + cH * 0.12, bw - fontSize * 0.32, cH * 0.76); c.setLineDash([]);
+  } else if (style === 'spine') {
+    const bx = x0 - fontSize * 0.7, bw = x1 - x0 + fontSize * 1.4;
+    c.beginPath(); c.roundRect(bx, startY, bw, cH, 3); c.fill();
+    c.strokeStyle = accent; c.globalAlpha = 0.95; c.lineWidth = Math.max(1.2, fontSize * 0.03);
+    c.strokeRect(bx + fontSize * 0.1, startY + cH * 0.1, bw - fontSize * 0.2, cH * 0.8);
+    c.lineWidth = 1; c.strokeRect(bx + fontSize * 0.17, startY + cH * 0.17, bw - fontSize * 0.34, cH * 0.66);
+    bgDiamond(c, bx + fontSize * 0.38, startY + cH / 2, fontSize * 0.07, accent); bgDiamond(c, bx + bw - fontSize * 0.38, startY + cH / 2, fontSize * 0.07, accent);
+  } else if (style === 'menu') {
+    if (big) {
+      const yy = startY + cH * 0.52; c.fillStyle = accent; c.globalAlpha = 0.9;
+      for (let x = x0 - fontSize * 2.0; x < x0 - fontSize * 0.45; x += fontSize * 0.16) { c.beginPath(); c.arc(x, yy + fontSize * 0.12, fontSize * 0.028, 0, Math.PI * 2); c.fill(); }
+      for (let x = x1 + fontSize * 0.45; x < x1 + fontSize * 2.0; x += fontSize * 0.16) { c.beginPath(); c.arc(x, yy + fontSize * 0.12, fontSize * 0.028, 0, Math.PI * 2); c.fill(); }
+      bgDiamond(c, x0 - fontSize * 2.2, yy + fontSize * 0.12, fontSize * 0.09, accent); bgDiamond(c, x1 + fontSize * 2.2, yy + fontSize * 0.12, fontSize * 0.09, accent);
+    }
+  } else if (style === 'metro') {
+    const lx = x0 - fontSize * 1.3, rx = x1 + fontSize * 0.55, hh = cH * 0.92, yy = startY + (cH - hh) / 2, r0 = hh * 0.36;
+    c.fillStyle = accent; c.beginPath(); c.roundRect(lx, yy, rx - lx, hh, hh / 2); c.fill();
+    c.fillStyle = '#ffffff'; c.beginPath(); c.arc(lx + hh / 2, yy + hh / 2, r0 * 1.05, 0, Math.PI * 2); c.fill();
+    bgText(c, TODAY.issue, lx + hh / 2, yy + hh / 2 + 1, { size: hh * 0.42, weight: 800, family: BGF.web, col: accent });
+  } else if (style === 'pixel') {
+    if (big) { c.fillStyle = chipText; c.globalAlpha = 0.9; c.fillRect(x1 + fontSize * 0.25, startY + cH * 0.74, fontSize * 0.5, fontSize * 0.13); }
+  } else if (style === 'doodle') {
+    if (big) {
+      c.strokeStyle = accent; c.globalAlpha = 0.9; c.lineWidth = Math.max(2, fontSize * 0.07); c.lineCap = 'round'; c.beginPath();
+      const wy = startY + cH + fontSize * 0.02, step = fontSize * 0.28;
+      c.moveTo(x0 - fontSize * 0.2, wy); for (let x = x0 - fontSize * 0.2, k = 0; x < x1 + fontSize * 0.2; x += step, k++) c.quadraticCurveTo(x + step / 2, wy + (k % 2 ? 6 : -6) * (fontSize / 42), x + step, wy);
+      c.stroke();
+      c.fillStyle = accent; nbStar(c, x0 - fontSize * 0.6, startY + cH * 0.3, fontSize * 0.2, 0.2); nbHeart(c, x1 + fontSize * 0.6, startY + cH * 0.34, fontSize * 0.2);
+    }
+  } else if (style === 'hanko') {
+    if (big) {
+      const sz = fontSize * 0.7, sx = x1 + fontSize * 0.45, sy = startY + (cH - sz) / 2;
+      c.fillStyle = accent; c.globalAlpha = 0.92; c.beginPath(); c.roundRect(sx, sy, sz, sz, 3); c.fill();
+      c.globalAlpha = 1; bgText(c, '和', sx + sz / 2, sy + sz / 2 + 1, { size: sz * 0.66, family: SANS, col: 'rgba(255,248,240,0.95)' });
+      c.fillStyle = chipText; c.globalAlpha = 0.5; c.fillRect(x0 - fontSize * 0.2, startY + cH + 4, x1 - x0 + fontSize * 0.4, 1.5); c.fillRect(x0 - fontSize * 0.2, startY + cH + 8, x1 - x0 + fontSize * 0.4, 1);
+    }
+  } else if (style === 'neonSign') {
+    if (big) {
+      c.save(); c.strokeStyle = accent; c.globalAlpha = 0.85; c.shadowColor = accent; c.shadowBlur = fontSize * 0.4; c.lineWidth = Math.max(2, fontSize * 0.05); c.lineCap = 'round';
+      c.beginPath(); c.moveTo(x0, startY + cH + fontSize * 0.1); c.lineTo(x1, startY + cH + fontSize * 0.1); c.stroke(); c.restore();
+    }
+  } else if (style === 'festive') {
+    if (big) {
+      const cols = [accent, '#e0b252', '#7fbf8e', '#f2f0e6'], ya = startY - fontSize * 0.02, ax = x0 - fontSize * 0.5, bx2 = x1 + fontSize * 0.5;
+      c.strokeStyle = chipText; c.globalAlpha = 0.55; c.lineWidth = 1.6; c.beginPath(); c.moveTo(ax, ya); c.quadraticCurveTo((ax + bx2) / 2, ya + fontSize * 0.34, bx2, ya); c.stroke();
+      c.globalAlpha = 1; const nb2 = Math.max(4, Math.round((bx2 - ax) / (fontSize * 0.7)));
+      for (let k = 1; k < nb2; k++) { const t = k / nb2, px = ax + (bx2 - ax) * t, py = 2 * (1 - t) * t * (ya + fontSize * 0.34) + ya * (1 - t) * (1 - t) + ya * t * t; c.fillStyle = cols[k % cols.length]; c.shadowColor = cols[k % cols.length]; c.shadowBlur = 8; c.beginPath(); c.ellipse(px, py + fontSize * 0.12, fontSize * 0.07, fontSize * 0.1, 0, 0, Math.PI * 2); c.fill(); }
+    }
   } else if (style === 'sparkle') {
     const col = chipText, yc = startY + cH / 2;
     c.globalAlpha = 0.85;
@@ -4117,6 +4595,9 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
     else if (style === 'ribbon') fillC = ribText;
     else if (style === 'invite') fillC = accent;
     else if (style === 'ticketLabel') fillC = '#ffffff';
+    else if (style === 'spine') fillC = chipBg;
+    else if (style === 'metro') fillC = '#ffffff';
+    else if (style === 'neonSign') fillC = mixHex(accent, '#ffffff', 0.8);
 
     c.font = `${ital}${style === 'ransom' ? 800 : weight} ${fontSize}px ${fam}`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
@@ -4133,6 +4614,15 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
       c.fillStyle = '#00e5ff'; c.fillText(ch, -k, 1);
       c.fillStyle = '#ff2d6f'; c.fillText(ch, k, 1);
       c.restore();
+    }
+    if (style === 'pixel') {
+      const d = Math.max(1.2, fontSize * 0.035);
+      c.save(); c.fillStyle = accent; c.globalAlpha = 0.9;
+      for (let k = 3; k >= 1; k--) c.fillText(ch, k * d, 1 + k * d);
+      c.restore();
+    } else if (style === 'neonSign') {
+      c.save(); c.shadowColor = accent; c.shadowBlur = fontSize * 0.55; c.lineJoin = 'round'; c.lineWidth = Math.max(2, fontSize * 0.07); c.strokeStyle = accent;
+      c.strokeText(ch, 0, 1); c.strokeText(ch, 0, 1); c.restore();
     }
     c.fillStyle = fillC;
     c.fillText(ch, 0, 1);
@@ -4268,6 +4758,8 @@ function render() {
   $('export').disabled = $('exportTop').disabled = !ok;
   const n = state.images.length;
   $('status').textContent = n ? `已选 ${n} 张` : '选1~6张截图';
+  if (typeof scheduleThumbs === 'function' && HIST && HIST.ready) scheduleThumbs(false);
+  if (window.fitPreview) window.fitPreview();
 }
 
 const previewCanvas = $('preview');
@@ -5173,11 +5665,24 @@ function initThemeToggle() {
     pin.title = on ? '预览固定在顶部，点击取消固定' : '点击把预览固定在顶部';
     sz.textContent = NAMES[size]; sz.title = '固定预览大小：' + NAMES[size] + '（点击切换 小 / 中 / 大）';
     try { localStorage.setItem('q_pin', on ? '1' : '0'); localStorage.setItem('q_pvsize', size); } catch (e) {}
+    if (window.fitPreview) window.fitPreview();
   };
   const togglePin = e => { e.stopPropagation(); on = !on; apply(); };
   pin.addEventListener('click', togglePin); fab.addEventListener('click', togglePin);
   sz.addEventListener('click', e => { e.stopPropagation(); size = size === 's' ? 'm' : size === 'm' ? 'l' : 's'; apply(); });
-  apply();
+  const fit = () => {
+    const cv = document.getElementById('preview'); if (!cv || !cv.width) return;
+    const wideEp = document.body.classList.contains('ep-mode') && window.innerWidth >= 1040;
+    if (!on || wideEp) { cv.style.width = ''; cv.style.maxHeight = ''; return; }
+    const cs = getComputedStyle(st), availW = st.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const K = { s: 0.5, m: 0.75, l: 1 }[size], HV = { s: 0.3, m: 0.44, l: 0.6 }[size];
+    const ratio = cv.height / cv.width;
+    cv.style.width = Math.max(120, Math.floor(Math.min(availW * K, window.innerHeight * HV / ratio))) + 'px';
+    cv.style.maxHeight = 'none';
+  };
+  window.fitPreview = fit; window.addEventListener('resize', fit);
+  new MutationObserver(fit).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  apply(); fit();
   const setH = () => document.documentElement.style.setProperty('--top-h', hdr.getBoundingClientRect().height + 'px');
   setH(); window.addEventListener('resize', setH);
   if (window.ResizeObserver) new ResizeObserver(setH).observe(hdr);
@@ -5186,6 +5691,164 @@ function initThemeToggle() {
   const box = $('bgImgControls'), row = document.querySelector('#p6 .bgrow');
   if (box && row && row.parentNode) row.parentNode.insertBefore(box, row);
 })();
+
+/* ====== 预设缩略图 / 随机风格 / 撤销重做 ====== */
+const histGrp = document.createElement('span'); histGrp.className = 'hgrp';
+histGrp.innerHTML = '<button type="button" class="pv-btn" id="undoBtn" title="撤销 (Ctrl+Z)" aria-label="撤销" disabled>↶</button><button type="button" class="pv-btn" id="redoBtn" title="重做 (Ctrl+Shift+Z)" aria-label="重做" disabled>↷</button><button type="button" class="pv-btn" id="rndTop" title="随机换风格" aria-label="随机换风格">🎲</button>';
+function placeHistGrp() {
+  const wide = document.body.classList.contains('ep-mode') && window.innerWidth >= 1040;
+  const host = wide ? document.querySelector('.top') : document.querySelector('.pv-ctl');
+  if (!host) return;
+  if (wide) host.insertBefore(histGrp, $('exportTop')); else if (histGrp.parentNode !== host) host.insertBefore(histGrp, host.firstChild);
+}
+placeHistGrp(); window.addEventListener('resize', placeHistGrp);
+new MutationObserver(placeHistGrp).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+const PRESET_BY_NAME = {}; PRESETS.forEach(p => { PRESET_BY_NAME[p.name] = p; });
+const COLOR_IDS = ['cBase', 'cFrame', 'cTape', 'cChip', 'cText'];
+
+function setColorValue(id, v) {
+  const el = $(id); if (!el) return;
+  el.value = v;
+  const cell = el.closest('.color-cell'), hx = cell && cell.querySelector('.color-hex');
+  if (hx) hx.value = v.toUpperCase();
+}
+function liteSnap() {
+  return {
+    colors: COLOR_IDS.map(id => $(id).value), opt: { ...opt }, cur: curPreset, bodyBg: document.body.style.background,
+    t: [tcfg.title, tcfg.author].map(t => ({ style: t.style, color: t.color })),
+    c: state.customTexts.map(t => ({ style: t.style, color: t.color }))
+  };
+}
+function liteRestore(s0) {
+  COLOR_IDS.forEach((id, i) => setColorValue(id, s0.colors[i]));
+  document.body.style.background = s0.bodyBg;
+  [tcfg.title, tcfg.author].forEach((t, i) => { t.style = s0.t[i].style; t.color = s0.t[i].color; });
+  state.customTexts.forEach((t, i) => { if (s0.c[i]) { t.style = s0.c[i].style; t.color = s0.c[i].color; } });
+  Object.entries(s0.opt).forEach(([k, v]) => setOpt(k, v));
+  curPreset = s0.cur;
+  document.querySelectorAll('#presets .pre').forEach(b => b.classList.toggle('on', !!curPreset && b.dataset.preset === curPreset));
+  refreshTextCards();
+  schedule(true, true, true);
+}
+
+let thumbJob = 0, thumbTimer = null, thumbKey = '';
+const imgIds = new WeakMap(); let imgIdN = 0;
+const imgId = im => { if (!imgIds.has(im)) imgIds.set(im, ++imgIdN); return imgIds.get(im); };
+function currentThumbKey() { return state.images.map(it => imgId(it.img)).join(',') + '|' + $('scale').value; }
+function scheduleThumbs(force) {
+  const k = currentThumbKey();
+  if (!force && k === thumbKey) return;
+  thumbKey = k;
+  clearTimeout(thumbTimer);
+  thumbTimer = setTimeout(renderThumbs, 350);
+}
+function renderThumbs() {
+  const job = ++thumbJob;
+  const btns = Array.from(document.querySelectorAll('#presets .pre'));
+  let i = 0;
+  const step = () => {
+    if (job !== thumbJob) return;
+    if (dragging || pickingTarget) { setTimeout(step, 300); return; }
+    const s0 = liteSnap(), hb = hitBoxes, histLock = HIST && HIST.lock, realSchedule = schedule;
+    if (HIST) HIST.lock = true;
+    schedule = () => {};            // 缩略图只画到小画布，不触碰主预览缓存，避免整页重绘卡顿
+    try {
+      for (let n = 0; n < 3 && i < btns.length; n++, i++) {
+        const b = btns[i], pr = PRESET_BY_NAME[b.dataset.preset], cv = b.querySelector('canvas.thumb');
+        if (!pr || !cv) continue;
+        applyPreset(pr, true);
+        draw(cv, 300, true);
+        cv.style.background = '';
+      }
+    } catch (e) { console.warn('thumb', e); i++; }
+    finally { hitBoxes = hb; liteRestore(s0); schedule = realSchedule; if (HIST) HIST.lock = histLock; }
+    if (i < btns.length) setTimeout(step, 24);
+  };
+  setTimeout(step, 30);
+}
+
+let rndBag = [];
+function randomStyle() {
+  if (!rndBag.length) {
+    rndBag = PRESETS.filter(p => p.name !== curPreset);
+    for (let i = rndBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rndBag[i], rndBag[j]] = [rndBag[j], rndBag[i]]; }
+  }
+  const p = rndBag.pop();
+  applyPreset(p, true);
+  toast('🎲 随机 · ' + p.name);
+}
+$('randomBtn').onclick = randomStyle;
+$('rndTop').onclick = randomStyle;
+
+/* 撤销 / 重做：快照 = 所有带 id 的控件 + 选项 + 文字配置 + 拖拽位置 */
+HIST = (() => {
+  const H = { stack: [], idx: -1, lock: false, timer: null, ready: false, userAt: 0 };
+  const ctrls = () => Array.from(document.querySelectorAll('.app input[id], .app select[id], .app textarea[id]')).filter(el => el.type !== 'file' && el.type !== 'button' && el.type !== 'submit');
+  const snap = () => {
+    const v = {};
+    ctrls().forEach(el => { v[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? !!el.checked : el.value; });
+    return JSON.stringify({ v, opt, tcfg: { title: tcfg.title, author: tcfg.author }, ct: state.customTexts, off: offsets, bg: bgOffset, cur: curPreset });
+  };
+  const btns = () => { $('undoBtn').disabled = H.idx <= 0; $('redoBtn').disabled = H.idx >= H.stack.length - 1; };
+  H.commit = () => {
+    if (H.lock || !H.ready) return;
+    const sn = snap();
+    if (H.idx >= 0 && H.stack[H.idx] === sn) return;
+    H.stack.length = H.idx + 1; H.stack.push(sn);
+    if (H.stack.length > 80) H.stack.shift();
+    H.idx = H.stack.length - 1; btns();
+  };
+  H.queue = () => {
+    if (H.lock || !H.ready) return;
+    // 撤销之后，只有用户真的操作了才记录新步骤，避免字体加载等后台刷新把“重做”记录冲掉
+    if (H.idx < H.stack.length - 1 && Date.now() - H.userAt > 2500) return;
+    clearTimeout(H.timer); H.timer = setTimeout(() => { H.timer = null; H.commit(); }, 300);
+  };
+  H.base = () => { H.ready = true; H.stack = [snap()]; H.idx = 0; btns(); };
+  H.go = d => {
+    if (H.timer) { clearTimeout(H.timer); H.timer = null; H.commit(); }   // 只有真的有未提交改动时才入栈
+    const ni = H.idx + d; if (ni < 0 || ni >= H.stack.length) return;
+    const o = JSON.parse(H.stack[ni]);
+    H.lock = true;
+    try {
+      ctrls().forEach(el => {
+        if (!(el.id in o.v)) return;
+        const nv = o.v[el.id], isChk = (el.type === 'checkbox' || el.type === 'radio');
+        if (isChk ? el.checked === nv : el.value === nv) return;
+        if (isChk) el.checked = nv; else el.value = nv;
+        if (el.type === 'color') setColorValue(el.id, nv);
+        el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      Object.entries(o.opt).forEach(([k, v]) => setOpt(k, v));
+      Object.assign(tcfg.title, o.tcfg.title); Object.assign(tcfg.author, o.tcfg.author);
+      state.customTexts = o.ct;
+      offsets.title = o.off.title; offsets.author = o.off.author; offsets.cards = o.off.cards; offsets.customTexts = o.off.customTexts;
+      bgOffset = o.bg;
+      document.body.style.background = $('cBase').value;
+      curPreset = o.cur;
+      document.querySelectorAll('#presets .pre').forEach(b => b.classList.toggle('on', !!curPreset && b.dataset.preset === curPreset));
+      buildTextCards(); refreshTextCards();
+      schedule(true, true, true);
+    } finally { H.lock = false; }
+    H.idx = ni; H.stack[ni] = snap(); H.userAt = 0; btns();      // 以恢复后的真实状态为准，保证之后“重做”可用
+    toast(d < 0 ? '↶ 已撤销' : '↷ 已重做');
+  };
+  return H;
+})();
+['pointerdown', 'keydown', 'input', 'change', 'click', 'touchstart', 'wheel'].forEach(ev => document.addEventListener(ev, () => { if (!HIST.lock) HIST.userAt = Date.now(); }, true));
+['pointermove', 'mousemove', 'touchmove'].forEach(ev => document.addEventListener(ev, e => { if (!HIST.lock && (e.buttons > 0 || ev === 'touchmove')) HIST.userAt = Date.now(); }, { capture: true, passive: true }));
+$('undoBtn').onclick = () => HIST.go(-1);
+$('redoBtn').onclick = () => HIST.go(1);
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const k = e.key.toLowerCase(), t = e.target;
+  if (t && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search|number|email|url|tel)?$/.test(t.type)) || t.isContentEditable)) return;
+  if (k === 'z') { e.preventDefault(); HIST.go(e.shiftKey ? 1 : -1); }
+  else if (k === 'y') { e.preventDefault(); HIST.go(1); }
+});
+setTimeout(() => { HIST.base(); scheduleThumbs(true); }, 500);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(() => scheduleThumbs(true), 900));
+
 setTimeout(initThemeToggle, 100);
 
 </script>
