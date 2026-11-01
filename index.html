@@ -156,6 +156,13 @@ body.picking #preview { cursor: crosshair !important; box-shadow: 0 0 0 3px var(
 .pre .dots { display: flex; gap: 2px; }
 .pre canvas.thumb { width: 100%; height: auto; display: block; border-radius: 4px; border: 1px solid rgba(0,0,0,.08); background: #eee; }
 .pre .pname { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25; }
+.pre { position: relative; }
+.pre .pdel { position: absolute; top: 3px; right: 3px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: rgba(0,0,0,.55); color: #fff; font-size: 10px; line-height: 18px; text-align: center; cursor: pointer; }
+.pre .pdel.arm { background: #d9534f; }
+#pvwrap { position: relative; width: 100%; display: flex; justify-content: center; align-items: flex-start; }
+#pvwrap #preview { flex: none; }
+#fx { background: none !important; border: 0 !important; box-shadow: none !important; image-rendering: auto; position: absolute !important; pointer-events: none; max-width: none !important; max-height: none !important; margin: 0 !important; z-index: 2; }
+#fxBtn:not(.on) { opacity: .45; }
 .hgrp { display: inline-flex; gap: 4px; align-items: center; flex: none; margin-right: 4px; }
 .hgrp .pv-btn { min-width: 26px; padding: 0 6px; font-size: 13px; }
 .hgrp .pv-btn:disabled { opacity: .35; }
@@ -357,9 +364,10 @@ body.dark-mode .tc-head .tc-del { color:#ff5f56; }
 
 /* ===== 约会票根主题 (Ephemera) ===== */
 body.ep-mode {
+  font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
   --bg-body: #f1ebe4; --border-color: #e0a9bb; --text-main: #3a2a30; --text-muted: #c21f59; --accent: #d6255f;
   --ep-pink: #f8bfd1; --ep-paper: #fbf7f1; --ep-blue: #3e8fbe; --ep-gold: #c9a35a;
-  --font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-family: "Playfair Display", "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
   background-color: var(--bg-body) !important; background-image: var(--ep-grain, none) !important;
 }
 body.ep-mode .app { background: transparent; border: none; box-shadow: none; position: relative; }
@@ -369,14 +377,14 @@ body.ep-mode .top {
 body.ep-mode .top::before { content: none; }
 body.ep-mode .top b { font-size: 0; line-height: 0; }
 body.ep-mode .top b::before { content: "Q. Theme Studio"; display: block; font: 400 31px/1.05 "DM Serif Display", "Playfair Display", Georgia, serif; color: var(--accent); letter-spacing: -.2px; }
-body.ep-mode .top b::after { content: 'Good dates, better people'; display: block; margin-top: 11px; font: 400 17px/1.2 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); opacity: .85; letter-spacing: .3px; }
+body.ep-mode .top b::after { content: 'Good dates, better people'; display: block; margin-top: 11px; font: 400 17px/1.2 "Pinyon Script", "Playfair Display", "Noto Serif SC", cursive; color: var(--accent); opacity: .85; letter-spacing: .3px; }
 body.ep-mode .top span#status {
   background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 3px rgba(214,37,95,.12) inset;
   transform: rotate(-8deg); font-size: 10px; letter-spacing: 1px; padding: 6px 7px; max-width: 74px; text-align: center; line-height: 1.15; opacity: .8;
 }
 body.ep-mode button {
   background: var(--ep-paper); color: var(--accent); border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; box-shadow: none;
-  font-family: "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; font-style: italic; font-weight: 600; transition: background-color .15s, color .15s, border-color .15s;
+  font-family: "Playfair Display", "Noto Serif SC", serif; font-style: italic; font-weight: 600; transition: background-color .15s, color .15s, border-color .15s;
 }
 body.ep-mode button:hover { background: #fde7ee; }
 body.ep-mode button:active, body.ep-mode button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: none; font-style: normal; }
@@ -433,7 +441,7 @@ body.ep-mode .tabs { counter-reset: ept; }
 body.ep-mode .tabs button { counter-increment: ept; position: relative; padding-top: 12px; flex-direction: column; gap: 2px; min-height: 46px; }
 body.ep-mode .tabs button::before { content: "No." counter(ept, decimal-leading-zero); position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; letter-spacing: .16em; color: rgba(214,37,95,.55); }
 body.ep-mode .tabs button svg { display: none; }
-body.ep-mode .panel.on::before { display: block; font: 400 30px/1.1 "Pinyon Script", "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", cursive; color: var(--accent); padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1px solid rgba(214,37,95,.4); }
+body.ep-mode .panel.on::before { display: block; font: 400 30px/1.1 "Pinyon Script", "Playfair Display", "Noto Serif SC", cursive; color: var(--accent); padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1px solid rgba(214,37,95,.4); }
 body.ep-mode #p1.on::before { content: "Shots · 截图"; }
 body.ep-mode #p3.on::before { content: "Layout · 构图"; }
 body.ep-mode #p2.on::before { content: "Words · 文字"; }
@@ -450,8 +458,8 @@ body.ep-mode .chips button::before { content: ''; flex: none; width: 12px; heigh
 body.ep-mode .chips button:hover { background: #fde7ee !important; }
 body.ep-mode .chips button[aria-pressed="true"] { color: var(--accent) !important; font-weight: 700; }
 body.ep-mode .chips button[aria-pressed="true"]::before { content: '✓'; font-weight: 900; }
-body.ep-mode .stage::after { content: 'FIG. 1 — PREVIEW  ·  No. 1028'; margin-top: 10px; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .24em; color: rgba(214,37,95,.6); }
-body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: block; margin: 0 0 0 15px; padding: 12px 10px 14px; border-top: 3px dotted rgba(214,37,95,.5); text-align: center; font: 600 10px "Playfair Display", "ZCOOL XiaoWei", Georgia, serif; letter-spacing: .3em; color: var(--accent); }
+body.ep-mode .stage::after { content: 'FIG. 1 — PREVIEW  ·  No. 1028'; margin-top: 10px; font: 600 10px "Playfair Display", "Noto Serif SC", Georgia, serif; letter-spacing: .24em; color: rgba(214,37,95,.6); }
+body.ep-mode .dock::after { content: 'ADMIT TWO · KEEP THIS HALF'; display: block; margin: 0 0 0 15px; padding: 12px 10px 14px; border-top: 3px dotted rgba(214,37,95,.5); text-align: center; font: 600 10px "Playfair Display", "Noto Serif SC", Georgia, serif; letter-spacing: .3em; color: var(--accent); }
 @media (min-width: 1040px) {
   body.ep-mode .app { max-width: 1200px; display: grid; grid-template-columns: minmax(0, 1fr) 450px; grid-template-areas: "top top" "tip dock" "stage dock"; column-gap: 28px; align-items: start; align-content: start; grid-template-rows: auto auto 1fr; padding: 0 24px; }
   body.ep-mode .top { grid-area: top; }
@@ -487,7 +495,7 @@ body.ep-mode .transparent-check { color: #5a3a46; font-size: 12px; }
 body.ep-mode .color-cell .picker { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid rgba(214,37,95,.55); background: #fff; color: var(--accent); box-shadow: none; }
 body.ep-mode .color-cell .picker:hover { background: #fde7ee; border-color: var(--accent); color: var(--accent); }
 body.ep-mode .color-cell .picker.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 3px rgba(214,37,95,.2); }
-body.ep-mode #p4 span[style*="color:#888"] { display: flex !important; align-items: center; gap: 10px; color: var(--accent) !important; font: italic 600 15px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif !important; }
+body.ep-mode #p4 span[style*="color:#888"] { display: flex !important; align-items: center; gap: 10px; color: var(--accent) !important; font: italic 600 15px "Playfair Display", "Noto Serif SC", serif !important; }
 body.ep-mode #p4 span[style*="color:#888"]::after { content: ''; flex: 1; border-top: 1px dotted rgba(214,37,95,.5); }
 body.ep-mode .add span { border: none; border-radius: 3px; padding: 6px 18px; color: var(--accent); font-style: italic; font-weight: 600; box-shadow: none; outline: 1.5px dashed rgba(214,37,95,.6); outline-offset: -4px;
   background: radial-gradient(circle at 0 50%, var(--ep-paper) 0 5px, transparent 5.5px), radial-gradient(circle at 100% 50%, var(--ep-paper) 0 5px, transparent 5.5px), #fde7ee; }
@@ -496,7 +504,7 @@ body.ep-mode .t button { border-radius: 999px; background: #fff; }
 body.ep-mode #bgOpacity, body.ep-mode #bgBlur { accent-color: var(--accent); }
 /* 「选1~6张截图」邮戳：双圈 + 波浪盖销线 + 爱心 */
 body.ep-mode .top span#status { position: relative; box-sizing: border-box; flex: none; display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; max-width: none; padding: 0 9px; text-align: center; opacity: .92;
-  font: 700 10px/1.3 "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; letter-spacing: .5px; color: #c8372d;
+  font: 700 10px/1.3 "Playfair Display", "Noto Serif SC", serif; letter-spacing: .5px; color: #c8372d;
   background: radial-gradient(circle, rgba(200,55,45,.07), transparent 72%); border: 1.5px solid rgba(200,55,45,.8); border-radius: 50%;
   box-shadow: inset 0 0 0 4px #f1ebe4, inset 0 0 0 5px rgba(200,55,45,.6), 0 0 0 1px rgba(200,55,45,.16); transform: rotate(-9deg); }
 body.ep-mode .top span#status::before { content: ''; position: absolute; right: 88%; top: 50%; width: 44px; height: 26px; margin-top: -13px; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='26' viewBox='0 0 44 26' fill='none' stroke='%23c8372d' stroke-width='1.300' stroke-linecap='round' opacity='.6'><path d='M2 5q5-4 10 0t10 0 10 0 10 0'/><path d='M2 13q5-4 10 0t10 0 10 0 10 0'/><path d='M2 21q5-4 10 0t10 0 10 0 10 0'/></svg>") no-repeat center / contain; pointer-events: none; }
@@ -609,12 +617,12 @@ body.dark-mode .stage { box-shadow: 0 8px 14px -6px rgba(0,0,0,.6), inset 0 -1px
 body.ep-mode .pv-bar { order: 2; margin: 8px 0 -4px; padding: 0 2px; }
 body.ep-mode .pv-title { flex: 1; text-align: left; color: rgba(214,37,95,.65); font: 600 10px "Playfair Display", Georgia, serif; letter-spacing: .2em; }
 body.ep-mode .pv-title::before { content: 'FIG. 1 — PREVIEW · No. 1028'; }
-body.ep-mode .pv-btn { border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; background: #fff; color: var(--accent); font: italic 600 11px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; box-shadow: none; padding: 0 10px; }
+body.ep-mode .pv-btn { border: 1.5px solid rgba(214,37,95,.55); border-radius: 999px; background: #fff; color: var(--accent); font: italic 600 11px "Playfair Display", "Noto Serif SC", serif; box-shadow: none; padding: 0 10px; }
 body.ep-mode .pv-pin[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); font-style: normal; }
 #pinFab { display: none; position: fixed; right: 14px; bottom: 18px; z-index: 25; height: 40px; padding: 0 16px; align-items: center; justify-content: center; font-size: 13px; border-radius: 999px; border: 1px solid #c6c6c8; background: rgba(255,255,255,.95); color: #333; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; }
 body.unpin-preview #pinFab { display: inline-flex; }
 body.dark-mode #pinFab { background: #3a3a3f; border-color: #55555b; color: #eee; }
-body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; color: var(--accent); font: italic 600 13px "Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", serif; box-shadow: 0 4px 10px rgba(150,40,80,.25); }
+body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; color: var(--accent); font: italic 600 13px "Playfair Display", "Noto Serif SC", serif; box-shadow: 0 4px 10px rgba(150,40,80,.25); }
 @media (min-width: 1040px) {
   body.ep-mode .pv-bar, body.ep-mode #pinFab { display: none !important; }
   body.unpin-preview.ep-mode .stage { position: sticky; }
@@ -639,7 +647,7 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
   </div>
 
   <main class="stage">
-    <canvas id="preview" aria-label="拼贴风格主题展示图"></canvas>
+    <div id="pvwrap"><canvas id="preview" aria-label="拼贴风格主题展示图"></canvas><canvas id="fx" aria-hidden="true"></canvas></div>
   </main>
 
   <section class="dock" id="dock">
@@ -715,6 +723,9 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
         <span style="padding-top:2px">模板库</span>
         <p class="hint" style="margin:0;flex:1">点击任意模板，一键套用配色、背景样式、边框与标题样式。</p>
       </div>
+      <div class="r" style="margin-bottom:8px"><input id="myName" type="text" maxlength="16" placeholder="给当前风格起个名字（可留空）" style="flex:1;min-width:0"><button id="mySave" style="flex:none">💾 保存为预设</button></div>
+      <div id="myPresets" style="display:none"></div>
+      <div class="r" style="margin:6px 0 10px"><button id="myExport" style="flex:1">导出我的预设</button><button id="myImport" style="flex:1">导入</button><input id="myFile" type="file" accept=".json,application/json" hidden></div>
       <div class="r" style="margin-bottom:12px"><button id="randomBtn" style="flex:1;font-weight:500">🎲 一键随机换风格</button></div>
       <div id="presets"></div>
     </div>
@@ -735,6 +746,8 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="accordion">折页</button>
           <button data-v="dateTilt">信笺轻斜</button>
           <button data-v="dateLadder">票根阶梯</button>
+          <button data-v="dnRows">日夜上下 3+3</button>
+          <button data-v="dnCols">日夜左右 3+3</button>
         </div>
       </div>
       <div class="r" style="align-items:flex-start">
@@ -765,6 +778,8 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="bookpage">书页</button>
           <button data-v="menucard">菜单卡</button>
           <button data-v="retrowin">复古窗口</button>
+          <button data-v="dnbezel">日夜机身</button>
+          <button data-v="dncard">日夜卡片</button>
         </div>
       </div>
       <div id="olCtl" style="display:none;padding:10px;margin-bottom:12px;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px">
@@ -898,6 +913,9 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
             <button data-v="xmasEve">圣诞限定</button>
             <button data-v="newYear">新春限定</button>
           </div></section>
+          <section class="bgcat"><h4 class="pgroup-title"><span class="pg-name">日夜主题</span><span class="pg-line"></span><span class="pg-count">1</span></h4><div class="bgcat-grid">
+            <button data-v="dayNight">日夜渐变</button>
+          </div></section>
         </div>
       </div>
       <div class="r" id="bgImgControls" style="display:none;flex-direction:column;gap:8px;margin-bottom:12px;padding:10px;background:#f9f9f9;border-radius:4px;border:1px solid #e0e0e0">
@@ -946,6 +964,7 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="chop" title="宋韵 · 国风">朱印</button>
           <button data-v="bookmark" title="书卷 · 阅读">书签带</button>
           <button data-v="bulbs" title="节日 · 夜景">灯串</button>
+          <button data-v="daynight" title="日夜对照">日夜徽章</button>
           <button data-v="none" aria-pressed="true">无</button>
         </div>
       </div>
@@ -993,6 +1012,8 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
           <button data-v="hanko">和风印</button>
           <button data-v="neonSign">霓虹灯管</button>
           <button data-v="festive">节日彩灯</button>
+          <button data-v="sunmoon">日月徽标</button>
+          <button data-v="switch">日夜开关</button>
         </div>
       </div>
       <div class="r" style="margin-top:12px">
@@ -1200,7 +1221,12 @@ function invalidateCardCache() { cardCache.length = 0; cardCacheVersion++; }
 
 let applyingPreset = false;
 let curPreset = null;
+let curCustom = null;
 var HIST = null;
+function paintOn() {
+  document.querySelectorAll('#presets .pre, #myPresets .pre').forEach(b => b.classList.toggle('on',
+    (!!b.dataset.preset && b.dataset.preset === curPreset) || (!!b.dataset.custom && b.dataset.custom === curCustom)));
+}
 
 let tm, raf;
 const toast = msg => {
@@ -1234,6 +1260,9 @@ function setOpt(k, v) {
 }
 
 const PRESETS = [
+  { name:'晨昏·上下', grp:'日夜对照', title:'sunmoon', sub:'kicker', tc:null, sc:'#6a7a96', colors:['#e4eefa','#fbfdff','#f2a65a','#fbfdff','#2a3550'], bg:'dayNight', frame:'dnbezel', tape:'daynight', layout:'dnRows' },
+  { name:'晨昏·左右', grp:'日夜对照', title:'switch', sub:'text', tc:null, sc:'#7a6a86', colors:['#fdf0e2','#fffaf2','#ef9a6b','#fffaf2','#3a3048'], bg:'dayNight', frame:'dnbezel', tape:'daynight', layout:'dnCols' },
+  { name:'日夜·圆角卡片', grp:'日夜对照', title:'sunmoon', sub:'italicMag', tc:null, sc:'#5f7a8c', colors:['#e8f3f1','#ffffff','#e8b86a','#ffffff','#26384a'], bg:'dayNight', frame:'dncard', tape:'daynight', layout:'dnRows' },
   { name:'大刊头', grp:'杂志版式', title:'masthead', sub:'italicMag', tc:null, sc:'#7a7165', colors:['#efece6','#fdfbf7','#a8957a','#fdfbf7','#2d2b2a'], bg:'magMast', frame:'magpage', tape:'staple', layout:'flat' },
   { name:'杂志封面', grp:'杂志版式', title:'magazine', sub:'kicker', tc:null, sc:'#d9604f', colors:['#e9eef5','#fbfcfe','#d9604f','#fbfcfe','#1f2a44'], bg:'magCover', frame:'magpage', tape:'staple', layout:'stairs' },
   { name:'编辑排版', grp:'杂志版式', title:'kicker', sub:'text', tc:null, sc:'#7a8794', colors:['#f4f4f1','#fdfdfb','#2fa4d9','#fdfdfb','#28303a'], bg:'magGrid', frame:'magpage', tape:'clip', layout:'flat' },
@@ -1310,8 +1339,7 @@ const PRESETS = [
 ]
 
 function clearPresetHighlight() {
-  curPreset = null;
-  document.querySelectorAll('#presets .pre').forEach(b => b.classList.remove('on'));
+  curPreset = null; curCustom = null; paintOn();
 }
 
 function applyPreset(p, silent) {
@@ -1353,10 +1381,7 @@ function applyPreset(p, silent) {
   if (p.frame) setOpt('frame', p.frame);
   if (p.tape) setOpt('tapeStyle', p.tape);
 
-  curPreset = p.name;
-  document.querySelectorAll('#presets .pre').forEach(b => {
-    b.classList.toggle('on', b.dataset.preset === p.name);
-  });
+  curPreset = p.name; curCustom = null; paintOn();
   schedule(true, true, true);
   applyingPreset = false;
   if (!silent) toast('已套用 · ' + p.name);
@@ -1570,7 +1595,8 @@ const rng = s => () => {
 
 const LAYOUT_NEW = {
   rows2: { rows: 2 }, rows2brick: { rows: 2, brick: true }, rows2tilt: { rows: 2 },
-  stairs: { rows: 1 }, wave: { rows: 1 }, fan: { rows: 1 }, dateTilt: { rows: 1 }, dateLadder: { rows: 1 }
+  stairs: { rows: 1 }, wave: { rows: 1 }, fan: { rows: 1 }, dateTilt: { rows: 1 }, dateLadder: { rows: 1 },
+  dnRows: { rows: 2 }, dnCols: { rows: 1 }          // 日夜对照：上下各一组 / 左右各一组
 };
 
 function slotPositions(g, w, cardsStartY) {
@@ -1602,6 +1628,12 @@ function slotPositions(g, w, cardsStartY) {
     }
     return out;
   }
+  if (lay === 'dnCols') {                       // 前一半（日）靠左，后一半（夜）靠右，中间留出分界
+    const d = Math.ceil(n / 2), mid = n > 1 ? 72 : 0, total = n * fw + Math.max(0, n - 2) * g.gap + mid;
+    let x = (w - total) / 2 + g.paddingLeft;
+    for (let i = 0; i < n; i++) { out.push({ px: x, py: cardsStartY, angle: 0 }); x += fw + (i === d - 1 ? mid : g.gap); }
+    return out;
+  }
   const c0 = (n - 1) / 2;
   const x0 = (w - (n * fw + (n - 1) * g.gap)) / 2 + g.paddingLeft;
   for (let i = 0; i < n; i++) {
@@ -1617,7 +1649,7 @@ function slotPositions(g, w, cardsStartY) {
 }
 
 function geometry() {
-  const n = state.images.length || 3;
+  const n = state.images.length || (/^dn/.test(opt.layout) ? 6 : 3);
   const im = state.images[0];
   const r = im ? im.img.height / im.img.width : 2.16;
   const lay = opt.layout;
@@ -1629,13 +1661,13 @@ function geometry() {
   const rows = (NEWLAY && NEWLAY.rows === 2 && n > 1) ? 2 : 1;
   const cols = rows === 2 ? Math.ceil(n / 2) : n;
   const brickX = (NEWLAY && NEWLAY.brick && rows === 2) ? 0.5 : 0;
-  const rowGap = 28;
+  const rowGap = lay === 'dnRows' ? 64 : 28;
   const c0 = (n - 1) / 2;
   let stagFixed = 0;
   if (NEWLAY) stagFixed = lay === 'wave' ? 60 : lay === 'stairs' ? (n - 1) * 44 : lay === 'fan' ? 20 * c0 * c0 + 24 : lay === 'rows2tilt' ? 26 : lay === 'dateTilt' ? 22 : lay === 'dateLadder' ? (n - 1) * 32 : 0;
 
   const fw0 = NEWLAY
-    ? (lay === 'fan' ? 1040 / (n - (n - 1) * 0.14) : (1040 - 24 * (cols - 1)) / (cols + brickX))
+    ? (lay === 'fan' ? 1040 / (n - (n - 1) * 0.14) : lay === 'dnCols' ? (1040 - 24 * Math.max(0, n - 2) - (n > 1 ? 72 : 0)) / n : (1040 - 24 * (cols - 1)) / (cols + brickX))
     : (lay === 'accordion'
       ? 1040 / n
       : (lay === 'stack' ? 1040 / (n - (n - 1) * 0.14) : (1040 - (lay === 'flat' ? 24 : 12) * (n - 1)) / n));
@@ -1670,6 +1702,8 @@ function geometry() {
     case 'bookpage': sidePad = 24 * scale; topPad = 28 * scale; botPad = 42 * scale; break;
     case 'menucard': sidePad = 26 * scale; topPad = 30 * scale; botPad = 50 * scale; break;
     case 'retrowin': sidePad = 10 * scale; topPad = 34 * scale; botPad = 28 * scale; break;
+    case 'dnbezel':  sidePad = 14 * scale; topPad = 26 * scale; botPad = 36 * scale; break;
+    case 'dncard':   sidePad = 16 * scale; topPad = 30 * scale; botPad = 22 * scale; break;
   }
 
   const gap = NEWLAY
@@ -1821,6 +1855,14 @@ function drawDecor(c, kind, fw, fh, s, R, accent) {
     c.fillStyle = '#b3261e'; c.fillRect(-13 * s, -13 * s, 26 * s, 26 * s); c.shadowColor = 'transparent';
     c.strokeStyle = 'rgba(255,235,225,0.85)'; c.lineWidth = 1.4 * s; c.strokeRect(-10 * s, -10 * s, 20 * s, 20 * s);
     c.fillStyle = 'rgba(255,235,225,0.92)'; c.font = `700 ${15 * s}px "Noto Serif SC", "Songti SC", serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('印', 0, 1 * s);
+  } else if (kind === 'daynight') {                        // 日夜徽章：日间卡片戴太阳，夜间卡片戴月亮
+    const night = dnNightNow, r0 = 11 * s;
+    c.translate(fw - 20 * s, 9 * s);
+    c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 5 * s; c.shadowOffsetY = 2 * s;
+    c.fillStyle = night ? '#1c2547' : '#ffd98a'; c.beginPath(); c.arc(0, 0, r0, 0, 6.283); c.fill();
+    c.shadowColor = 'transparent'; c.strokeStyle = 'rgba(255,255,255,0.85)'; c.lineWidth = 1.5 * s; c.stroke();
+    if (night) { dnMoon(c, -1 * s, 0, 5.4 * s, '#f4efd8'); c.fillStyle = '#f4efd8'; c.beginPath(); c.arc(5 * s, -4 * s, 0.9 * s, 0, 6.283); c.arc(6 * s, 3 * s, 0.7 * s, 0, 6.283); c.fill(); }
+    else dnSun(c, 0, 0, 3.4 * s, '#f08c2e');
   } else if (kind === 'bookmark') {                        // 书签带
     c.translate(fw * 0.8 + jx * 0.3, 0);
     c.shadowColor = 'rgba(0,0,0,0.28)'; c.shadowBlur = 5 * s; c.shadowOffsetX = 1.5 * s; c.shadowOffsetY = 2.5 * s;
@@ -3189,6 +3231,16 @@ function sketchBackground(c, w, h, cb, o) {
 }
 
 /* ====== 新增背景风格（书脊书架 / 实体书封面 / 咖啡馆菜单 / 地铁线路图 / 拍立得墙 / 复古电脑 / 手帐贴纸 / 和风 / 赛博霓虹 / 圣诞 / 新春） ====== */
+let dnNightNow = false;      // 当前正在绘制的卡片是否属于“夜间”那一组（日夜对照排列）
+function dnSun(c, x, y, r, col) {
+  c.save(); c.fillStyle = col; c.strokeStyle = col; c.lineWidth = Math.max(1, r * 0.28); c.lineCap = 'round';
+  c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.5, y + Math.sin(a) * r * 1.5); c.lineTo(x + Math.cos(a) * r * 2.0, y + Math.sin(a) * r * 2.0); c.stroke(); }
+  c.restore();
+}
+function dnMoon(c, x, y, r, col) {
+  c.save(); c.fillStyle = col; c.beginPath(); c.arc(x, y, r, -Math.PI / 2, Math.PI / 2, true); c.quadraticCurveTo(x + r * 0.85, y, x, y - r); c.fill(); c.restore();
+}
 const NB_SERIF = '"Playfair Display", "Noto Serif SC", Georgia, serif';
 const nbBlend = (h1, h2, t) => { const a = rgb(h1), b = rgb(h2); return hex([0, 1, 2].map(i => a[i] + (b[i] - a[i]) * t)); };
 const nbA = (h, a) => { const r = rgb(h); return `rgba(${r[0]},${r[1]},${r[2]},${a})`; };
@@ -3337,7 +3389,7 @@ const NEWBG = {
     const { tcol, frameCol, transparent, isDark } = X;
     if (!transparent) {
       const pc = document.createElement('canvas'); pc.width = 4; pc.height = 4; const px = pc.getContext('2d');
-      px.fillStyle = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'; px.fillRect(0, 0, 2, 2); px.fillRect(2, 2, 2, 2);
+      px.fillStyle = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.035)'; px.fillRect(0, 0, 2, 2); px.fillRect(2, 2, 2, 2);
       const pat = c.createPattern(pc, 'repeat'); if (pat) { c.fillStyle = pat; c.fillRect(0, 0, w, h); }
     }
     const tb = 44, gray = nbBlend(frameCol, '#c3c3c3', 0.5);
@@ -3464,6 +3516,72 @@ const NEWBG = {
     a.forEach((ch, i) => bgText(c, ch, w - 34, 250 + i * 26, { size: 18, family: SANS, col: tcol(0.55) }));
     b.forEach((ch, i) => bgText(c, ch, 34, h - 250 + i * 26, { size: 18, family: SANS, col: tcol(0.55) }));
     bgText(c, '恭 贺 新 禧', w / 2, h - 36, { size: 15, family: SANS, sp: 4, col: tcol(0.55) });
+  }
+};
+
+NEWBG.dayNight = function (c, w, h, X) {
+  const { tcol, tapeCol, baseCol, transparent } = X;
+  const cols = opt.layout === 'dnCols', rows = opt.layout === 'dnRows';
+  let start = 120, seam = h / 2, g = null, fhh = 0;
+  try { g = geometry(); const tb = textLayout().titleBlockH; start = Math.max(80, (h - (tb + g.fh + g.stag)) * 0.32) + tb + 24; fhh = g.fh; if (rows) seam = start + g.fh + g.rowGap / 2; } catch (e) {}
+  const dayTop = nbBlend(baseCol, '#ffffff', 0.55), night = nbBlend('#101733', baseCol, 0.07), nightMid = nbBlend(night, '#2a3566', 0.35);
+  const dusk = nbBlend(nbBlend(baseCol, night, 0.5), tapeCol, 0.22);
+  const dayL = '#2a3550', nightL = 'rgba(232,238,255,0.62)';
+  if (!transparent) {
+    let gr;
+    if (cols) {
+      gr = c.createLinearGradient(0, 0, w, 0);
+      gr.addColorStop(0, dayTop); gr.addColorStop(0.3, baseCol); gr.addColorStop(0.5, dusk); gr.addColorStop(0.7, nightMid); gr.addColorStop(1, night);
+      c.fillStyle = gr; c.fillRect(0, 0, w, h);
+      const tg = c.createLinearGradient(0, 0, 0, start - 10);      // 标题区保持日间底色，保证标题可读
+      tg.addColorStop(0, baseCol); tg.addColorStop(0.7, baseCol); tg.addColorStop(1, nbA(baseCol, 0));
+      c.fillStyle = tg; c.fillRect(0, 0, w, start - 10);
+    } else {
+      gr = c.createLinearGradient(0, 0, 0, h);
+      const m = Math.max(0.2, Math.min(0.8, seam / h));
+      gr.addColorStop(0, dayTop); gr.addColorStop(Math.max(0, m - 0.26), baseCol); gr.addColorStop(m, dusk); gr.addColorStop(Math.min(1, m + 0.22), nightMid); gr.addColorStop(1, night);
+      c.fillStyle = gr; c.fillRect(0, 0, w, h);
+    }
+  }
+  const cloud = (x, y, s, a) => { c.save(); c.fillStyle = 'rgba(255,255,255,' + a + ')'; c.beginPath(); c.arc(x, y, 16 * s, 0, 6.283); c.arc(x + 20 * s, y - 9 * s, 21 * s, 0, 6.283); c.arc(x + 44 * s, y, 17 * s, 0, 6.283); c.rect(x, y, 44 * s, 16 * s); c.fill(); c.restore(); };
+  const sun = (x, y, r) => {
+    const gl = c.createRadialGradient(x, y, r * 0.2, x, y, r * 2.8); gl.addColorStop(0, nbA(tapeCol, 0.5)); gl.addColorStop(1, nbA(tapeCol, 0));
+    c.fillStyle = gl; c.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
+    c.strokeStyle = nbA(tapeCol, 0.55); c.lineWidth = 2.4; c.lineCap = 'round';
+    for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); }
+    c.fillStyle = nbBlend(tapeCol, '#fff3c4', 0.45); c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+  };
+  const moon = (x, y, r) => {
+    const gl = c.createRadialGradient(x, y, r * 0.3, x, y, r * 3); gl.addColorStop(0, 'rgba(210,222,255,0.35)'); gl.addColorStop(1, 'rgba(210,222,255,0)');
+    c.fillStyle = gl; c.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
+    const t = document.createElement('canvas'); t.width = t.height = Math.ceil(r * 2 + 6); const q = t.getContext('2d');
+    q.fillStyle = '#f4f1e1'; q.beginPath(); q.arc(r + 3, r + 3, r, 0, 6.283); q.fill();
+    q.globalCompositeOperation = 'destination-out'; q.beginPath(); q.arc(r + 3 + r * 0.42, r + 3 - r * 0.12, r * 0.86, 0, 6.283); q.fill();
+    c.drawImage(t, x - r - 3, y - r - 3);
+  };
+  const R = X.R;
+  // 日间一侧：太阳 + 云
+  c.save(); c.beginPath(); if (cols) c.rect(0, 0, w / 2, h); else c.rect(0, 0, w, seam); c.clip();
+  if (cols) { sun(104, 104, 30); cloud(190, 150, 1, 0.6); cloud(60, h - 150, 0.9, 0.45); cloud(w / 2 - 190, h - 110, 0.8, 0.4); }
+  else { sun(w - 108, 104, 30); cloud(70, 150, 1, 0.65); cloud(w - 250, 210, 0.8, 0.5); cloud(120, seam - 60, 0.8, 0.4); }
+  c.restore();
+  // 夜间一侧：月亮 + 星星
+  c.save(); c.beginPath(); if (cols) c.rect(w / 2, 0, w / 2, h); else c.rect(0, seam, w, h - seam); c.clip();
+  const sx0 = cols ? w / 2 : 0, sy0 = cols ? 0 : seam, sw = cols ? w / 2 : w, sh = cols ? h : h - seam;
+  for (let i = 0; i < 70; i++) { c.fillStyle = 'rgba(255,248,220,' + (0.25 + R() * 0.6) + ')'; c.beginPath(); c.arc(sx0 + R() * sw, sy0 + R() * sh, 0.8 + R() * 1.8, 0, 6.283); c.fill(); }
+  if (cols) moon(w - 104, 104, 28); else moon(w - 108, h - 110, 28);
+  c.restore();
+  // 分界：细线 + 日/月小标
+  c.save(); c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 1.4; c.setLineDash([6, 7]);
+  c.beginPath(); if (cols) { c.moveTo(w / 2, start - 4); c.lineTo(w / 2, start + fhh + 4); } else { c.moveTo(60, seam); c.lineTo(w - 60, seam); } c.stroke(); c.restore();
+  // 标签（与背景其他文字同一字体和字距）
+  const lab = (t, x, y, col, al) => bgText(c, t, x, y, { size: 11, weight: 600, family: BGF.web, sp: 5, align: al || 'left', col });
+  if (cols) {
+    lab('DAY  ·  日间', w / 4, start - 14, dayL, 'center'); lab('NIGHT  ·  夜间', w * 3 / 4, start - 14, nightL, 'center');
+    lab('DAY & NIGHT BY Q.', w - 60, h - 30, nightL, 'right');
+  } else {
+    lab('DAY  ·  日间', 60, start - 14, dayL); lab('NIGHT  ·  夜间', 60, seam + (g ? g.rowGap : 28) / 2 - 14, nightL);
+    lab('DAY & NIGHT BY Q.', w / 2, h - 30, nightL, 'center');
   }
 };
 
@@ -3770,7 +3888,10 @@ function renderBookPageBackground(c, w, h) {
 
 function drawOneCard(c, i, g, w, noShadow = false) {
   const R = rng(42 + i * 977);
-  const frameCol = $('cFrame').value;
+  const frameCol0 = $('cFrame').value;
+  const dnOn = /^dn/.test(opt.layout), dnNight = dnOn && i >= Math.ceil(g.n / 2);
+  const frameCol = dnNight ? mixHex(frameCol0, '#141b3d', 0.86) : frameCol0;   // 日夜对照：后一半是夜间卡片
+  dnNightNow = dnNight;
   const tapeCol = $('cTape').value;
   const textCol = $('cText').value;
   const fw = g.sw + 2 * g.sidePad;
@@ -3945,6 +4066,15 @@ function drawOneCard(c, i, g, w, noShadow = false) {
       c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(bx, by + bh - 1.2 * scale, bw, 1.2 * scale); c.fillRect(bx + bw - 1.2 * scale, by, 1.2 * scale, bh);
       c.fillStyle = 'rgba(20,20,30,0.9)'; c.font = `700 ${9 * scale}px ${BGF.ruler}`; c.textAlign = 'center'; c.fillText(t, bx + bw / 2, by + bh / 2 + (k === 0 ? -1.5 * scale : 0));
     });
+  } else if (frameType === 'dnbezel' || frameType === 'dncard') {
+    const bz = frameType === 'dnbezel', rr = (bz ? 20 : 11) * scale;
+    imgR = (bz ? 8 : 5) * scale;
+    c.beginPath(); c.roundRect(0, 0, fw, g.fh, rr); c.fill(); c.shadowColor = 'transparent';
+    c.save(); c.strokeStyle = dnNight ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.10)'; c.lineWidth = 1.2 * scale;
+    c.beginPath(); c.roundRect(2.5 * scale, 2.5 * scale, fw - 5 * scale, g.fh - 5 * scale, rr - 2 * scale); c.stroke();
+    if (bz) { c.fillStyle = dnNight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.14)'; c.beginPath(); c.roundRect(fw / 2 - 17 * scale, 9 * scale, 34 * scale, 6 * scale, 3 * scale); c.fill(); }
+    else { c.strokeStyle = dnNight ? 'rgba(255,255,255,0.35)' : nbA(tapeCol, 0.55); c.lineWidth = 1 * scale; c.setLineDash([4 * scale, 3 * scale]); c.beginPath(); c.roundRect(7 * scale, 7 * scale, fw - 14 * scale, g.fh - 14 * scale, rr - 6 * scale); c.stroke(); }
+    c.restore();
   } else if (frameType === 'scallop') {
     imgR = 6 * scale;
     const nx = Math.max(3, Math.round(fw / (16 * scale))), ny = Math.max(3, Math.round(g.fh / (16 * scale)));
@@ -4093,6 +4223,15 @@ function drawOneCard(c, i, g, w, noShadow = false) {
     c.textAlign = 'right'; c.fillText(`${120 + i * 37} KB`, fw - 10 * scale, sy + sh / 2 + 0.5 * scale);
     c.restore();
   }
+  if (frameType === 'dnbezel' || frameType === 'dncard') {
+    const d = Math.ceil(g.n / 2), night = dnNight, j = (dnOn ? (night ? i - d : i) : i) + 1, label = (night ? 'NIGHT' : 'DAY') + ' 0' + j;
+    const fs = Math.max(6.5, 8 * scale), ir = Math.max(2.6, 3.4 * scale), bz = frameType === 'dnbezel';
+    c.save(); c.textBaseline = 'middle'; c.textAlign = 'left'; c.font = `700 ${fs}px ${BGF.web}`; try { c.letterSpacing = `${1.2 * scale}px`; } catch (e) {}
+    const tw = c.measureText(label).width, ly = bz ? g.fh - 18 * scale : 16 * scale, lx = bz ? fw / 2 - (ir * 3 + tw) / 2 : 15 * scale;
+    if (night) dnMoon(c, lx + ir, ly, ir, '#f4efd8'); else dnSun(c, lx + ir, ly, ir * 0.7, '#f08c2e');
+    c.fillStyle = night ? 'rgba(232,238,255,0.78)' : tA(0.68); c.fillText(label, lx + ir * 3, ly + 0.5 * scale);
+    c.restore();
+  }
   if (frameType === 'ticket') {
     const ny = g.fh - g.botPad + 20 * scale;
     c.save(); c.strokeStyle = tA(0.4); c.lineWidth = 1.2 * scale; c.setLineDash([4 * scale, 4 * scale]);
@@ -4170,7 +4309,7 @@ function drawOneCard(c, i, g, w, noShadow = false) {
 
 function cardCacheKey(g) {
   return [g.sw, g.sidePad, g.topPad, g.botPad, g.fh, g.r, g.olGap, g.olW, g.olR,
-    opt.frame, opt.tapeStyle,
+    opt.frame, opt.tapeStyle, opt.layout, g.n,
     $('cFrame').value, $('cTape').value, $('cText').value].join('|');
 }
 
@@ -4368,10 +4507,10 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
   if (!chars.length) return { totalW: 0, height: 0 };
   const isFlat = opt.layout === 'flat' || opt.layout === 'accordion' || !!LAYOUT_NEW[opt.layout];
   const fontSize = baseFontSize;
-  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed', 'invite', 'postmark', 'ticketLabel', 'spine', 'menu', 'metro', 'pixel', 'doodle', 'hanko', 'neonSign', 'festive'];
+  const ALIGNED = ['magazine', 'masthead', 'label', 'highlight', 'ink', 'seal', 'cutout', 'ribbon', 'wave', 'sparkle', 'tape', 'ransom', 'drip', 'glitch', 'stamp', 'kicker', 'italicMag', 'issue', 'boxed', 'invite', 'postmark', 'ticketLabel', 'spine', 'menu', 'metro', 'pixel', 'doodle', 'hanko', 'neonSign', 'festive', 'sunmoon', 'switch'];
   const isNew = ALIGNED.includes(style);
   const weight = { magazine: 700, masthead: 400, ink: 900, cutout: 900, tape: 900, drip: 900, stamp: 900, kicker: 600, italicMag: 400, issue: 700, boxed: 700, invite: 900, postmark: 400, ticketLabel: 700, spine: 700, menu: 500, pixel: 700, doodle: 700, hanko: 900, neonSign: 700 }[style] || 800;
-  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22, spine: 0.2, menu: 0.06, metro: 0.14, pixel: 0.12, doodle: 0.08, hanko: 0.16, neonSign: 0.14, festive: 0.12 }[style] ?? 0.5;
+  const gapK = { magazine: 0.1, masthead: 0.32, label: 0.12, highlight: 0.12, ink: 0.18, seal: 0.3, cutout: 0.16, ribbon: 0.14, wave: 0.14, sparkle: 0.2, tape: 0.15, ransom: 0.35, drip: 0.12, glitch: 0.15, stamp: 0.2, kicker: 0.3, italicMag: 0.06, issue: 0.1, boxed: 0.18, invite: 0.06, postmark: 0.08, ticketLabel: 0.22, spine: 0.2, menu: 0.06, metro: 0.14, pixel: 0.12, doodle: 0.08, hanko: 0.16, neonSign: 0.14, festive: 0.12, sunmoon: 0.1, switch: 0.1 }[style] ?? 0.5;
   let famBase = fontFam;
   if (fontFam === SANS && (style === 'italicMag' || style === 'postmark')) famBase = BGF.parch;
   if (fontFam === SANS && style === 'menu') famBase = '"Playfair Display", "ZCOOL XiaoWei", "Noto Serif SC", "Songti SC", Georgia, serif';
@@ -4517,6 +4656,27 @@ function drawCollageTextGroup(c, textStr, startY, baseFontSize, fontFam, chipBg,
       c.strokeStyle = chipText; c.globalAlpha = 0.55; c.lineWidth = 1.6; c.beginPath(); c.moveTo(ax, ya); c.quadraticCurveTo((ax + bx2) / 2, ya + fontSize * 0.34, bx2, ya); c.stroke();
       c.globalAlpha = 1; const nb2 = Math.max(4, Math.round((bx2 - ax) / (fontSize * 0.7)));
       for (let k = 1; k < nb2; k++) { const t = k / nb2, px = ax + (bx2 - ax) * t, py = 2 * (1 - t) * t * (ya + fontSize * 0.34) + ya * (1 - t) * (1 - t) + ya * t * t; c.fillStyle = cols[k % cols.length]; c.shadowColor = cols[k % cols.length]; c.shadowBlur = 8; c.beginPath(); c.ellipse(px, py + fontSize * 0.12, fontSize * 0.07, fontSize * 0.1, 0, 0, Math.PI * 2); c.fill(); }
+    }
+  } else if (style === 'sunmoon') {
+    if (big) {
+      const cy = startY + cH * 0.5;
+      c.globalAlpha = 1;
+      dnSun(c, x0 - fontSize * 0.95, cy, fontSize * 0.17, mixHex(accent, '#ffb84d', 0.5));
+      dnMoon(c, x1 + fontSize * 0.9, cy, fontSize * 0.24, chipText);
+      c.fillStyle = chipText; c.globalAlpha = 0.6;
+      [[1.25, -0.2, 0.035], [1.42, 0.12, 0.028]].forEach(([dx, dy, rr]) => { c.beginPath(); c.arc(x1 + fontSize * dx, cy + fontSize * dy, fontSize * rr, 0, 6.283); c.fill(); });
+      c.globalAlpha = 0.35; c.fillRect(x0 - fontSize * 0.3, startY + cH + 4, x1 - x0 + fontSize * 0.6, 1.4); c.globalAlpha = 1;
+    }
+  } else if (style === 'switch') {
+    if (big) {
+      const hh = fontSize * 0.56, ww = fontSize * 1.5, sx = x1 + fontSize * 0.6, sy = startY + (cH - hh) / 2;
+      c.globalAlpha = 1;
+      c.save(); c.beginPath(); c.roundRect(sx, sy, ww, hh, hh / 2); c.clip();
+      c.fillStyle = '#ffd98a'; c.fillRect(sx, sy, ww / 2, hh); c.fillStyle = '#1c2547'; c.fillRect(sx + ww / 2, sy, ww / 2, hh);
+      c.restore();
+      dnSun(c, sx + ww * 0.22, sy + hh / 2, hh * 0.13, '#f08c2e'); dnMoon(c, sx + ww * 0.8, sy + hh / 2, hh * 0.2, '#f4efd8');
+      c.save(); c.fillStyle = '#ffffff'; c.shadowColor = 'rgba(0,0,0,0.3)'; c.shadowBlur = 4; c.beginPath(); c.arc(sx + ww / 2, sy + hh / 2, hh * 0.36, 0, 6.283); c.fill(); c.restore();
+      c.save(); c.strokeStyle = chipText; c.globalAlpha = 0.4; c.lineWidth = 1.2; c.beginPath(); c.roundRect(sx, sy, ww, hh, hh / 2); c.stroke(); c.restore();
     }
   } else if (style === 'sparkle') {
     const col = chipText, yc = startY + cH / 2;
@@ -4760,6 +4920,7 @@ function render() {
   $('status').textContent = n ? `已选 ${n} 张` : '选1~6张截图';
   if (typeof scheduleThumbs === 'function' && HIST && HIST.ready) scheduleThumbs(false);
   if (window.fitPreview) window.fitPreview();
+  if (typeof FX !== 'undefined') FX.refresh();
 }
 
 const previewCanvas = $('preview');
@@ -5694,7 +5855,7 @@ function initThemeToggle() {
 
 /* ====== 预设缩略图 / 随机风格 / 撤销重做 ====== */
 const histGrp = document.createElement('span'); histGrp.className = 'hgrp';
-histGrp.innerHTML = '<button type="button" class="pv-btn" id="undoBtn" title="撤销 (Ctrl+Z)" aria-label="撤销" disabled>↶</button><button type="button" class="pv-btn" id="redoBtn" title="重做 (Ctrl+Shift+Z)" aria-label="重做" disabled>↷</button><button type="button" class="pv-btn" id="rndTop" title="随机换风格" aria-label="随机换风格">🎲</button>';
+histGrp.innerHTML = '<button type="button" class="pv-btn" id="undoBtn" title="撤销 (Ctrl+Z)" aria-label="撤销" disabled>↶</button><button type="button" class="pv-btn" id="redoBtn" title="重做 (Ctrl+Shift+Z)" aria-label="重做" disabled>↷</button><button type="button" class="pv-btn" id="rndTop" title="随机换风格" aria-label="随机换风格">🎲</button><button type="button" class="pv-btn on" id="fxBtn" title="预览动态效果" aria-label="预览动态效果">✨</button>';
 function placeHistGrp() {
   const wide = document.body.classList.contains('ep-mode') && window.innerWidth >= 1040;
   const host = wide ? document.querySelector('.top') : document.querySelector('.pv-ctl');
@@ -5714,7 +5875,7 @@ function setColorValue(id, v) {
 }
 function liteSnap() {
   return {
-    colors: COLOR_IDS.map(id => $(id).value), opt: { ...opt }, cur: curPreset, bodyBg: document.body.style.background,
+    colors: COLOR_IDS.map(id => $(id).value), opt: { ...opt }, cur: curPreset, cc: curCustom, bodyBg: document.body.style.background,
     t: [tcfg.title, tcfg.author].map(t => ({ style: t.style, color: t.color })),
     c: state.customTexts.map(t => ({ style: t.style, color: t.color }))
   };
@@ -5725,8 +5886,7 @@ function liteRestore(s0) {
   [tcfg.title, tcfg.author].forEach((t, i) => { t.style = s0.t[i].style; t.color = s0.t[i].color; });
   state.customTexts.forEach((t, i) => { if (s0.c[i]) { t.style = s0.c[i].style; t.color = s0.c[i].color; } });
   Object.entries(s0.opt).forEach(([k, v]) => setOpt(k, v));
-  curPreset = s0.cur;
-  document.querySelectorAll('#presets .pre').forEach(b => b.classList.toggle('on', !!curPreset && b.dataset.preset === curPreset));
+  curPreset = s0.cur; curCustom = s0.cc; paintOn();
   refreshTextCards();
   schedule(true, true, true);
 }
@@ -5742,40 +5902,53 @@ function scheduleThumbs(force) {
   clearTimeout(thumbTimer);
   thumbTimer = setTimeout(renderThumbs, 350);
 }
-function renderThumbs() {
-  const job = ++thumbJob;
-  const btns = Array.from(document.querySelectorAll('#presets .pre'));
-  let i = 0;
+let thumbQ = [], thumbRun = false;
+function pumpThumbs() {
+  if (thumbRun) return; thumbRun = true;
   const step = () => {
-    if (job !== thumbJob) return;
+    if (!thumbQ.length) { thumbRun = false; return; }
     if (dragging || pickingTarget) { setTimeout(step, 300); return; }
-    const s0 = liteSnap(), hb = hitBoxes, histLock = HIST && HIST.lock, realSchedule = schedule;
+    const hb = hitBoxes, histLock = HIST && HIST.lock, realSchedule = schedule;
     if (HIST) HIST.lock = true;
-    schedule = () => {};            // 缩略图只画到小画布，不触碰主预览缓存，避免整页重绘卡顿
+    schedule = () => {};            // 缩略图只画到小画布，不触碰主预览缓存
     try {
-      for (let n = 0; n < 3 && i < btns.length; n++, i++) {
-        const b = btns[i], pr = PRESET_BY_NAME[b.dataset.preset], cv = b.querySelector('canvas.thumb');
-        if (!pr || !cv) continue;
-        applyPreset(pr, true);
-        draw(cv, 300, true);
-        cv.style.background = '';
+      const b0 = thumbQ[0];
+      if (b0.dataset.custom) {
+        thumbQ.shift();
+        const cp = myPresets.find(x => x.id === b0.dataset.custom), cvs = b0.querySelector('canvas.thumb');
+        if (cp && cvs) {
+          const full = JSON.parse(HIST.snap());
+          try { HIST.restore(cp.data, 'style'); draw(cvs, 300, true); cvs.style.background = ''; } finally { HIST.restore(full, 'all'); }
+        }
+      } else {
+        const s0 = liteSnap();
+        try {
+          for (let n = 0; n < 3 && thumbQ.length && !thumbQ[0].dataset.custom; n++) {
+            const b = thumbQ.shift(), pr = PRESET_BY_NAME[b.dataset.preset], cv = b.querySelector('canvas.thumb');
+            if (!pr || !cv) continue;
+            applyPreset(pr, true); draw(cv, 300, true); cv.style.background = '';
+          }
+        } finally { liteRestore(s0); }
       }
-    } catch (e) { console.warn('thumb', e); i++; }
-    finally { hitBoxes = hb; liteRestore(s0); schedule = realSchedule; if (HIST) HIST.lock = histLock; }
-    if (i < btns.length) setTimeout(step, 24);
+    } catch (e) { console.warn('thumb', e); }
+    finally { hitBoxes = hb; schedule = realSchedule; if (HIST) HIST.lock = histLock; }
+    setTimeout(step, 24);
   };
   setTimeout(step, 30);
 }
+function renderThumbs() { thumbQ = Array.from(document.querySelectorAll('#myPresets .pre, #presets .pre')); pumpThumbs(); }
 
 let rndBag = [];
 function randomStyle() {
   if (!rndBag.length) {
-    rndBag = PRESETS.filter(p => p.name !== curPreset);
+    rndBag = PRESETS.filter(p => p.name !== curPreset).map(p => ({ p })).concat(myPresets.filter(c => c.id !== curCustom).map(c => ({ c })));
     for (let i = rndBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rndBag[i], rndBag[j]] = [rndBag[j], rndBag[i]]; }
   }
-  const p = rndBag.pop();
-  applyPreset(p, true);
-  toast('🎲 随机 · ' + p.name);
+  let it = rndBag.pop();
+  while (it && it.c && !myPresets.includes(it.c) && rndBag.length) it = rndBag.pop();
+  if (!it) return;
+  if (it.c) { applyCustom(it.c); toast('🎲 随机 · ' + it.c.name); }
+  else { applyPreset(it.p, true); toast('🎲 随机 · ' + it.p.name); }
 }
 $('randomBtn').onclick = randomStyle;
 $('rndTop').onclick = randomStyle;
@@ -5783,12 +5956,13 @@ $('rndTop').onclick = randomStyle;
 /* 撤销 / 重做：快照 = 所有带 id 的控件 + 选项 + 文字配置 + 拖拽位置 */
 HIST = (() => {
   const H = { stack: [], idx: -1, lock: false, timer: null, ready: false, userAt: 0 };
-  const ctrls = () => Array.from(document.querySelectorAll('.app input[id], .app select[id], .app textarea[id]')).filter(el => el.type !== 'file' && el.type !== 'button' && el.type !== 'submit');
+  const ctrls = () => Array.from(document.querySelectorAll('.app input[id], .app select[id], .app textarea[id]')).filter(el => el.type !== 'file' && el.type !== 'button' && el.type !== 'submit' && el.id.indexOf('my') !== 0);
   const snap = () => {
     const v = {};
     ctrls().forEach(el => { v[el.id] = (el.type === 'checkbox' || el.type === 'radio') ? !!el.checked : el.value; });
-    return JSON.stringify({ v, opt, tcfg: { title: tcfg.title, author: tcfg.author }, ct: state.customTexts, off: offsets, bg: bgOffset, cur: curPreset });
+    return JSON.stringify({ v, opt, tcfg: { title: tcfg.title, author: tcfg.author }, ct: state.customTexts, off: offsets, bg: bgOffset, cur: curPreset, cc: curCustom });
   };
+  H.snap = snap;
   const btns = () => { $('undoBtn').disabled = H.idx <= 0; $('redoBtn').disabled = H.idx >= H.stack.length - 1; };
   H.commit = () => {
     if (H.lock || !H.ready) return;
@@ -5805,31 +5979,40 @@ HIST = (() => {
     clearTimeout(H.timer); H.timer = setTimeout(() => { H.timer = null; H.commit(); }, 300);
   };
   H.base = () => { H.ready = true; H.stack = [snap()]; H.idx = 0; btns(); };
-  H.go = d => {
-    if (H.timer) { clearTimeout(H.timer); H.timer = null; H.commit(); }   // 只有真的有未提交改动时才入栈
-    const ni = H.idx + d; if (ni < 0 || ni >= H.stack.length) return;
-    const o = JSON.parse(H.stack[ni]);
-    H.lock = true;
+  // scope 'all'：完整恢复（撤销/重做）；'style'：只套用样式（我的预设），不动文字内容和拖拽位置
+  H.restore = (o, scope) => {
+    const was = H.lock; H.lock = true;
     try {
       ctrls().forEach(el => {
-        if (!(el.id in o.v)) return;
+        if (!o.v || !(el.id in o.v)) return;
         const nv = o.v[el.id], isChk = (el.type === 'checkbox' || el.type === 'radio');
+        if (typeof nv !== (isChk ? 'boolean' : 'string')) return;
         if (isChk ? el.checked === nv : el.value === nv) return;
         if (isChk) el.checked = nv; else el.value = nv;
         if (el.type === 'color') setColorValue(el.id, nv);
         el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true }));
       });
-      Object.entries(o.opt).forEach(([k, v]) => setOpt(k, v));
-      Object.assign(tcfg.title, o.tcfg.title); Object.assign(tcfg.author, o.tcfg.author);
-      state.customTexts = o.ct;
-      offsets.title = o.off.title; offsets.author = o.off.author; offsets.cards = o.off.cards; offsets.customTexts = o.off.customTexts;
-      bgOffset = o.bg;
-      document.body.style.background = $('cBase').value;
-      curPreset = o.cur;
-      document.querySelectorAll('#presets .pre').forEach(b => b.classList.toggle('on', !!curPreset && b.dataset.preset === curPreset));
-      buildTextCards(); refreshTextCards();
+      Object.entries(o.opt || {}).forEach(([k, v]) => { if (k in opt) setOpt(k, v); });
+      if (scope === 'all') {
+        Object.assign(tcfg.title, o.tcfg.title); Object.assign(tcfg.author, o.tcfg.author);
+        state.customTexts = o.ct;
+        offsets.title = o.off.title; offsets.author = o.off.author; offsets.cards = o.off.cards; offsets.customTexts = o.off.customTexts;
+        bgOffset = o.bg;
+        document.body.style.background = $('cBase').value;
+        curPreset = o.cur; curCustom = o.cc || null; paintOn();
+        buildTextCards(); refreshTextCards();
+      } else {
+        ['title', 'author'].forEach(k => { const t = o.tc && o.tc[k]; if (t) ['style', 'color', 'size', 'sp'].forEach(f => { if (f in t) tcfg[k][f] = t[f]; }); });
+        document.body.style.background = $('cBase').value;
+        refreshTextCards();
+      }
       schedule(true, true, true);
-    } finally { H.lock = false; }
+    } finally { H.lock = was; }
+  };
+  H.go = d => {
+    if (H.timer) { clearTimeout(H.timer); H.timer = null; H.commit(); }   // 只有真的有未提交改动时才入栈
+    const ni = H.idx + d; if (ni < 0 || ni >= H.stack.length) return;
+    H.restore(JSON.parse(H.stack[ni]), 'all');
     H.idx = ni; H.stack[ni] = snap(); H.userAt = 0; btns();      // 以恢复后的真实状态为准，保证之后“重做”可用
     toast(d < 0 ? '↶ 已撤销' : '↷ 已重做');
   };
@@ -5846,6 +6029,213 @@ document.addEventListener('keydown', e => {
   if (k === 'z') { e.preventDefault(); HIST.go(e.shiftKey ? 1 : -1); }
   else if (k === 'y') { e.preventDefault(); HIST.go(1); }
 });
+
+/* ====== 我的预设（保存 / 应用 / 删除 / 导出 / 导入） ====== */
+const MYKEY = 'q_mypresets';
+let myPresets = [];
+try { myPresets = JSON.parse(localStorage.getItem(MYKEY) || '[]'); if (!Array.isArray(myPresets)) myPresets = []; } catch (e) { myPresets = []; }
+function saveMy() { try { localStorage.setItem(MYKEY, JSON.stringify(myPresets)); return true; } catch (e) { toast('当前环境无法保存到浏览器，请用“导出”备份'); return false; } }
+function captureStyle() {
+  const o = JSON.parse(HIST.snap()), pick = t => ({ style: t.style, color: t.color, size: t.size, sp: t.sp });
+  return { v: o.v, opt: o.opt, tc: { title: pick(o.tcfg.title), author: pick(o.tcfg.author) } };
+}
+function applyCustom(c) {
+  if (!c || !myPresets.includes(c)) return;
+  HIST.restore(c.data, 'style');
+  curPreset = null; curCustom = c.id; paintOn();
+  schedule(true, true, true);                     // 解锁后再触发一次，让这一步进入撤销记录
+  toast('已应用 · ' + c.name);
+}
+function renderMy() {
+  const host = $('myPresets'); host.innerHTML = '';
+  if (!myPresets.length) { host.style.display = 'none'; return; }
+  host.style.display = '';
+  const sec = document.createElement('section'); sec.className = 'pgroup';
+  const title = document.createElement('h4'); title.className = 'pgroup-title';
+  const nm = document.createElement('span'); nm.className = 'pg-name'; nm.textContent = '我的预设';
+  const ln = document.createElement('span'); ln.className = 'pg-line';
+  const ct = document.createElement('span'); ct.className = 'pg-count'; ct.textContent = myPresets.length + ' 款';
+  title.append(nm, ln, ct);
+  const grid = document.createElement('div'); grid.className = 'pgroup-grid';
+  const made = [];
+  myPresets.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'pre'; b.dataset.custom = c.id; b.title = c.name;
+    b.innerHTML = '<canvas class="thumb" width="300" height="400"></canvas><span class="pname"></span><span class="pdel" role="button" aria-label="删除" title="删除">✕</span>';
+    b.querySelector('.pname').textContent = c.name;
+    b.querySelector('canvas').style.background = (c.data && c.data.v && c.data.v.cBase) || '#eee';
+    b.onclick = e => {
+      const d = e.target.closest('.pdel');
+      if (!d) { applyCustom(c); return; }
+      e.stopPropagation();
+      if (!d.classList.contains('arm')) { d.classList.add('arm'); d.textContent = '确认'; setTimeout(() => { d.classList.remove('arm'); d.textContent = '✕'; }, 2500); return; }
+      myPresets = myPresets.filter(x => x.id !== c.id); if (curCustom === c.id) curCustom = null;
+      saveMy(); renderMy(); toast('已删除 · ' + c.name);
+    };
+    grid.append(b); made.push(b);
+  });
+  sec.append(title, grid); host.append(sec);
+  paintOn();
+  thumbQ.push(...made); pumpThumbs();
+}
+const newId = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+$('mySave').onclick = () => {
+  const name = ($('myName').value.trim() || ('我的预设 ' + (myPresets.length + 1))).slice(0, 16);
+  const data = captureStyle(), ex = myPresets.find(x => x.name === name);
+  if (ex) { ex.data = data; ex.t = Date.now(); curCustom = ex.id; }
+  else { const c = { id: newId(), name, t: Date.now(), data }; myPresets.unshift(c); curCustom = c.id; }
+  curPreset = null; saveMy(); renderMy(); paintOn(); $('myName').value = '';
+  toast((ex ? '已更新 · ' : '已保存 · ') + name);
+};
+$('myExport').onclick = () => {
+  if (!myPresets.length) { toast('还没有自定义预设'); return; }
+  const txt = JSON.stringify({ app: 'q-theme', v: 1, presets: myPresets });
+  try {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'application/json' })); a.download = 'q-my-presets.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('已导出 ' + myPresets.length + ' 个预设');
+  } catch (e) { try { navigator.clipboard.writeText(txt); toast('已复制到剪贴板'); } catch (e2) { toast('导出失败'); } }
+};
+$('myImport').onclick = () => $('myFile').click();
+$('myFile').onchange = e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  f.text().then(t => {
+    try {
+      const j = JSON.parse(t), arr = Array.isArray(j) ? j : j.presets; if (!Array.isArray(arr)) throw new Error('bad');
+      let n = 0;
+      arr.forEach(x => {
+        if (!x || !x.name || !x.data || typeof x.data.v !== 'object' || typeof x.data.opt !== 'object') return;
+        const name = String(x.name).slice(0, 16), old = myPresets.find(y => y.name === name);
+        if (old) { old.data = x.data; old.t = Date.now(); } else myPresets.push({ id: newId(), name, t: Date.now(), data: x.data });
+        n++;
+      });
+      saveMy(); renderMy(); toast(n ? '已导入 ' + n + ' 个预设' : '文件里没有可用的预设');
+    } catch (err) { toast('文件格式不对'); }
+    e.target.value = '';
+  });
+};
+renderMy();
+
+/* ====== 预览动态效果（叠加层，不影响导出） ====== */
+var FX = (() => {
+  const cv = $('preview'), fx = $('fx'), wrap = $('pvwrap'), ctx = fx.getContext('2d');
+  const F = { on: true, key: '', parts: [], last: 0, W: 0, H: 0, dpr: 1, vis: true, kind: 'motes', u: 1, k: 1, dark: false, acc: '#ffffff', nextShoot: 4, shoot: null };
+  try { const v = localStorage.getItem('q_fx'); F.on = v === null ? !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) : v === '1'; } catch (e) {}
+  const KIND = { xmasEve: 'snow', wafuu: 'petals', newYear: 'coins', starChart: 'stars', deepSea: 'bubbles', emberDusk: 'embers', neonRain: 'rain', cyberGrid: 'cyber', glitchArchive: 'cyber', polaroidWall: 'fairy', dayNight: 'dn', suspenseFog: 'fog', cloudDots: 'bubbles', gingham: 'hearts', journalStickers: 'hearts', bambooMoon: 'fireflies', metroMap: 'train', retroPC: 'pixel', cafeMenu: 'steam' };
+  const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[(Math.random() * a.length) | 0];
+  const lum = h => { const c = rgb(h); return (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255; };
+  const rgba = (h, a) => { const c = rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+  function sync() {
+    const w = cv.offsetWidth, h = cv.offsetHeight; if (!w || !h) return false;
+    fx.style.left = cv.offsetLeft + 'px'; fx.style.top = cv.offsetTop + 'px'; fx.style.width = w + 'px'; fx.style.height = h + 'px';
+    fx.style.borderRadius = getComputedStyle(cv).borderRadius;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (F.W !== w || F.H !== h || F.dpr !== dpr) { F.W = w; F.H = h; F.dpr = dpr; fx.width = Math.round(w * dpr); fx.height = Math.round(h * dpr); F.key = ''; }
+    return true;
+  }
+  const INIT = {
+    snow() { return Array.from({ length: 72 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(1, 3) * F.u, vy: rnd(18, 46) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.6) })); },
+    petals() { return Array.from({ length: 22 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(5, 9) * F.u, vy: rnd(22, 42) * F.u, vx: rnd(-6, 12) * F.u, rot: rnd(0, 6), vr: rnd(-1.5, 1.5), ph: rnd(0, 6), col: pick(['#f6b8c6', '#f9d0d9', '#ffe6ec']) })); },
+    coins() { return Array.from({ length: 34 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), w: rnd(4, 8) * F.u, h: rnd(6, 11) * F.u, vy: rnd(24, 52) * F.u, rot: rnd(0, 6), vr: rnd(1.5, 4), ph: rnd(0, 6), col: pick(['#e3b95a', '#f0cf7a', '#d6a642']) })); },
+    stars() { return Array.from({ length: 64 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.5, 1.7) * F.u, ph: rnd(0, 6), sp: rnd(0.8, 2.4) })); },
+    bubbles() { return Array.from({ length: 26 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(3, 10) * F.u, vy: rnd(14, 40) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.4) })); },
+    embers() { return Array.from({ length: 46 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(1, 2.6) * F.u, vy: rnd(16, 48) * F.u, ph: rnd(0, 6) })); },
+    rain() { return Array.from({ length: 70 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), len: rnd(12, 26) * F.u, vy: rnd(420, 640) * F.u, col: pick(['#ff7ab8', '#41e0ee']) })); },
+    cyber() { return []; },
+    dn() { const cols = opt.layout === 'dnCols'; return Array.from({ length: 46 }, () => ({ x: cols ? rnd(0.52, 1) * F.W : rnd(0, F.W), y: cols ? rnd(0, F.H) : rnd(0.54, 1) * F.H, r: rnd(0.5, 1.7) * F.u, ph: rnd(0, 6), sp: rnd(0.8, 2.4) })); },
+    fairy() {
+      const a = [], cols = [F.acc, '#ffd27a', '#8fd0c0', '#f2a1b5', '#9ec6ee'];
+      for (let i = 0; i < 8; i++) for (let kk = 1; kk <= 2; kk++) { const t = kk / 3, bx = 150 * i + 150 * t, by = 2 * (1 - t) * t * 62 + 26 * (1 - t) * (1 - t) + 26 * t * t + 9; a.push({ x: bx * F.k, y: by * F.k, col: cols[(i * 2 + kk) % cols.length], ph: rnd(0, 6) }); }
+      return a;
+    },
+    fog() { return Array.from({ length: 6 }, () => ({ x: rnd(0, F.W), y: rnd(0.15, 0.95) * F.H, r: rnd(0.25, 0.5) * F.W, vx: rnd(6, 16) * F.u * (Math.random() < 0.5 ? -1 : 1), a: rnd(0.05, 0.1) })); },
+    motes() { return Array.from({ length: 36 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.8, 2.2) * F.u, vx: rnd(2, 8) * F.u, vy: rnd(-10, -3) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.8) })); },
+    hearts() { return Array.from({ length: 16 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(5, 11) * F.u, vy: rnd(14, 30) * F.u, ph: rnd(0, 6), col: pick([F.acc, '#f2a1b5', '#ffd27a', '#f19ab0']) })); },
+    fireflies() { return Array.from({ length: 20 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), vx: rnd(-8, 8) * F.u, vy: rnd(-8, 8) * F.u, ph: rnd(0, 6), r: rnd(1.4, 2.8) * F.u })); },
+    train() { return []; },
+    pixel() { return Array.from({ length: 20 }, () => ({ x: Math.round(rnd(0, F.W)), y: Math.round(rnd(0, F.H)), s: Math.round(rnd(3, 5) * F.u), ph: rnd(0, 1), sp: rnd(0.6, 1.8), col: pick(['#ffe27a', '#ffffff', '#8ee8e0']) })); },
+    steam() {
+      const a = [], cups = [[92 * F.k, F.H - 176 * F.k], [F.W - 92 * F.k, 104 * F.k]];
+      cups.forEach(([cx, cy]) => { for (let i = 0; i < 6; i++) a.push({ cx, cy, t0: rnd(0, 3), ph: rnd(0, 6) }); });
+      return a;
+    }
+  };
+  const heart = (s, x, y) => { ctx.beginPath(); ctx.moveTo(x, y + s * 0.35); ctx.bezierCurveTo(x - s, y - s * 0.3, x - s * 0.55, y - s * 0.95, x, y - s * 0.4); ctx.bezierCurveTo(x + s * 0.55, y - s * 0.95, x + s, y - s * 0.3, x, y + s * 0.35); ctx.fill(); };
+  const glow = (x, y, r, col, a) => { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2); };
+  const wrapY = (p, H) => { if (p.y > H + 12) { p.y = -12; p.x = rnd(0, F.W); } };
+  const DRAW = {
+    snow(t, dt) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 12 * F.u * dt; wrapY(p, F.H); if (p.x < -5) p.x = F.W + 5; if (p.x > F.W + 5) p.x = -5; ctx.globalAlpha = 0.45 + p.r / (3 * F.u) * 0.45; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
+    petals(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 0.9 + p.ph) * 14 * F.u) * dt; p.rot += p.vr * dt; wrapY(p, F.H); if (p.x > F.W + 12) p.x = -12; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, 0.55 + 0.45 * Math.abs(Math.sin(t * 1.3 + p.ph))); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * 0.55, 0, 0, 6.283); ctx.fill(); ctx.restore(); }); },
+    coins(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * 0.8 + p.ph) * 10 * F.u * dt; p.rot += p.vr * dt; wrapY(p, F.H); ctx.save(); ctx.translate(p.x, p.y); ctx.scale(Math.max(0.15, Math.abs(Math.cos(p.rot))), 1); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }); },
+    stars(t, dt) {
+      F.parts.forEach(p => { ctx.globalAlpha = 0.25 + 0.75 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = '#fff6d8'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); });
+      ctx.globalAlpha = 1; F.nextShoot -= dt;
+      if (F.nextShoot <= 0 && !F.shoot) { F.shoot = { x: rnd(0.1, 0.6) * F.W, y: rnd(0, 0.25) * F.H, life: 0 }; F.nextShoot = rnd(6, 11); }
+      if (F.shoot) { const s = F.shoot; s.life += dt; const L = 90 * F.u, dx = 260 * F.u * s.life, dy = 150 * F.u * s.life; const g = ctx.createLinearGradient(s.x + dx - L * 0.86, s.y + dy - L * 0.5, s.x + dx, s.y + dy); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,0.9)'); ctx.strokeStyle = g; ctx.lineWidth = 1.6 * F.u; ctx.beginPath(); ctx.moveTo(s.x + dx - L * 0.86, s.y + dy - L * 0.5); ctx.lineTo(s.x + dx, s.y + dy); ctx.stroke(); if (s.life > 0.9) F.shoot = null; }
+    },
+    bubbles(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 10 * F.u * dt; if (p.y < -14) { p.y = F.H + 14; p.x = rnd(0, F.W); } ctx.strokeStyle = F.dark ? 'rgba(220,240,255,0.5)' : rgba(F.acc, 0.55); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(p.x - p.r * 0.35, p.y - p.r * 0.35, p.r * 0.2, 0, 6.283); ctx.fill(); }); },
+    embers(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * 1.1 + p.ph) * 14 * F.u * dt; if (p.y < -10) { p.y = F.H + 10; p.x = rnd(0, F.W); } const a = Math.max(0, Math.min(1, p.y / F.H)); glow(p.x, p.y, p.r * 5, F.acc, 0.55 * a); ctx.fillStyle = rgba('#ffd9a8', 0.9 * a); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); },
+    rain(t, dt) { ctx.lineWidth = 1.1 * F.u; ctx.globalAlpha = 0.35; F.parts.forEach(p => { p.y += p.vy * dt; p.x -= p.vy * 0.2 * dt; if (p.y > F.H + 20) { p.y = -20; p.x = rnd(0, F.W * 1.25); } ctx.strokeStyle = p.col; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.len * 0.2, p.y + p.len); ctx.stroke(); }); ctx.globalAlpha = 1; },
+    dn(t, dt) { F.parts.forEach(p => { ctx.globalAlpha = 0.2 + 0.8 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = '#fff6d8'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
+    cyber(t) {
+      const p = (t * 0.22) % 1.3 - 0.15, y = p * F.H, hh = 40 * F.u, g = ctx.createLinearGradient(0, y - hh, 0, y + hh);
+      g.addColorStop(0, 'rgba(65,224,238,0)'); g.addColorStop(0.5, 'rgba(65,224,238,0.16)'); g.addColorStop(1, 'rgba(65,224,238,0)'); ctx.fillStyle = g; ctx.fillRect(0, y - hh, F.W, hh * 2);
+      if (t % 3.2 < 0.14) for (let i = 0; i < 4; i++) { ctx.fillStyle = i % 2 ? 'rgba(255,95,168,0.22)' : 'rgba(65,224,238,0.22)'; ctx.fillRect(rnd(0, 0.4) * F.W, rnd(0, 1) * F.H, rnd(0.3, 0.7) * F.W, rnd(2, 6) * F.u); }
+    },
+    fairy(t) { F.parts.forEach(p => { const a = 0.3 + 0.35 * (0.5 + 0.5 * Math.sin(t * 2.2 + p.ph)); glow(p.x, p.y, 22 * F.k * 2.2, p.col, a); }); },
+    fog(t, dt) { F.parts.forEach(p => { p.x += p.vx * dt; if (p.x > F.W + p.r) p.x = -p.r; if (p.x < -p.r) p.x = F.W + p.r; const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r); g.addColorStop(0, 'rgba(200,215,230,' + p.a + ')'); g.addColorStop(1, 'rgba(200,215,230,0)'); ctx.fillStyle = g; ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2); }); },
+    motes(t, dt) { F.parts.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; if (p.y < -6) { p.y = F.H + 6; p.x = rnd(0, F.W); } if (p.x > F.W + 6) p.x = -6; const a = 0.2 + 0.5 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = F.dark ? 'rgba(255,255,255,' + a * 0.8 + ')' : 'rgba(224,180,74,' + Math.min(0.85, a * 1.1) + ')'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); },
+    hearts(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * 0.9 + p.ph) * 12 * F.u * dt; if (p.y < -14) { p.y = F.H + 14; p.x = rnd(0, F.W); } ctx.globalAlpha = 0.6; ctx.fillStyle = p.col; heart(p.s, p.x, p.y); }); ctx.globalAlpha = 1; },
+    fireflies(t, dt) { F.parts.forEach(p => { p.vx += rnd(-12, 12) * dt * F.u; p.vy += rnd(-12, 12) * dt * F.u; p.vx = Math.max(-12 * F.u, Math.min(12 * F.u, p.vx)); p.vy = Math.max(-12 * F.u, Math.min(12 * F.u, p.vy)); p.x += p.vx * dt; p.y += p.vy * dt; if (p.x < 0) p.x = F.W; if (p.x > F.W) p.x = 0; if (p.y < 0) p.y = F.H; if (p.y > F.H) p.y = 0; const a = 0.25 + 0.75 * Math.abs(Math.sin(t * 1.4 + p.ph)); glow(p.x, p.y, p.r * 6, '#e6ff8c', 0.7 * a); ctx.fillStyle = 'rgba(245,255,200,' + a + ')'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.7, 0, 6.283); ctx.fill(); }); },
+    train(t) {
+      const k = F.k, car = (x, y, col) => { ctx.fillStyle = '#ffffff'; ctx.strokeStyle = col; ctx.lineWidth = 2 * Math.max(0.7, k * 1.6); ctx.beginPath(); ctx.roundRect(x, y - 5 * k, 30 * k, 10 * k, 4 * k); ctx.fill(); ctx.stroke(); };
+      const span = F.W - 112 * k + 3 * 34 * k, x1 = 56 * k - 3 * 34 * k + ((t * 110 * k) % span), x2 = F.W - 56 * k - ((t * 90 * k + span / 2) % span);
+      for (let i = 0; i < 3; i++) { car(x1 + i * 34 * k, 44 * k, F.acc); car(x2 - i * 34 * k - 30 * k, F.H - 44 * k, '#4fa3a5'); }
+    },
+    pixel(t) { F.parts.forEach(p => { if (((t * p.sp + p.ph) % 1) < 0.5) { ctx.fillStyle = p.col; ctx.fillRect(p.x, p.y, p.s, p.s); } }); },
+    steam(t) { F.parts.forEach(p => { const life = ((t + p.t0) % 3) / 3, y = p.cy - life * 70 * F.k, x = p.cx + Math.sin(life * 7 + p.ph) * 9 * F.k, r = (5 + life * 9) * F.k; glow(x, y, r * 1.6, F.dark ? '#ffffff' : '#ffffff', (1 - life) * 0.42); }); }
+  };
+  function shine(t) {
+    const ph = (t % 8) / 1.6; if (ph > 1) return;
+    const L = Math.hypot(F.W, F.H), x = (ph - 0.5) * 1.8 * L;
+    ctx.save(); ctx.translate(F.W / 2, F.H / 2); ctx.rotate(-0.4);
+    const g = ctx.createLinearGradient(x - 0.1 * L, 0, x + 0.1 * L, 0), a = F.dark ? 0.07 : 0.12;
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(-L, -L, 2 * L, 2 * L); ctx.restore();
+  }
+  function ensure() {
+    const kind = KIND[opt.collageBase] || 'motes', acc = $('cTape').value, base = $('cBase').value;
+    const key = kind + '|' + acc + '|' + base + '|' + opt.layout + '|' + F.W + 'x' + F.H;
+    if (key === F.key) return;
+    F.key = key; F.kind = kind; F.acc = acc; F.dark = lum(base) < 0.4; F.u = Math.max(0.6, F.W / 520); F.k = F.W / 1200; F.shoot = null;
+    F.parts = INIT[kind]();
+  }
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!F.on || document.hidden || !F.vis) return;
+    if (now - F.last < 33) return;
+    const dt = Math.min(0.1, (now - F.last) / 1000); F.last = now;
+    if (!sync()) return;
+    ensure();
+    ctx.setTransform(F.dpr, 0, 0, F.dpr, 0, 0); ctx.clearRect(0, 0, F.W, F.H);
+    const t = now / 1000;
+    try { DRAW[F.kind](t, dt); shine(t); } catch (e) { F.on = false; console.warn('fx', e); }
+  }
+  const api = {
+    refresh() { sync(); },
+    set(on) {
+      F.on = on; try { localStorage.setItem('q_fx', on ? '1' : '0'); } catch (e) {}
+      $('fxBtn').classList.toggle('on', on);
+      if (!on) ctx.clearRect(0, 0, fx.width, fx.height);
+    },
+    get on() { return F.on; }
+  };
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { F.vis = es[0].isIntersecting; }).observe(cv);
+  window.addEventListener('resize', () => { sync(); });
+  api.set(F.on);
+  requestAnimationFrame(frame);
+  return api;
+})();
+$('fxBtn').onclick = () => { FX.set(!FX.on); toast(FX.on ? '✨ 预览动态效果：开' : '预览动态效果：关'); };
+
 setTimeout(() => { HIST.base(); scheduleThumbs(true); }, 500);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(() => scheduleThumbs(true), 900));
 
