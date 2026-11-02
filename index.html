@@ -1047,7 +1047,9 @@ body.ep-mode #pinFab { border: 1.5px solid var(--accent); background: #fff; colo
         </div>
       </div>
       <button class="go" id="export" style="width:100%;margin-top:12px;min-height:32px;font-size:14px" disabled>导出拼贴画</button>
-      <p class="hint" style="text-align:center;margin-top:8px">生成高分辨率图像并直接下载。<span id="dims"></span></p>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px"><input id="myExpFx" type="checkbox" checked> PNG 同时叠加一帧粒子效果（与预览一致）</label>
+      <div class="r" style="margin-top:10px"><span>动态时长</span><select id="myExpSec" style="flex:none"><option value="3">3 秒</option><option value="5" selected>5 秒</option><option value="8">8 秒</option></select><button class="go" id="exportMotion" style="flex:1;font-weight:500" disabled>🎬 导出动态视频</button></div>
+      <p class="hint" style="text-align:center;margin-top:8px">PNG 是静态图，粒子只能定格成一帧；想要会动的效果请导出视频（支持 MP4/WebM，取决于浏览器）。<span id="dims"></span></p>
     </div>
   </section>
 </div>
@@ -4915,7 +4917,7 @@ function render() {
   if (typeof refreshTextCards === 'function') refreshTextCards();
 
   const ok = !state.busy && state.images.length >= 1;
-  $('export').disabled = $('exportTop').disabled = !ok;
+  $('export').disabled = $('exportTop').disabled = !ok; if ($('exportMotion') && !state.busy) $('exportMotion').disabled = !ok;
   const n = state.images.length;
   $('status').textContent = n ? `已选 ${n} 张` : '选1~6张截图';
   if (typeof scheduleThumbs === 'function' && HIST && HIST.ready) scheduleThumbs(false);
@@ -5243,17 +5245,17 @@ $('resetPos').onclick = () => {
 };
 
 let lastExportUrl = null;
-function downloadBlob(blob) {
+function downloadBlob(blob, ext = 'png') {
   const pad = n => String(n).padStart(2, '0');
   const d = new Date();
   const stamp = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
   const name = ((tcfg.title.text || '').trim() || '主题预览').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40);
-  const filename = `${name}-${opt.res}px-${stamp}.png`;
+  const filename = `${name}-${ext === 'png' ? opt.res + 'px' : '动态'}-${stamp}.${ext}`;
   if (lastExportUrl) URL.revokeObjectURL(lastExportUrl);
   lastExportUrl = URL.createObjectURL(blob);
   const link = $('saveImageLink');
   link.href = lastExportUrl;
-  link.download = filename;
+  link.download = filename; link.textContent = ext === 'png' ? '保存图片' : '保存视频';
   $('savePanel').classList.add('show');
   const a = document.createElement('a');
   a.href = lastExportUrl;
@@ -5274,6 +5276,9 @@ async function exportPNG() {
   try {
     await document.fonts.ready;
     const cv = draw(document.createElement('canvas'), +opt.res, true);
+    if ($('myExpFx').checked && FX.on) {             // 与预览一致：把一帧粒子效果画进静态图
+      const e0 = makeFxEngine(); e0.setCtx(cv.getContext('2d')); e0.size(cv.width, cv.height); e0.ensure(); e0.draw(2.2, 0.033, { shine: false });
+    }
     const blob = await new Promise((ok, no) => cv.toBlob(b => b ? ok(b) : no(Error('生成失败')), 'image/png'));
     cv.width = cv.height = 1;
     downloadBlob(blob);
@@ -5387,6 +5392,52 @@ $('clear').onclick = () => {
 };
 
 $('export').onclick = $('exportTop').onclick = exportPNG;
+async function exportMotion() {
+  if (state.busy || state.images.length < 1) { toast('请先选 1~6 张截图'); return; }
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast('当前浏览器不支持录制视频，请换用 Chrome / Safari 新版本'); return; }
+  state.busy = true;
+  $('export').disabled = $('exportTop').disabled = $('exportMotion').disabled = true;
+  try {
+    await document.fonts.ready;
+    const base = draw(document.createElement('canvas'), Math.min(1080, +opt.res), true);
+    const cw = base.width & ~1, ch = base.height & ~1;                       // H.264 需要偶数尺寸
+    const comp = document.createElement('canvas'); comp.width = cw; comp.height = ch;
+    const cx = comp.getContext('2d');
+    const eng = makeFxEngine(); eng.setCtx(cx); eng.size(cw, ch);
+    const mime = ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+    const rec = new MediaRecorder(comp.captureStream(30), mime ? { mimeType: mime, videoBitsPerSecond: 6000000 } : {});
+    const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    const stopped = new Promise(r => { rec.onstop = r; });
+    const dur = (+$('myExpSec').value || 5) * 1000, withFx = FX.on;
+    cx.drawImage(base, 0, 0, cw, ch);
+    rec.start(250);
+    const t0 = performance.now(); let last = t0, shown = -1;
+    await new Promise(done => {
+      const tick = now => {
+        const el = now - t0, dt = Math.min(0.1, (now - last) / 1000); last = now;
+        cx.clearRect(0, 0, cw, ch); cx.drawImage(base, 0, 0, cw, ch);
+        if (withFx) { eng.ensure(); eng.draw(el / 1000, dt); }
+        const sec = Math.floor(el / 1000); if (sec !== shown) { shown = sec; toast('🎬 录制中 ' + Math.min(sec + 1, dur / 1000) + ' / ' + dur / 1000 + ' 秒，请保持本页面在前台'); }
+        if (el >= dur) { done(); return; }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    rec.stop(); await stopped;
+    const type = (mime || 'video/webm').split(';')[0], blob = new Blob(chunks, { type });
+    downloadBlob(blob, type.indexOf('mp4') >= 0 ? 'mp4' : 'webm');
+    toast('已导出动态视频（' + (blob.size / 1048576).toFixed(1) + ' MB）' + (withFx ? '' : '，粒子效果已关闭所以画面是静止的'));
+  } catch (e) {
+    toast(e.message || '录制失败');
+  } finally {
+    state.busy = false;
+    $('exportMotion').disabled = state.images.length < 1;
+    $('export').disabled = $('exportTop').disabled = state.images.length < 1;
+    render();
+  }
+}
+$('exportMotion').onclick = exportMotion;
+
 $('closeSavePanel').onclick = () => $('savePanel').classList.remove('show');
 
 $('font').onchange = async e => {
@@ -6114,32 +6165,39 @@ $('myFile').onchange = e => {
 };
 renderMy();
 
-/* ====== 预览动态效果（叠加层，不影响导出） ====== */
-var FX = (() => {
-  const cv = $('preview'), fx = $('fx'), wrap = $('pvwrap'), ctx = fx.getContext('2d');
-  const F = { on: true, key: '', parts: [], last: 0, W: 0, H: 0, dpr: 1, vis: true, kind: 'motes', u: 1, k: 1, dark: false, acc: '#ffffff', nextShoot: 4, shoot: null };
-  try { const v = localStorage.getItem('q_fx'); F.on = v === null ? !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) : v === '1'; } catch (e) {}
-  const KIND = { xmasEve: 'snow', wafuu: 'petals', newYear: 'coins', starChart: 'stars', deepSea: 'bubbles', emberDusk: 'embers', neonRain: 'rain', cyberGrid: 'cyber', glitchArchive: 'cyber', polaroidWall: 'fairy', dayNight: 'dn', suspenseFog: 'fog', cloudDots: 'bubbles', gingham: 'hearts', journalStickers: 'hearts', bambooMoon: 'fireflies', metroMap: 'train', retroPC: 'pixel', cafeMenu: 'steam' };
+/* ====== 预览/导出共用的动态效果引擎（叠加层，不改动底图） ====== */
+function makeFxEngine() {
+  const F = { W: 0, H: 0, key: '', parts: [], kind: 'none', variant: '', u: 1, k: 1, dark: false, acc: '#ffffff', nextShoot: 4, shoot: null, film: null };
+  let ctx = null;
+  // 每种背景只配“贴合它氛围”的粒子；没写的背景不放粒子，只留偶尔扫过的柔光
+  const KIND = {
+    parchment: 'motes', bookShelf: 'motes', scroll: 'motes', songSilk: 'motes', classifiedDossier: 'motes', detectiveBoard: 'motes',
+    cloudDots: 'bubbles', gingham: 'hearts', journalStickers: 'confetti', polaroidWall: 'fairy',
+    pstPop: 'confetti:pop', pstCinema: 'film',
+    starChart: 'stars', emberDusk: 'embers', deepSea: 'bubbles', neonRain: 'rain', cyberGrid: 'cyber', glitchArchive: 'cyber',
+    suspenseFog: 'fog', crimeDna: 'siren',
+    dateInvite: 'petals:rose', dateStubs: 'sparkles',
+    songPorcelain: 'ripples', songWindow: 'petals:plum', songTea: 'mist', inkMountain: 'mist', bambooMoon: 'fireflies',
+    cafeMenu: 'steam', metroMap: 'train', retroPC: 'pixel', wafuu: 'petals:sakura',
+    xmasEve: 'snow', newYear: 'coins', dayNight: 'dn'
+  };
   const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[(Math.random() * a.length) | 0];
   const lum = h => { const c = rgb(h); return (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255; };
   const rgba = (h, a) => { const c = rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
-  function sync() {
-    const w = cv.offsetWidth, h = cv.offsetHeight; if (!w || !h) return false;
-    fx.style.left = cv.offsetLeft + 'px'; fx.style.top = cv.offsetTop + 'px'; fx.style.width = w + 'px'; fx.style.height = h + 'px';
-    fx.style.borderRadius = getComputedStyle(cv).borderRadius;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (F.W !== w || F.H !== h || F.dpr !== dpr) { F.W = w; F.H = h; F.dpr = dpr; fx.width = Math.round(w * dpr); fx.height = Math.round(h * dpr); F.key = ''; }
-    return true;
-  }
+  const PETAL = { sakura: ['#f6b8c6', '#f9d0d9', '#ffe6ec'], rose: ['#d6537f', '#e88aa6', '#f6c5d4'], plum: ['#f6d5dd', '#f2c4cf', '#ffffff'] };
   const INIT = {
+    none() { return []; },
     snow() { return Array.from({ length: 72 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(1, 3) * F.u, vy: rnd(18, 46) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.6) })); },
-    petals() { return Array.from({ length: 22 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(5, 9) * F.u, vy: rnd(22, 42) * F.u, vx: rnd(-6, 12) * F.u, rot: rnd(0, 6), vr: rnd(-1.5, 1.5), ph: rnd(0, 6), col: pick(['#f6b8c6', '#f9d0d9', '#ffe6ec']) })); },
+    petals() { const pal = PETAL[F.variant] || PETAL.sakura; return Array.from({ length: 22 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(5, 9) * F.u, vy: rnd(22, 42) * F.u, vx: rnd(-6, 12) * F.u, rot: rnd(0, 6), vr: rnd(-1.5, 1.5), ph: rnd(0, 6), col: pick(pal) })); },
     coins() { return Array.from({ length: 34 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), w: rnd(4, 8) * F.u, h: rnd(6, 11) * F.u, vy: rnd(24, 52) * F.u, rot: rnd(0, 6), vr: rnd(1.5, 4), ph: rnd(0, 6), col: pick(['#e3b95a', '#f0cf7a', '#d6a642']) })); },
+    confetti() { const pal = F.variant === 'pop' ? ['#ff6f91', '#ffd23f', '#3bceac', '#4d96ff'] : [F.acc, '#ffd27a', '#8fd0c0', '#f2a1b5', '#9ec6ee']; return Array.from({ length: 34 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), w: rnd(3, 7) * F.u, h: rnd(5, 10) * F.u, vy: rnd(20, 44) * F.u, rot: rnd(0, 6), vr: rnd(-2.5, 2.5), ph: rnd(0, 6), round: Math.random() < 0.35, col: pick(pal) })); },
+    sparkles() { return Array.from({ length: 20 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(4, 9) * F.u, ph: rnd(0, 6), sp: rnd(0.7, 1.8), col: pick(['#ffffff', F.acc, '#ffe9a8']) })); },
     stars() { return Array.from({ length: 64 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.5, 1.7) * F.u, ph: rnd(0, 6), sp: rnd(0.8, 2.4) })); },
     bubbles() { return Array.from({ length: 26 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(3, 10) * F.u, vy: rnd(14, 40) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.4) })); },
     embers() { return Array.from({ length: 46 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(1, 2.6) * F.u, vy: rnd(16, 48) * F.u, ph: rnd(0, 6) })); },
     rain() { return Array.from({ length: 70 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), len: rnd(12, 26) * F.u, vy: rnd(420, 640) * F.u, col: pick(['#ff7ab8', '#41e0ee']) })); },
     cyber() { return []; },
+    siren() { return []; },
     dn() { const cols = opt.layout === 'dnCols'; return Array.from({ length: 46 }, () => ({ x: cols ? rnd(0.52, 1) * F.W : rnd(0, F.W), y: cols ? rnd(0, F.H) : rnd(0.54, 1) * F.H, r: rnd(0.5, 1.7) * F.u, ph: rnd(0, 6), sp: rnd(0.8, 2.4) })); },
     fairy() {
       const a = [], cols = [F.acc, '#ffd27a', '#8fd0c0', '#f2a1b5', '#9ec6ee'];
@@ -6147,51 +6205,67 @@ var FX = (() => {
       return a;
     },
     fog() { return Array.from({ length: 6 }, () => ({ x: rnd(0, F.W), y: rnd(0.15, 0.95) * F.H, r: rnd(0.25, 0.5) * F.W, vx: rnd(6, 16) * F.u * (Math.random() < 0.5 ? -1 : 1), a: rnd(0.05, 0.1) })); },
-    motes() { return Array.from({ length: 36 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.8, 2.2) * F.u, vx: rnd(2, 8) * F.u, vy: rnd(-10, -3) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.8) })); },
+    mist() { return Array.from({ length: 6 }, () => ({ x: rnd(0, F.W), y: rnd(0.55, 0.95) * F.H, r: rnd(0.3, 0.55) * F.W, vx: rnd(4, 11) * F.u, a: rnd(0.1, 0.18) })); },
+    motes() { return Array.from({ length: 30 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.8, 2.2) * F.u, vx: rnd(2, 8) * F.u, vy: rnd(-10, -3) * F.u, ph: rnd(0, 6), sp: rnd(0.6, 1.8) })); },
     hearts() { return Array.from({ length: 16 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), s: rnd(5, 11) * F.u, vy: rnd(14, 30) * F.u, ph: rnd(0, 6), col: pick([F.acc, '#f2a1b5', '#ffd27a', '#f19ab0']) })); },
     fireflies() { return Array.from({ length: 20 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), vx: rnd(-8, 8) * F.u, vy: rnd(-8, 8) * F.u, ph: rnd(0, 6), r: rnd(1.4, 2.8) * F.u })); },
+    ripples() { return Array.from({ length: 5 }, () => ({ x: rnd(0.1, 0.9) * F.W, y: rnd(0.3, 0.92) * F.H, t0: rnd(0, 4), per: rnd(3.2, 4.6) })); },
     train() { return []; },
     pixel() { return Array.from({ length: 20 }, () => ({ x: Math.round(rnd(0, F.W)), y: Math.round(rnd(0, F.H)), s: Math.round(rnd(3, 5) * F.u), ph: rnd(0, 1), sp: rnd(0.6, 1.8), col: pick(['#ffe27a', '#ffffff', '#8ee8e0']) })); },
+    film() { F.film = { t0: -1, lines: [], dust: [] }; return []; },
     steam() {
       const a = [], cups = [[92 * F.k, F.H - 176 * F.k], [F.W - 92 * F.k, 104 * F.k]];
       cups.forEach(([cx, cy]) => { for (let i = 0; i < 6; i++) a.push({ cx, cy, t0: rnd(0, 3), ph: rnd(0, 6) }); });
       return a;
     }
   };
-  const heart = (s, x, y) => { ctx.beginPath(); ctx.moveTo(x, y + s * 0.35); ctx.bezierCurveTo(x - s, y - s * 0.3, x - s * 0.55, y - s * 0.95, x, y - s * 0.4); ctx.bezierCurveTo(x + s * 0.55, y - s * 0.95, x + s, y - s * 0.3, x, y + s * 0.35); ctx.fill(); };
+  const heart = (sz, x, y) => { ctx.beginPath(); ctx.moveTo(x, y + sz * 0.35); ctx.bezierCurveTo(x - sz, y - sz * 0.3, x - sz * 0.55, y - sz * 0.95, x, y - sz * 0.4); ctx.bezierCurveTo(x + sz * 0.55, y - sz * 0.95, x + sz, y - sz * 0.3, x, y + sz * 0.35); ctx.fill(); };
   const glow = (x, y, r, col, a) => { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2); };
-  const wrapY = (p, H) => { if (p.y > H + 12) { p.y = -12; p.x = rnd(0, F.W); } };
+  const wrapY = p => { if (p.y > F.H + 12) { p.y = -12; p.x = rnd(0, F.W); } };
   const DRAW = {
-    snow(t, dt) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 12 * F.u * dt; wrapY(p, F.H); if (p.x < -5) p.x = F.W + 5; if (p.x > F.W + 5) p.x = -5; ctx.globalAlpha = 0.45 + p.r / (3 * F.u) * 0.45; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
-    petals(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 0.9 + p.ph) * 14 * F.u) * dt; p.rot += p.vr * dt; wrapY(p, F.H); if (p.x > F.W + 12) p.x = -12; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, 0.55 + 0.45 * Math.abs(Math.sin(t * 1.3 + p.ph))); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * 0.55, 0, 0, 6.283); ctx.fill(); ctx.restore(); }); },
-    coins(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * 0.8 + p.ph) * 10 * F.u * dt; p.rot += p.vr * dt; wrapY(p, F.H); ctx.save(); ctx.translate(p.x, p.y); ctx.scale(Math.max(0.15, Math.abs(Math.cos(p.rot))), 1); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }); },
+    none() {},
+    snow(t, dt) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 12 * F.u * dt; wrapY(p); if (p.x < -5) p.x = F.W + 5; if (p.x > F.W + 5) p.x = -5; ctx.globalAlpha = 0.45 + p.r / (3 * F.u) * 0.45; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
+    petals(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 0.9 + p.ph) * 14 * F.u) * dt; p.rot += p.vr * dt; wrapY(p); if (p.x > F.W + 12) p.x = -12; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, 0.55 + 0.45 * Math.abs(Math.sin(t * 1.3 + p.ph))); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * 0.55, 0, 0, 6.283); ctx.fill(); ctx.restore(); }); },
+    coins(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * 0.8 + p.ph) * 10 * F.u * dt; p.rot += p.vr * dt; wrapY(p); ctx.save(); ctx.translate(p.x, p.y); ctx.scale(Math.max(0.15, Math.abs(Math.cos(p.rot))), 1); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }); },
+    confetti(t, dt) { F.parts.forEach(p => { p.y += p.vy * dt; p.x += Math.sin(t * 0.9 + p.ph) * 12 * F.u * dt; p.rot += p.vr * dt; wrapY(p); ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * 0.4); ctx.scale(Math.max(0.25, Math.abs(Math.cos(p.rot))), 1); ctx.fillStyle = p.col; ctx.globalAlpha = 0.85; if (p.round) { ctx.beginPath(); ctx.arc(0, 0, p.w * 0.6, 0, 6.283); ctx.fill(); } else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }); },
+    sparkles(t) { F.parts.forEach(p => { const a = Math.abs(Math.sin(t * p.sp + p.ph)), sz = p.s * (0.5 + 0.7 * a); ctx.globalAlpha = 0.25 + 0.7 * a; ctx.fillStyle = p.col; ctx.beginPath(); ctx.moveTo(p.x, p.y - sz); ctx.lineTo(p.x + sz * 0.18, p.y - sz * 0.18); ctx.lineTo(p.x + sz, p.y); ctx.lineTo(p.x + sz * 0.18, p.y + sz * 0.18); ctx.lineTo(p.x, p.y + sz); ctx.lineTo(p.x - sz * 0.18, p.y + sz * 0.18); ctx.lineTo(p.x - sz, p.y); ctx.lineTo(p.x - sz * 0.18, p.y - sz * 0.18); ctx.closePath(); ctx.fill(); }); ctx.globalAlpha = 1; },
     stars(t, dt) {
       F.parts.forEach(p => { ctx.globalAlpha = 0.25 + 0.75 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = '#fff6d8'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); });
       ctx.globalAlpha = 1; F.nextShoot -= dt;
       if (F.nextShoot <= 0 && !F.shoot) { F.shoot = { x: rnd(0.1, 0.6) * F.W, y: rnd(0, 0.25) * F.H, life: 0 }; F.nextShoot = rnd(6, 11); }
-      if (F.shoot) { const s = F.shoot; s.life += dt; const L = 90 * F.u, dx = 260 * F.u * s.life, dy = 150 * F.u * s.life; const g = ctx.createLinearGradient(s.x + dx - L * 0.86, s.y + dy - L * 0.5, s.x + dx, s.y + dy); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,0.9)'); ctx.strokeStyle = g; ctx.lineWidth = 1.6 * F.u; ctx.beginPath(); ctx.moveTo(s.x + dx - L * 0.86, s.y + dy - L * 0.5); ctx.lineTo(s.x + dx, s.y + dy); ctx.stroke(); if (s.life > 0.9) F.shoot = null; }
+      if (F.shoot) { const s0 = F.shoot; s0.life += dt; const L = 90 * F.u, dx = 260 * F.u * s0.life, dy = 150 * F.u * s0.life; const g = ctx.createLinearGradient(s0.x + dx - L * 0.86, s0.y + dy - L * 0.5, s0.x + dx, s0.y + dy); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,0.9)'); ctx.strokeStyle = g; ctx.lineWidth = 1.6 * F.u; ctx.beginPath(); ctx.moveTo(s0.x + dx - L * 0.86, s0.y + dy - L * 0.5); ctx.lineTo(s0.x + dx, s0.y + dy); ctx.stroke(); if (s0.life > 0.9) F.shoot = null; }
     },
-    bubbles(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 10 * F.u * dt; if (p.y < -14) { p.y = F.H + 14; p.x = rnd(0, F.W); } ctx.strokeStyle = F.dark ? 'rgba(220,240,255,0.5)' : rgba(F.acc, 0.55); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(p.x - p.r * 0.35, p.y - p.r * 0.35, p.r * 0.2, 0, 6.283); ctx.fill(); }); },
+    dn(t) { F.parts.forEach(p => { ctx.globalAlpha = 0.2 + 0.8 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = '#fff6d8'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
+    bubbles(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * p.sp + p.ph) * 10 * F.u * dt; if (p.y < -14) { p.y = F.H + 14; p.x = rnd(0, F.W); } ctx.strokeStyle = F.dark ? 'rgba(220,240,255,0.5)' : rgba(F.acc, 0.55); ctx.lineWidth = Math.max(1, 1.2 * F.u * 0.8); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(p.x - p.r * 0.35, p.y - p.r * 0.35, p.r * 0.2, 0, 6.283); ctx.fill(); }); },
     embers(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * 1.1 + p.ph) * 14 * F.u * dt; if (p.y < -10) { p.y = F.H + 10; p.x = rnd(0, F.W); } const a = Math.max(0, Math.min(1, p.y / F.H)); glow(p.x, p.y, p.r * 5, F.acc, 0.55 * a); ctx.fillStyle = rgba('#ffd9a8', 0.9 * a); ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); },
-    rain(t, dt) { ctx.lineWidth = 1.1 * F.u; ctx.globalAlpha = 0.35; F.parts.forEach(p => { p.y += p.vy * dt; p.x -= p.vy * 0.2 * dt; if (p.y > F.H + 20) { p.y = -20; p.x = rnd(0, F.W * 1.25); } ctx.strokeStyle = p.col; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.len * 0.2, p.y + p.len); ctx.stroke(); }); ctx.globalAlpha = 1; },
-    dn(t, dt) { F.parts.forEach(p => { ctx.globalAlpha = 0.2 + 0.8 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = '#fff6d8'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); ctx.globalAlpha = 1; },
+    rain(t, dt) { ctx.lineWidth = Math.max(1, 1.1 * F.u); ctx.globalAlpha = 0.35; F.parts.forEach(p => { p.y += p.vy * dt; p.x -= p.vy * 0.2 * dt; if (p.y > F.H + 20) { p.y = -20; p.x = rnd(0, F.W * 1.25); } ctx.strokeStyle = p.col; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.len * 0.2, p.y + p.len); ctx.stroke(); }); ctx.globalAlpha = 1; },
     cyber(t) {
       const p = (t * 0.22) % 1.3 - 0.15, y = p * F.H, hh = 40 * F.u, g = ctx.createLinearGradient(0, y - hh, 0, y + hh);
       g.addColorStop(0, 'rgba(65,224,238,0)'); g.addColorStop(0.5, 'rgba(65,224,238,0.16)'); g.addColorStop(1, 'rgba(65,224,238,0)'); ctx.fillStyle = g; ctx.fillRect(0, y - hh, F.W, hh * 2);
       if (t % 3.2 < 0.14) for (let i = 0; i < 4; i++) { ctx.fillStyle = i % 2 ? 'rgba(255,95,168,0.22)' : 'rgba(65,224,238,0.22)'; ctx.fillRect(rnd(0, 0.4) * F.W, rnd(0, 1) * F.H, rnd(0.3, 0.7) * F.W, rnd(2, 6) * F.u); }
     },
+    siren(t) { const a = 0.5 + 0.5 * Math.sin(t * 3.2); glow(0, 0, F.W * 0.75, '#ff5a64', 0.26 * a); glow(F.W, 0, F.W * 0.75, '#4d8dff', 0.26 * (1 - a)); glow(0, F.H, F.W * 0.6, '#4d8dff', 0.14 * a); glow(F.W, F.H, F.W * 0.6, '#ff5a64', 0.14 * (1 - a)); },
     fairy(t) { F.parts.forEach(p => { const a = 0.3 + 0.35 * (0.5 + 0.5 * Math.sin(t * 2.2 + p.ph)); glow(p.x, p.y, 22 * F.k * 2.2, p.col, a); }); },
     fog(t, dt) { F.parts.forEach(p => { p.x += p.vx * dt; if (p.x > F.W + p.r) p.x = -p.r; if (p.x < -p.r) p.x = F.W + p.r; const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r); g.addColorStop(0, 'rgba(200,215,230,' + p.a + ')'); g.addColorStop(1, 'rgba(200,215,230,0)'); ctx.fillStyle = g; ctx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2); }); },
+    mist(t, dt) { F.parts.forEach(p => { p.x += p.vx * dt; if (p.x > F.W + p.r) p.x = -p.r; ctx.save(); ctx.translate(p.x, p.y); ctx.scale(1, 0.28); const g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.r); const c0 = F.dark ? '230,238,250' : '255,255,255'; g.addColorStop(0, 'rgba(' + c0 + ',' + (F.dark ? p.a * 0.7 : p.a * 2) + ')'); g.addColorStop(1, 'rgba(' + c0 + ',0)'); ctx.fillStyle = g; ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2); ctx.restore(); }); },
     motes(t, dt) { F.parts.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; if (p.y < -6) { p.y = F.H + 6; p.x = rnd(0, F.W); } if (p.x > F.W + 6) p.x = -6; const a = 0.2 + 0.5 * Math.abs(Math.sin(t * p.sp + p.ph)); ctx.fillStyle = F.dark ? 'rgba(255,255,255,' + a * 0.8 + ')' : 'rgba(224,180,74,' + Math.min(0.85, a * 1.1) + ')'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }); },
     hearts(t, dt) { F.parts.forEach(p => { p.y -= p.vy * dt; p.x += Math.sin(t * 0.9 + p.ph) * 12 * F.u * dt; if (p.y < -14) { p.y = F.H + 14; p.x = rnd(0, F.W); } ctx.globalAlpha = 0.6; ctx.fillStyle = p.col; heart(p.s, p.x, p.y); }); ctx.globalAlpha = 1; },
     fireflies(t, dt) { F.parts.forEach(p => { p.vx += rnd(-12, 12) * dt * F.u; p.vy += rnd(-12, 12) * dt * F.u; p.vx = Math.max(-12 * F.u, Math.min(12 * F.u, p.vx)); p.vy = Math.max(-12 * F.u, Math.min(12 * F.u, p.vy)); p.x += p.vx * dt; p.y += p.vy * dt; if (p.x < 0) p.x = F.W; if (p.x > F.W) p.x = 0; if (p.y < 0) p.y = F.H; if (p.y > F.H) p.y = 0; const a = 0.25 + 0.75 * Math.abs(Math.sin(t * 1.4 + p.ph)); glow(p.x, p.y, p.r * 6, '#e6ff8c', 0.7 * a); ctx.fillStyle = 'rgba(245,255,200,' + a + ')'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.7, 0, 6.283); ctx.fill(); }); },
+    ripples(t) { ctx.lineWidth = Math.max(1, 1.3 * F.u * 0.8); F.parts.forEach(p => { const life = ((t + p.t0) % p.per) / p.per, r = life * 70 * F.u; ctx.strokeStyle = F.dark ? 'rgba(220,240,255,' + (1 - life) * 0.5 + ')' : rgba(F.acc, (1 - life) * 0.5); ctx.beginPath(); ctx.ellipse(p.x, p.y, r, r * 0.4, 0, 0, 6.283); ctx.stroke(); ctx.beginPath(); ctx.ellipse(p.x, p.y, r * 0.55, r * 0.22, 0, 0, 6.283); ctx.stroke(); }); },
     train(t) {
       const k = F.k, car = (x, y, col) => { ctx.fillStyle = '#ffffff'; ctx.strokeStyle = col; ctx.lineWidth = 2 * Math.max(0.7, k * 1.6); ctx.beginPath(); ctx.roundRect(x, y - 5 * k, 30 * k, 10 * k, 4 * k); ctx.fill(); ctx.stroke(); };
       const span = F.W - 112 * k + 3 * 34 * k, x1 = 56 * k - 3 * 34 * k + ((t * 110 * k) % span), x2 = F.W - 56 * k - ((t * 90 * k + span / 2) % span);
       for (let i = 0; i < 3; i++) { car(x1 + i * 34 * k, 44 * k, F.acc); car(x2 - i * 34 * k - 30 * k, F.H - 44 * k, '#4fa3a5'); }
     },
     pixel(t) { F.parts.forEach(p => { if (((t * p.sp + p.ph) % 1) < 0.5) { ctx.fillStyle = p.col; ctx.fillRect(p.x, p.y, p.s, p.s); } }); },
-    steam(t) { F.parts.forEach(p => { const life = ((t + p.t0) % 3) / 3, y = p.cy - life * 70 * F.k, x = p.cx + Math.sin(life * 7 + p.ph) * 9 * F.k, r = (5 + life * 9) * F.k; glow(x, y, r * 1.6, F.dark ? '#ffffff' : '#ffffff', (1 - life) * 0.42); }); }
+    film(t) {
+      const f = F.film; if (!f) return;
+      ctx.fillStyle = 'rgba(0,0,0,' + rnd(0, 0.05) + ')'; ctx.fillRect(0, 0, F.W, F.H);
+      if (t - f.t0 > 0.12 || t < f.t0) { f.t0 = t; f.lines = Array.from({ length: Math.floor(rnd(0, 3)) }, () => rnd(0, F.W)); f.dust = Array.from({ length: 12 }, () => ({ x: rnd(0, F.W), y: rnd(0, F.H), r: rnd(0.6, 1.8) * F.u })); }
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = Math.max(1, F.u * 0.8); f.lines.forEach(x => { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + rnd(-1, 1), F.H); ctx.stroke(); });
+      ctx.fillStyle = 'rgba(255,255,255,0.45)'; f.dust.forEach(d => { ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283); ctx.fill(); });
+    },
+    steam(t) { F.parts.forEach(p => { const life = ((t + p.t0) % 3) / 3, y = p.cy - life * 70 * F.k, x = p.cx + Math.sin(life * 7 + p.ph) * 9 * F.k, r = (5 + life * 9) * F.k; glow(x, y, r * 1.6, '#ffffff', (1 - life) * 0.42); }); }
   };
   function shine(t) {
     const ph = (t % 8) / 1.6; if (ph > 1) return;
@@ -6201,36 +6275,57 @@ var FX = (() => {
     g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,' + a + ')'); g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g; ctx.fillRect(-L, -L, 2 * L, 2 * L); ctx.restore();
   }
-  function ensure() {
-    const kind = KIND[opt.collageBase] || 'motes', acc = $('cTape').value, base = $('cBase').value;
-    const key = kind + '|' + acc + '|' + base + '|' + opt.layout + '|' + F.W + 'x' + F.H;
-    if (key === F.key) return;
-    F.key = key; F.kind = kind; F.acc = acc; F.dark = lum(base) < 0.4; F.u = Math.max(0.6, F.W / 520); F.k = F.W / 1200; F.shoot = null;
-    F.parts = INIT[kind]();
+  return {
+    setCtx(c) { ctx = c; },
+    size(W, H) { if (F.W !== W || F.H !== H) { F.W = W; F.H = H; F.key = ''; } },
+    ensure() {
+      const spec = (KIND[opt.collageBase] || 'none').split(':'), kind = spec[0], variant = spec[1] || '', acc = $('cTape').value, base = $('cBase').value;
+      const key = kind + ':' + variant + '|' + acc + '|' + base + '|' + opt.layout + '|' + F.W + 'x' + F.H;
+      if (key === F.key) return;
+      F.key = key; F.kind = kind; F.variant = variant; F.acc = acc; F.dark = lum(base) < 0.4; F.u = Math.max(0.6, F.W / 520); F.k = F.W / 1200; F.shoot = null; F.film = null;
+      F.parts = INIT[kind]();
+    },
+    draw(t, dt, o) { DRAW[F.kind](t, dt); if (!o || o.shine !== false) shine(t); }
+  };
+}
+
+/* ====== 预览动态效果（叠加在预览图上的一层，不影响拖拽） ====== */
+var FX = (() => {
+  const cv = $('preview'), fx = $('fx'), lctx = fx.getContext('2d');
+  const eng = makeFxEngine(); eng.setCtx(lctx);
+  const L = { on: true, last: 0, vis: true, W: 0, H: 0, dpr: 1 };
+  try { const v = localStorage.getItem('q_fx'); L.on = v === null ? !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) : v === '1'; } catch (e) {}
+  function sync() {
+    const w = cv.offsetWidth, h = cv.offsetHeight; if (!w || !h) return false;
+    fx.style.left = cv.offsetLeft + 'px'; fx.style.top = cv.offsetTop + 'px'; fx.style.width = w + 'px'; fx.style.height = h + 'px';
+    fx.style.borderRadius = getComputedStyle(cv).borderRadius;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (L.W !== w || L.H !== h || L.dpr !== dpr) { L.W = w; L.H = h; L.dpr = dpr; fx.width = Math.round(w * dpr); fx.height = Math.round(h * dpr); }
+    eng.size(w, h);
+    return true;
   }
   function frame(now) {
     requestAnimationFrame(frame);
-    if (!F.on || document.hidden || !F.vis) return;
-    if (now - F.last < 33) return;
-    const dt = Math.min(0.1, (now - F.last) / 1000); F.last = now;
+    if (!L.on || document.hidden || !L.vis) return;
+    if (now - L.last < 33) return;
+    const dt = Math.min(0.1, (now - L.last) / 1000); L.last = now;
     if (!sync()) return;
-    ensure();
-    ctx.setTransform(F.dpr, 0, 0, F.dpr, 0, 0); ctx.clearRect(0, 0, F.W, F.H);
-    const t = now / 1000;
-    try { DRAW[F.kind](t, dt); shine(t); } catch (e) { F.on = false; console.warn('fx', e); }
+    eng.ensure();
+    lctx.setTransform(L.dpr, 0, 0, L.dpr, 0, 0); lctx.clearRect(0, 0, L.W, L.H);
+    try { eng.draw(now / 1000, dt); } catch (e) { L.on = false; console.warn('fx', e); }
   }
   const api = {
     refresh() { sync(); },
     set(on) {
-      F.on = on; try { localStorage.setItem('q_fx', on ? '1' : '0'); } catch (e) {}
+      L.on = on; try { localStorage.setItem('q_fx', on ? '1' : '0'); } catch (e) {}
       $('fxBtn').classList.toggle('on', on);
-      if (!on) ctx.clearRect(0, 0, fx.width, fx.height);
+      if (!on) lctx.clearRect(0, 0, fx.width, fx.height);
     },
-    get on() { return F.on; }
+    get on() { return L.on; }
   };
-  if ('IntersectionObserver' in window) new IntersectionObserver(es => { F.vis = es[0].isIntersecting; }).observe(cv);
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { L.vis = es[0].isIntersecting; }).observe(cv);
   window.addEventListener('resize', () => { sync(); });
-  api.set(F.on);
+  api.set(L.on);
   requestAnimationFrame(frame);
   return api;
 })();
